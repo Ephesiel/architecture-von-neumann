@@ -85,3 +85,9 @@ RETURN||non
 JUMP||oui
 JUMPC|conditions?|oui
 NOOP||non
+
+### Notes
+
+Affichage du registre de flag (pour les conditions)
+Affichage des valeurs in et out lorsqu'un registre est modifié
+Voir comment coder SelMS (2 bits ?) adresse suivante (n bits logiquement) et condition (3 bits ?)
