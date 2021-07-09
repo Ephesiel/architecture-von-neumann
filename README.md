@@ -4,8 +4,9 @@ Projet stage juillet 2021 - Arnaud Virazel
 
 ## Questions
 
-Comment marche les conditions dans l'architecture, qui commande quoi ? Comment sont-elles sélectionnées par le séquenceur via la valeur du cond dans REMM ? <br>
-Comment marche les registres au temps T et T + 1 ? Est-ce que REMM et RAMM ont la même logique ?
+Comment marche les conditions dans l'architecture, qui commande quoi ? Comment sont-elles sélectionnées par le séquenceur via la valeur du cond dans REMM ?<br>
+Comment marche les registres au temps T et T + 1 ? Est-ce que REMM et RAMM ont la même logique ?<br>
+Comment sont incrémentées les phases du phi dans le séquenceur, qu'est-ce qui fait que c'est incrémenté ?
 
 ## Conception
 
@@ -269,7 +270,7 @@ class Plus1 {
 
  - C'est un registre normal mais attention, le signal de changement T <- T + 1 ne dois pas être le même que les autres. Il doit être déclenché juste après que le eRAMM est terminé (signal d'écriture)
 
-### REMMM
+### REMM
 
  - **A DISCUTER AVEC JOHANN**
  - Registre un peu spécial puisqu'il doit envoyer des signaux spécifiques en fonction du mot et de l'horloge
