@@ -2,166 +2,368 @@
 
 Projet stage juillet 2021 - Arnaud Virazel
 
-## Discussions
+## Questions
 
-### Codage des instructions
-
-<table>
-  <thead>
-    <tr>
-      <th>COP</th>
-      <th>MA</th>
-      <th>RA</th>
-      <th>Signification</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td rowspan=5>8 bits</td> 
-      <td>x000</td>
-      <td rowspan=5>20 bits</td>
-      <td>Immédiat</td>
-    </tr>
-    <tr>
-      <td>x001</td>
-      <td>Direct</td>
-    </tr>
-    <tr>
-      <td>x010</td>
-      <td>Indirect</td>
-    </tr>
-    <tr>
-      <td>x011</td>
-      <td>Indexé</td>
-    </tr>
-    <tr>
-      <td>x100</td>
-      <td>Relatif</td>
-    </tr>
-    <tr>
-      <td colspan=4>Si x = 0, mode d'adressage normal.<br /> Si x = 1, mode d'adressage étendu.</td>
-    </tr>
-    <tr>
-      <td colspan=4>Si on met 20 bits en RA, l'utilisateur peut coder un entier jusqu'à 1M,<br /> éventuellement 500k si on met un registre de signe.</td>
-    </tr>
-  </tbody>
-</table>
-
-### Registres
-
-Registres obligatoires :
-
-* Compteur ordinal (CO)
-* Registre d'échange (RE)
-* Registre d'instruction (RI)
-* Registre d'index (RX)
-* Registre d'adresse mémoire (RAM)
-
-Registres manipulables :
-
-* Registres A B C D : 
-  * 2 registres à manipuler (A et B) 
-  * 1 ou 2 registres de stockage (C et D, à renommer pour plus de clarté)
-
-Autre :
-
-* Stack pointer
-
-### Mémoire
-
-* Quelle taille pour la mémoire ? 2^n (avec n = nombre de bits de RA) ? Ou moins ? (parce que là ça fait beaucoup) 
-* Où mettre la pile ? Fin de la mémoire ? Ou adresse définie ?
-
-### Instructions
-
-Instruction|Registres|RA?
---|--|--
-LOAD|A/B/C/D/X|oui
-STORE|A/B/C/D/X|oui
-INC|A/B/C/D/X|non
-ADD|A/B/C/D/X|oui
-CALL||oui
-RETURN||non
-JUMP||oui
-JUMPC|conditions?|oui
-NOOP||non
-
-### Notes
-
-Affichage du registre de flag (pour les conditions)
-
-Affichage des valeurs in et out lorsqu'un registre est modifié
-
-Voir comment coder SelMS (2 bits ?) adresse suivante (n bits logiquement) et condition (3 bits ?)
+Comment marche les conditions dans l'architecture, qui commande quoi ? Comment sont-elles sélectionnées par le séquenceur via la valeur du cond dans REMM ? <br>
+Comment marche les registres au temps T et T + 1 ? Est-ce que REMM et RAMM ont la même logique ?
 
 ## Conception
 
-### Bus
+Nous partons sur un pattern MVC, la vue et le controller sont gérés dans les composants VueJS et le modèle est fait directement avec des classes JS permettant de faire tourner l'architecture sans visualisation.
 
-Objet ayant 1 propriété :
- - valeur : La valeur du bus actuel
+## Le modèle
 
-### Multiplexeur
+### Principe d'horloge
 
-Composant comprenant :
- - sortie : un bus de sortie
- - valeur : un bus de valeur (celui qui lui donne la valeur à choisir)
- - entrées : Les différents bus d'entrée ayant un identifiant. Le bus de valeur donne le bus d'entrée à envoyer en sortie
+ - On note UTA l'unité de temps de l'application
+ - Chaque objet à une méthode update qui prend en paramètre le temps écoulé depuis la dernière update
+ - On définit le temps d'un tick d'horloge (1000 UTA par exemple)
+ - On peut mettre pause ou lancer un certain nombre de UTA (+ 1000, + 200, +n...)
+ - Un manager global gère les update (toutes les 1 UTA par exemple) lorsque le temps n'est pas en pause et l'envoie à tous les objets
+ - Les objets qui veulent connaître et gérer le temps doivent s'enregistrer dans le manager avec une méthode
 
-### Registre
-
-Composant comprenant :
- - entrée : un bus d'entrée
- - sortie : un bus de sortie
- - valeur t+1 : valeur des bits en entrée
- - valeur t : valeur des bits en sortie
- - Possibilité de récupérer le signal d'entrée pour écrire la valeur t+1 en fonction de l'entrée
- - Possibilité de récupérer un signal disant que l'entrée doit s'écrire sur la sortie
- - Les bus de sorties valent toujours la valeur t
-
-### Isolateur
-
-Composant comprenant :
- - Un bus d'entrée
- - Un bus de sortie
- - Possibilité de récupérer un signal disant que la sortie vaut l'entrée
+```js
+class MaClasse {
+    constructor() {
+        Horloge.register(this.maMethodeUpdate)
+    }
+    
+    /**
+     * UTA représente le temps écoulé depuis la dernière update
+     */
+    maMethodeUpdate(UTA) {
+        // ...
+    }
+}
+```
 
 ### Signaux
 
-Enumération :
- - Chaque composant demande en props ses signaux
- - Lorsqu'un signal est envoyé l'architecture detecte quel composant doit faire quelque chose
+ - Les signaux sont donnés à un instant T et doivent durer un temps D.
+ - Ils sont représentés par une énumération.
+ - Le temps restant pour un signal actif est donné dans un deuxième paramètre de la méthode d'update
+ - Si cette valeur est 0, il reste 0 UTA et le signal est donc down
+ - Sinon il est up et les composants peuvent gérer en conséquence
+ - Pour envoyer un signal, il faut l'émettre de n'importe où
+
+```js
+class MaClasseReceptrice {
+    constructor() {
+        Horloge.register(this.maMethodeUpdate)
+    }
+    
+    /**
+     * UTA représente le temps écoulé depuis la dernière update
+     *
+     * signals représente le tableau des signaux. Les clés sont les 
+     * valeurs de l'énumération Signals. Les valeurs sont les temps
+     * restant en UTA pour ces signaux. 0 signifie que le signal
+     * est inactif
+     */
+    maMethodeUpdate(UTA, signals) {
+        if (signals[Signals.eSIG]) {
+            // ... Faire quelque chose si le signal eSIG est actif
+        }
+    }
+}
+
+MaClasseEmetrice {
+    maMethodeEmetrice() {
+        SignalManager.emit(Signals.eSIG, 100)
+    }
+}
+```
+
+### Bus
+
+ - Les bus représentent une valeur mais ne connaissent rien d'autre
+ - Ils ont du courant ou non, dès que quelqu'un leur donne une valeur, on considère que le courant passe
+ - Si aucune valeur n'a été donné durant un certain nombre de UTA alors le courant s'éteint et aucune valeur n'est à la sortie du bus.
+ - Ce temps de latence permet de simuler le temps que l'électricité passe dans les fils mais permet surtout d'éviter de devoir dire au bus qu'on ne lui donne plus de valeur. La valeur doit être donné à chaque update.
+
+```js
+class Bus {
+    int valeur
+    int tempsDepuisModification
+    bool courant
+    
+    setValeur(val) {
+        valeur = val
+        tempsDepuisModification = 0
+        courant = true
+    }
+    
+    update(UTA) {
+        tempsDepuisModification += UTA
+        if (tempsDepuisModification > TEMPS_MAX) {
+            courant = false
+            valeur = 0
+        }
+    }
+}
+```
+
+### Isolateur
+
+ - Un bus de sortie
+ - Un signal
+ - Une valeur
+ - Lorsque le signal est actif, la valeur est envoyé dans le bus de sortie
+
+```js
+class Isolateur {
+    Bus sortie
+    int valeur
+    int signal
+    
+    update(UTA, signals) {
+        if (signals[signal]) {
+            sortie.setValeur(valeur)
+        }
+    }
+}
+```
+
+### Registre
+ 
+ - Un registre possède une valeur T et une valeur T + 1
+ - Lorsqu'un signal de tick d'horloge est émis, le registre sait qu'il doit passer sa valeur T + 1 à T, les deux rangées de transistors sont alors connectés durant el temps du signal
+ - Ce tick d'horloge peut être différent selon les registres (le RAMM et REMM du séquenceur n'ont pas les mêmes cycles de vie par exemple), donc nous le modélisons par un signal.
+ - Il connait son bus d'entrée (la valeur T + 1 vaut la valeur du bus d'entrée, si ce dernier est actif)
+ - Il connait ses bus de sortie et ils peuvent avoir ou ne pas avoir d'Isolateur
+ - S'ils n'en ont pas, la valeur du bus de sortie vaut la valeur du temps T.
+
+```js
+class Registre {
+    int signalTickHorloge
+    Bus/int [] entrees // Tableau de bus en entrées, si le courant passe dans l'un d'eux alors la valeur est donné à T + 1 si le signal d'écriture est actif
+    Bus/Isolateur [] sorties // Tableau de bus de sorties, on peut donner un isolateur à chaque bus (représentable par un objet par exemple avec une clé bus et une clé isolateur) 
+    
+    int T
+    int TP1
+    
+    update(UTA, signals) {
+        // Si nouveau tick d'horloge
+        if (signals[signalTickHorloge]) {
+            T = TP1
+        }
+        
+        for (entree of entrees) {
+            if (entree.bus.possedeCourant() && (entree.signal == null || signals[entree.signal])) {
+                TP1 = entree.bus.valeur
+            }
+        }
+        
+        for (sortie of sorties) {
+            if (sortie.isolateur == null) {
+                sortie.bus.setValeur(T)
+            }
+            else {
+                sortie.isolateur.setValeur(T)
+            }
+        }
+    }
+}
+```
 
 ### Mémoire
 
-Composant contenant :
- - Un tableau adresse -> valeur en bits sur 2^n lignes.
+ - Un tableau d'adresse et de valeur
+ - Un signal de sortie mémoire
+ - Un signal d'entrée mémoire
+ - Un bus d'entrée mémoire RE
+ - un bus d'entrée mémoire RAM
+ - Un bus de sortie mémoire RE
+ - Le signal de sortie envoie les valeur dans le bus de sortie en récupérant les valeurs du bus d'entrée RAM
+ - Le signal d'entrée va écrire à l'adresse du bus RAM le contenu de RE
+
+```js
+class Memoire {
+    int [] memoire
+    int signalEntree
+    int signalSortie
+    Bus entreeRAM
+    Bus entreeRE
+    Bus sortieRE
+    
+    update(UTA, signals) {
+        if (signals[signalEntree]) {
+            memoire[bus.entreeRAM] = bus.entreeRE
+        }
+        
+        if (signals[signalSortie]) {
+            bus.sortieRE.setValeur(memoire[bus.entreeRAM])
+        }
+    }
+}
+```
+
+### Opérateur combinatoire
+
+ - Deux bus d'entrée X et Y
+ - Un bus de sortie
+ - Un tableau de callbacks indexés par des signaux
+ - L'avantage des callbacks c'est qu'elles permettent d'envoyer les signaux voulu et pourront être changés n'importe quand !
+
+```js
+class OperateurCombinatoire {
+    Callback [] operations
+    Bus entreeX
+    Bus entreeY
+    Bus sortie
+    
+    update (UTA, signals) {
+        for ((signal, operation) of operations) {
+            if (signals[signal]) {
+                sortie.setValeur(operations(entreeX.valeur, entreeY.valeur))
+            }
+        }
+    }
+    
+    addOperation(signal, callback(int, int) : int) {
+        operations[signal] = callback
+    }
+}
+```
+
+### Multiplexeur
+
+ - Contient plusieurs bus d'entrée
+ - Un bus de sortie
+ - Un bus de valeur
+ - Lorsque le bus de valeur envoie une valeur possible pour une entrée, le bus de sortie vaut le bus d'entrée ayant la valeur en question
+
+```js
+class Multiplexeur {
+    Bus [] entrees
+    Bus sortie
+    Bus valeur
+    
+    update() {
+        sortie.setValeur(entrees[valeur.valeur].valeur)
+    }
+}
+```
+
+### Plus1
+
+ - Modificateur de bus qui ajoute + 1 à sa valeur
+
+```js
+class Plus1 {
+    Bus entree
+    Bus sortie
+    
+    update() {
+        sortie.setValeur(entre.valeur + 1)
+    }
+}
+```
+
+### Mémoire microprogrammée
+
+ - On peut la voir comme une mémoire de base mais sans eM, du coup il peut y avoir une classe parent and voilà
+ - eREMM est considéré comme sM pour la mémoire centrale
+
+### RAMM
+
+ - C'est un registre normal mais attention, le signal de changement T <- T + 1 ne dois pas être le même que les autres. Il doit être déclenché juste après que le eRAMM est terminé (signal d'écriture)
+
+### REMMM
+
+ - **A DISCUTER AVEC JOHANN**
+ - Registre un peu spécial puisqu'il doit envoyer des signaux spécifiques en fonction du mot et de l'horloge
+
+```js
+class RegistreREMM {
+    int valeur
+    int signalEnvoiNiveaux
+    int signalEnvoiImpulsions
+    Bus busAdresseSuiv
+    Bus busSelMS
+    Bus busCond
+    
+    update(UTA, signals) {
+        adresseSuiv = ... // Bits 1-10
+        selMS = ...       // Bits 11-12
+        cond = ...        // Bits 13-16
+        busAdresseSuiv.setValeur(adresseSuiv)
+        busSelMS.setValeur(selMS)
+        busCond.setValeur(cond) // on doit d'abord vérifier si la condition est bonne ou pas (voir registre de flag), ce bus est relié au multiplexeur de condition
+        
+        if (signals[signalEnvoiNiveaux]) {
+            Horloge.emitNiveaux([...]) // Les signaux de sortie
+        }
+        if (signals[signalEnvoiImpulsions]) {
+            Horloge.emitImpulsions([...]) // Les signaux d'écriture
+        }
+    }
+}
+```
+
+### Compteur de phases
+
+ - Le signal de FIN le remet à 1
+ - Sinon chaque boucle, il est incrémenté de 1
+ - Le fait d'être à 1 envoi 1 dans le bus de valeur du multiplexeur du fetch
+ - Le fait d'être à autre chose renvoie 0
+
+```js
+class CompteurPhases {
+    int signalFin
+    int phaseActuelle
+    
+    update(UTA, signals) {
+        if (signals[signalFin]) {
+            phaseActuelle = 1
+        }
+        // Voir comment faire pour incrémenter les phases lorsque ce n'est pas la fin
+    }
+}
+```
+
+### Valeur du fetch
+
+ - Petit registre qui n'a qu'une seule sortie et qui renvoie toujours la valeur du fetch
 
 ### Séquenceur
 
-Composant comprenant :
- - Possibilité de récupérer un signal FIN pour remettre la phase à 1
- - Multiplexeurs
- - Bus
- - REMM (registre qui envoie les signaux)
- - RAMM
- - Mémoire microprogrammée
- - Condition ?
- - Plus1 ?
- - Inputs:
-   - COP/MA
-   - Phi
-   - Adresse début fetch
+ - Mémoire de microprogrammation
+ - Registre REMM
+ - Registre RAMM
+ - 3 multiplexeurs
+ - Plus1
+ - Compteur de phases
+ - Les bus qui relient
+ - Condition ? A réfléchir
 
-### Registre d'instruction
+### Registre instruction
 
- - Registre COP/MA
- - Registre Formatteur (RA)
- - Séquenceur
- - Condition ?
- - Possibilité de récupérer un signal d'écriture qui va déclencher les écritures pour les deux registres en formattant les données comme il faut
- 
+ - Registre spéciale dont seule modification est que la sortie est différentes selon le bus
+ - Le bus du séquenceur renvoie COP/MA tandis que le bus du formatteur renvoie RA
+ - La sortie RA peut être override via une méthode getValeur qui renverrai la valeur du séquenceur
+ - L'autre bus serait géré différemment et non considéré comme un bus de sortie
+
+```js
+class RegistreInstruction extends Registre {
+    Bus busSequenceur
+    
+    update() {
+        parent.update()
+        busSequenceur.setValeur(COPMA)
+    }
+    
+    getValeur() {
+        return RA
+    }
+}
+```
+
 ### Unité de traitement
 
-Composant comprenant :
- - Registres A/B/C
+ - On peut considérer l'unité de traitement comme un packetage contenant :
+ - Tous les registres (+ RI)
+ - Tous les bus (hors séquenceur)
+ - Le séquenceur
+ - L'opérateur combinatoire
+ - La mémoire centrale
