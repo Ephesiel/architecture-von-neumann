@@ -1,4 +1,5 @@
 import { MAXIMUM_ALLOWED_BUS_POWER_TIME } from '@/globals.js'
+import Clock from '@/models/clock'
 
 /**
  * Représentation abstraite d'un bus de données.
@@ -35,7 +36,7 @@ export default class Bus {
     // Constructeur.
 
     constructor() {
-        // TODO: Enregistrer l'élément dans l'horloge.
+        Clock.register(this.update.bind(this))
 
         this.value = 0
         this.timeSinceLastModification = 0
