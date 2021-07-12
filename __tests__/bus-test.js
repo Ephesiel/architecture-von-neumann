@@ -1,8 +1,8 @@
 import { test, expect } from '@jest/globals'
-import Bus from '@/models/bus-model.js'
-import { MAXIMUM_ALLOWED_BUS_POWER_TIME } from '@/globals.js'
+import Bus from '@/models/bus-model'
+import { MAXIMUM_ALLOWED_BUS_POWER_TIME } from '@/globals'
 
-let bus = new Bus()
+const bus = new Bus()
 
 test('Constructor', () => {
     expect(bus.hasPower()).toBe(false)
