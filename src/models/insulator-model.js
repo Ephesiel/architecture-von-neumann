@@ -32,7 +32,7 @@ export default class Insulator {
     // Constructeur.
 
     constructor(outputBus, powerOnSignal) {
-        // TODO: Enregistrer l'élément dans l'observateur d'événements.
+        // TODO: Enregistrer l'élément dans l'horloge.
 
         this.value = 0
         this.outputBus = outputBus

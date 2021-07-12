@@ -25,6 +25,10 @@ import Clock from '@/models/clock'
  *     }
  * }
  * ```
+ * Vous serez sans doute tenté d'utiliser `bus.value = ...` pour écrire une
+ * valeur dans le bus, mais ce comportement est à proscrire. En effet, une
+ * couche d'abstraction a été rajoutée pour gérer discrètement les mécanismes
+ * internes d'un Bus, et il faut donc absolument passer par `setValue()`.
  */
 export default class Bus {
     // ------------------------------------------------------------------------

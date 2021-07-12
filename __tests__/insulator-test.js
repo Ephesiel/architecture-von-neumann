@@ -1,10 +1,10 @@
 import { test, expect } from '@jest/globals'
 import Insulator from '@/models/insulator-model'
-import signals from '@/globals'
+import Signals from '@/globals'
 import Bus from '@/models/bus-model'
 
 const busOutput = new Bus()
-const insulator = new Insulator(busOutput, signals.RIB1)
+const insulator = new Insulator(busOutput, Signals.RIB1)
 
 test('Constructor', () => {
     expect(insulator.value).toBe(0)
@@ -15,9 +15,7 @@ test('Constructor', () => {
 })
 
 test('Allow value transfer', () => {
-    const s = {}
-    s[signals.RIB1] = true
-    insulator.update(1, s)
+    insulator.update(1, { [Signals.RIB1]: true })
     expect(busOutput.hasPower()).toBe(true)
     expect(busOutput.value).toBe(73)
 })
