@@ -1,3 +1,4 @@
 module.exports = {
     MAXIMUM_ALLOWED_BUS_POWER_TIME: 5,
+    ATU_BETWEEN_UPDATE: 1,
 }
