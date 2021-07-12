@@ -276,10 +276,12 @@ class Plus1 {
  - Registre un peu spécial puisqu'il doit envoyer des signaux spécifiques en fonction du mot et de l'horloge
 
 ```js
-class RegistreREMM {
+class REMM extends Registre {
     int valeur
     int signalEnvoiNiveaux
+    int tempsUTANiveaux
     int signalEnvoiImpulsions
+    int tempsUTAImpulsions
     Bus busAdresseSuiv
     Bus busSelMS
     Bus busCond
@@ -293,10 +295,10 @@ class RegistreREMM {
         busCond.setValeur(cond) // on doit d'abord vérifier si la condition est bonne ou pas (voir registre de flag), ce bus est relié au multiplexeur de condition
         
         if (signals[signalEnvoiNiveaux]) {
-            Horloge.emitNiveaux([...]) // Les signaux de sortie
+            SignalManager.emit([...], tempsUTANiveaux) // Les signaux de sortie
         }
         if (signals[signalEnvoiImpulsions]) {
-            Horloge.emitImpulsions([...]) // Les signaux d'écriture
+            SignalManager.emit([...], tempsUTAImpulsions) // Les signaux d'écriture
         }
     }
 }
@@ -368,3 +370,171 @@ class RegistreInstruction extends Registre {
  - Le séquenceur
  - L'opérateur combinatoire
  - La mémoire centrale
+
+### Exemple boucle d'instruction
+
+```js
+class ArchitectureVonNeumann {
+    phase() {
+        eRAMM()
+        eREMM()
+        impulsions()
+    }
+    
+    eRAMM() {
+        SignalManager.emit(Signal.eRAMM, 10)
+        Horloge.waitAndTick(15, 1)
+        SignalManager.emit(Signal.basculeRAMM, 10)
+        Horloge.waitAndTick(15, 1)
+    }
+    
+    eREMM() {
+        SignalManager.emit(Signal.eREMM, 10)
+        Horloge.waitAndTick(15, 1)
+        SignalManager.emit(Signal.basculeREMM, 10)
+        Horloge.waitAndTick(15, 1)
+    }
+    
+    impulsions() {
+        SignalManager.emit(Signal.sendLevels, 1)
+        Horloge.waitAndTick(180, 1)
+        SignalManager.emit(Signal.sendImpulsions, 1)
+        Horloge.waitAndTick(15, 1)
+        SignalManager.emit(Signal.endPhase, 10)
+        Horloge.waitAndTick(15, 1)
+    }
+}
+```
+
+### Horloge et SignalManager
+
+```js
+class Horloge {
+    static Callback [] registeredObjects
+    static int totalUTA
+    static int prevUTA
+    
+    static register(callback) {
+        registeredObjects.push(callback)
+    }
+    
+    static tick() {
+        diffUTA = totalUTA - prevUTA
+        prevUTA = totalUTA
+        signals = SignalManager.getArraySignals()
+        for (callback of registeredObjects) {
+            callback(prevUTA, signals)
+        }
+    }
+    
+    static wait (UTA) {
+        totalUTA += UTA
+    }
+    
+    static waitAndTick(UTA, tickDiff) {
+        while (UTA > tickDiff) {
+            UTA -= tickDiff
+            wait(tickDiff)
+            tick()
+        }
+        wait(UTA)
+        tick()
+    }
+}
+```
+
+```js
+class SignalManager {
+    static int/int [] signals
+    
+    static init() {
+        for (signal in signals) {
+            signals[signal] = 0
+        }
+        Horloge.register(update)
+    }
+    
+    static update(UTA) {
+        for (signal in signals) {
+            signals[signal] = min(signals[signal] - UTA, 0)
+        }
+    }
+    
+    static getArraySignals() {
+        return signals
+    }
+    
+    static emit(signal, UTA) {
+        signals[signal] = max(UTA, signals[signal])
+    }
+    
+    static emit(signalsArray [], UTA) {
+        for (signal of signalsArray) {
+            signals[signal] = min(signals[signal] - UTA, 0)
+        }
+    }
+}
+```
+
+### Architecure
+
+```js
+Bus busA = new Bus()
+Bus busB = new Bus()
+Bus busC = new Bus()
+
+Bus entreeRAM = new Bus()
+Bus entreeRE = new Bus()
+Bus sortieRE = new Bus()
+
+Registre registreA = new Registre(
+    [busC],
+    [new Isolateur(Signal.RAB1, busA), new Isolateur(Signal.RAB2, busB)],
+    Signal.endPhase
+)
+Registre registreB = new Registre(
+    [busC],
+    [new Isolateur(Signal.RBB1, busA), new Isolateur(Signal.RBB2, busB)],
+    Signal.endPhase
+)
+
+// ...
+
+Memoire memoire = new Memoire(
+    Signal.eM,
+    Signal.sM,
+    entreeRAM,
+    entreeRE,
+    sortieRE
+)
+OperateurCombinatoire OC = new OperateurCombinatoire(
+    busA,
+    busB,
+    busC
+)
+OC.addOperation(XS, function(x, y) { return x; }
+
+// ...
+
+Multiplexeur cond = new Multiplexeur(
+    {0: busP1, 1: busAdrSuiv}
+    busSortieCond,
+    busvaleurCond
+)
+
+// ...
+
+Plus1 P1 = new Plus1(busSortieRamm, busP1)
+
+REMM remm = new REMM(
+    Signal.basculeREMM,
+    Signal.eREMM,
+    busAdrSuiv,
+    busSelMS,
+    busCond,
+    10,
+    170
+)
+
+// ...
+```
