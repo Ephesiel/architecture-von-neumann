@@ -9,6 +9,7 @@ import Clock from '@/models/clock'
  *   * La valeur, qui donne la valeur qui est transférée dans le bus.
  *   * Le courant, qui informe si un composant a transféré des données dans le
  *     bus durant les derniers instants (en Unité de Temps d'Architecture).
+ *
  * Si un bus n'a plus de courant, sa valeur deviendra 0. C'est un choix que
  * nous avons prit pour essayer de garder une représentation (informatique)
  * consistante avec la réalité (électronique).
@@ -16,21 +17,21 @@ import Clock from '@/models/clock'
  * bus, de vérifier si celui-ci est sous tension ou non (grâce à la méthode
  * hasPower()).
  *
- * <code>
+ * ```js
  * // `entries` est une liste de bus.
  * for (const entry of this.entries) {
  *     if (entry.hasPower()) {
  *         this.value = entry.value
  *     }
  * }
- * </code>
+ * ```
  */
 export default class Bus {
     // ------------------------------------------------------------------------
     // Attributs.
-    value
-    timeSinceLastModification
-    power
+    value //: Number
+    timeSinceLastModification //: Number
+    power //: Boolean
 
     // ------------------------------------------------------------------------
     // Constructeur.
