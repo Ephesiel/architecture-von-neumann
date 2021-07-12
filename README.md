@@ -272,7 +272,6 @@ class Plus1 {
 
 ### REMM
 
- - **A DISCUTER AVEC JOHANN**
  - Registre un peu spécial puisqu'il doit envoyer des signaux spécifiques en fonction du mot et de l'horloge
 
 ```js
@@ -476,7 +475,7 @@ class SignalManager {
 }
 ```
 
-### Architecure
+### Architecture
 
 ```js
 Bus busA = new Bus()
