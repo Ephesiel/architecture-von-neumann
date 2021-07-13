@@ -20,9 +20,11 @@ import { ATU_BETWEEN_UPDATE } from '@/globals'
  *  - Le premier est le nombre de UTA passées depuis la dernière update. Cette
  *    valeur est souvent la même, mais il se peut qu'elle soit parfois
  *    différente.
- *  - Le second est un tableau représentant tous les signaux de l'architecture.
- *    Les clés sont les signaux (voir `SignalManager`) est les valeurs
- *    représentent le temps restant avant que le signal n'arrête son émission.
+ *  - Le second est un objet représentant tous les signaux de l'architecture.
+ *    Les clés de l'objet sont les signaux (voir `SignalManager` et
+ *    `globals.Signals`).
+ *    Les valeurs représentent le temps restant avant que le signal n'arrête
+ *    son émission.
  *    Lorsque la valeur est 0, cela signifie que le signal est éteint.
  *
  * ```js
@@ -93,7 +95,7 @@ class Clock {
      * @param {Number} ATU
      */
     wait(ATU) {
-        this.totalATU += ATU
+        this.totalATU += Number(ATU)
     }
 
     /**
@@ -104,6 +106,9 @@ class Clock {
      * @param {Number} tickDiff Le temps entre 2 updates
      */
     waitAndTick(ATU, tickDiff = ATU_BETWEEN_UPDATE) {
+        ATU = Number(ATU)
+        tickDiff = Number(tickDiff)
+
         while (ATU > tickDiff) {
             ATU -= tickDiff
             this.wait(tickDiff)
