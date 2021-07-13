@@ -1,12 +1,12 @@
-// import SignalManager from '@/models/signal-manager'
+import SignalManager from '@/models/signal-manager'
 import { ATU_BETWEEN_UPDATE } from '@/globals'
 
 /**
- * Manageur du temps dans l'application.
+ * Gestionnaire du temps dans l'architecture.
  *
  * Nous notons le temps en UTA (Unité de Temps de l'Architecture).
  * Lors du lancement de l'application, cette horloge va tourner, envoyant une
- * update toutes les 1 UTA.
+ * update toutes les x UTA.
  *
  * Pour avoir une méthode ou une fonction qui est appelée à chaque update, il
  * faut appeler la méthode register avec comme paramètre, le nom de la
@@ -18,10 +18,10 @@ import { ATU_BETWEEN_UPDATE } from '@/globals'
  *
  * La méthode peut prendre jusqu'à deux arguments :
  *  - Le premier est le nombre de UTA passées depuis la dernière update. Cette
- *    valeur est 1 normalement, mais il se peut qu'elle soit parfois
+ *    valeur est souvent la même, mais il se peut qu'elle soit parfois
  *    différente.
  *  - Le second est un tableau représentant tous les signaux de l'architecture.
- *    Les clés sont les signaux (voir SignalManager) est les valeurs
+ *    Les clés sont les signaux (voir `SignalManager`) est les valeurs
  *    représentent le temps restant avant que le signal n'arrête son émission.
  *    Lorsque la valeur est 0, cela signifie que le signal est éteint.
  *
@@ -70,7 +70,16 @@ class Clock {
     tick() {
         const diffATU = this.totalATU - this.prevATU
         this.prevATU = this.totalATU
-        const signals = [] //SignalManager.getArraySignals()
+
+        // On modifie les signaux avant d'appeler les fonctions enregistrées.
+        // C'est au cas où un signal serait émis dans l'une de ces fonctions,
+        // il ne doit pas être modifié avant même d'avoir pu être envoyé une
+        // fois
+
+        // On fait une copie des signaux, sinon leur modification sera impactée
+        // dans les fonctions enregistrées
+        const signals = { ...SignalManager.getSignals() }
+        SignalManager.updateSignals(diffATU)
 
         for (const callback of this.updateCallbacks) {
             callback(diffATU, signals)
