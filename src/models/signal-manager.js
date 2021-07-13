@@ -1,4 +1,5 @@
 import { Signals } from '@/globals'
+import Debug from '@/debug'
 
 /**
  * Gestionnaire des signaux dans l'architecture
@@ -68,7 +69,8 @@ class SignalManager {
      */
     emit(signal, ATU) {
         if (typeof Signals[signal] === 'undefined') {
-            throw new Error(`Le signal ${signal} n'existe pas`)
+            Debug.warn(`Le signal ${signal} n'existe pas`)
+            return
         }
 
         this.signals[signal] = Math.max(ATU, this.signals[signal])
