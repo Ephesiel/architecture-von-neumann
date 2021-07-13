@@ -1,3 +1,5 @@
+import Clock from '@/models/clock'
+
 /**
  * Un isolateur choisi si une valeur est passée ou non dans un bus.
  *
@@ -32,7 +34,7 @@ export default class Insulator {
     // Constructeur.
 
     constructor(outputBus, powerOnSignal) {
-        // TODO: Enregistrer l'élément dans l'horloge.
+        Clock.register(this.update.bind(this))
 
         this.value = 0
         this.outputBus = outputBus
@@ -42,9 +44,13 @@ export default class Insulator {
     // ------------------------------------------------------------------------
     // Méthodes publiques.
 
-    update(ATU, signals) {
+    update(_, signals) {
         if (true === signals[this.powerOnSignal]) {
             this.outputBus.setValue(this.value)
         }
+    }
+
+    setValue(value) {
+        this.value = value
     }
 }

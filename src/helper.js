@@ -3,7 +3,7 @@
  *
  * Toutes les méthodes de cette classe sont ainsi statiques.
  */
-export default class Helper {
+class Helper {
     /**
      * Crée un objet bus/signal pour les registres.
      *
@@ -11,7 +11,7 @@ export default class Helper {
      * @param {Signal|null} signal Le signal qui trigger le bus
      * @returns {Object} Un objet avec une ou deux clés : bus ou bus et signal.
      */
-    static makeRObj(bus, signal = null) {
+    makeRObj(bus, signal) {
         if (typeof signal === 'undefined' || signal === null) {
             return {
                 bus: bus,
@@ -24,3 +24,5 @@ export default class Helper {
         }
     }
 }
+
+export default new Helper()

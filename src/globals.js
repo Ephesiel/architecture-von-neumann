@@ -35,6 +35,7 @@ const signals = {
     OR: 'OR',
     XOR: 'XOR',
     FIN: 'FIN',
+    REGSIGCLOCK: 'REGSIGCLOCK',
 }
 
 module.exports = {
