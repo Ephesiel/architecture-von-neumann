@@ -1,8 +1,3 @@
-module.exports = {
-    MAXIMUM_ALLOWED_BUS_POWER_TIME: 5,
-    ATU_BETWEEN_UPDATE: 1,
-}
-
 const signals = {
     REB1: 'REB1',
     REB2: 'REB2',
@@ -42,4 +37,8 @@ const signals = {
     FIN: 'FIN',
 }
 
-export default signals
+module.exports = {
+    MAXIMUM_ALLOWED_BUS_POWER_TIME: 5,
+    ATU_BETWEEN_UPDATE: 1,
+    Signals: signals,
+}

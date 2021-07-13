@@ -1,5 +1,5 @@
 import { test, expect } from '@jest/globals'
-import Signals from '@/globals'
+import { Signals } from '@/globals'
 import Bus from '@/models/bus-model'
 import Register from '@/models/registers/register-model'
 import Helper from '@/helper'

@@ -14,7 +14,7 @@ test('Register', () => {
 
     Clock.register((ATU, signals) => {
         expect(isNaN(ATU)).toBe(false)
-        expect(signals).toBeInstanceOf(Array)
+        expect(signals).toBeInstanceOf(Object)
         expect(ATU).toBe(timePassed)
         callTimes++
     })
