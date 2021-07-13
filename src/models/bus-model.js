@@ -1,6 +1,8 @@
 import { MAXIMUM_ALLOWED_BUS_POWER_TIME } from '@/globals.js'
 import Clock from '@/models/clock'
 
+// Nombre de bits ?
+
 /**
  * Représentation abstraite d'un bus de données.
  *
@@ -55,6 +57,10 @@ export default class Bus {
         this.value = Number(val)
         this.timeSinceLastModification = 0
         this.power = true
+    }
+
+    getValue() {
+        return this.value
     }
 
     hasPower() {

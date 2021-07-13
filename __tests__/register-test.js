@@ -13,14 +13,9 @@ const register = new Register(
         Helper.makeRObj(busInput1, Signals.eRA),
         Helper.makeRObj(busInput2, Signals.eRB),
     ],
-    [busOutput1, busOutput2]
+    [busOutput1, busOutput2],
+    Signals.eRC
 )
-
-test('Exception', () => {
-    expect(() => {
-        register.update(1, {})
-    }).toThrow()
-})
 
 test('Output values', () => {
     register.currentValue = 1

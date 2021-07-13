@@ -1,3 +1,5 @@
+import Clock from '@/models/clock'
+
 /**
  * Implémentation d'un registre à décalage SISO.
  *
@@ -17,10 +19,10 @@
  *  }, [
  *      new Insulator(bus3, signals.SIG1),
  *      new Insulator(bus4, signals.SIG2),
- * ])
+ * ], Signals.SIG3)
  * ```
  * Cependant, cette écriture n'étant pas très claire, il vaut mieux l'éviter et
- * utiliser la classe fille prévue à cet effet, qui instancie directement les
+ * utiliser le décorateur prévu à cet effet, qui instancie directement les
  * isolateurs grâce à ses bus de sortie :
  * ```js
  * const [bus1, bus2, bus3, bus4] = [new Bus(), new Bus(), new Bus(), new Bus()]
@@ -30,12 +32,14 @@
  *  }, {
  *      Helper.makeRObj(bus3, signals.SIG1),
  *      Helper.makeRObj(bus4, signals.SIG2)
- * }),
+ * }, Signals.SIG3),
  * ```
- * Bien sûr, un registre peut être nourri en continu, ou bien peut nourrir en
- * continu un (/ des) bus, sans avoir besoin de signal. Dans ce cas, il suffit
- * de créer un objet sans signal avec `Helper.makeRObj(monBus)`, le signal
- * n'est pas un paramètre obligatoire.
+ * Bien sûr, un registre peut nourrir en continu un (/ des) bus, sans avoir
+ * besoin de signal. Dans ce cas, il suffit de créer un objet sans signal avec
+ * `Helper.makeRObj(monBus)`, le signal n'est pas un paramètre obligatoire.
+ *
+ * Cependant, un bus d'entrée doit **toujours** avoir un signal, car un bus ne
+ * peut pas nourrir en continu un registre !
  *
  * Discriminants pour les classe filles :
  *   * Présence d'isolateur,
@@ -48,22 +52,26 @@ export default class Register {
     outputs //: []Bus
     currentValue //: Number
     nextValue //: Number
+    signalClockTick //: Signal
 
     // ------------------------------------------------------------------------
     // Constructeur.
 
-    constructor(inputs, outputs) {
-        // TODO: Enregistrer l'élément dans l'horloge.
+    constructor(inputs, outputs, signalClockTick) {
+        Clock.register(this.update.bind(this))
 
         this.inputs = inputs
         this.outputs = outputs
+        this.signalClockTick = signalClockTick
+        this.currentValue = 0
+        this.nextValue = 0
     }
 
     // ------------------------------------------------------------------------
     // Méthodes publiques.
 
     update(_, signals) {
-        if (this.hasClockTicked()) {
+        if (signals[this.signalClockTick]) {
             this.currentValue = this.nextValue
         }
 
@@ -81,17 +89,6 @@ export default class Register {
         }
 
         this.setOutputValue()
-    }
-
-    // ------------------------------------------------------------------------
-    // Méthodes abstraites à override.
-
-    /**
-     * Vérifie si un tick d'horloge est passé. Méthode virtuelle à implémenter
-     * dans les classes filles.
-     */
-    hasClockTicked() {
-        throw new Error('Méthode abstraite hasClockTicked() non implémentée.')
     }
 
     // ------------------------------------------------------------------------
@@ -124,19 +121,36 @@ export default class Register {
      * @returns {Boolean} Si oui ou non la valeur T+1 a été modifiée.
      */
     tryValueUpdate(input, signal, alreadyModified, signals) {
-        if (
-            input.hasPower() &&
-            (typeof signal === 'undefined' || signals[signal])
-        ) {
+        if (typeof signals[signal] !== 'undefined' && signals[signal]) {
             if (alreadyModified) {
                 throw new Error(
                     'Erreur: 2 bus essaient de modifier le même registre.'
                 )
             }
             alreadyModified = true
-            this.nextValue = input.value
+            this.nextValue = input.getValue()
         }
 
         return alreadyModified
+    }
+
+    setOutputs(outputs) {
+        this.outputs = outputs
+    }
+
+    setSignalClockTick(signalClockTick) {
+        this.signalClockTick = signalClockTick
+    }
+
+    getCurrentValue() {
+        return this.currentValue
+    }
+
+    getNextValue() {
+        return this.nextValue
+    }
+
+    getOutputs() {
+        return this.outputs
     }
 }
