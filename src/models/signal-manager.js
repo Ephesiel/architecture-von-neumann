@@ -24,7 +24,12 @@ import { Signals } from '@/globals'
  * sur une durée de 1 UTA sera quand même envoyé une fois.
  */
 class SignalManager {
-    signals // Object
+    // ------------------------------------------------------------------------
+    // Attributs.
+    signals //: Object
+
+    // ------------------------------------------------------------------------
+    // Constructeur.
 
     constructor() {
         this.signals = {}
@@ -32,6 +37,9 @@ class SignalManager {
             this.signals[signal] = 0
         }
     }
+
+    // ------------------------------------------------------------------------
+    // Méthodes publiques.
 
     /**
      * Tous les signaux doivent baisser de tant de UTA

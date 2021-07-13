@@ -9,14 +9,20 @@ import { ATU_BETWEEN_UPDATE } from '@/globals'
  * update toutes les x UTA.
  *
  * Pour avoir une méthode ou une fonction qui est appelée à chaque update, il
- * faut appeler la méthode register avec comme paramètre, le nom de la
- * callback :
+ * faut l'enregistrer dans l'horloge :
  *
  * ```js
- * Clock.register('myUpdateFunction')
+ * Clock.register(myUpdateFunction)
  * ```
  *
- * La méthode peut prendre jusqu'à deux arguments :
+ * Dans le cas d'une méthode, si vous voulez pouvoir utiliser le mot clé `this`
+ * n'oubliez pas de bind l'objet dans la callback :
+ *
+ * ```js
+ * Clock.register(this.myUpdateFunction.bind(this))
+ * ```
+ *
+ * La méthode/fonction donnée peut prendre jusqu'à deux arguments :
  *  - Le premier est le nombre de UTA passées depuis la dernière update. Cette
  *    valeur est souvent la même, mais il se peut qu'elle soit parfois
  *    différente.
@@ -30,7 +36,7 @@ import { ATU_BETWEEN_UPDATE } from '@/globals'
  * ```js
  * myUpdateFunction(ATU, signals) {
  *     console.log(`${ATU} UTA sont passées depuis la dernière update`)
- *     for (const signal of signals) {
+ *     for (const signal in signals) {
  *         if (signals[signal] > 0) {
  *             console.log(`Le signal ${signal} est activé pendant encore ${signals[signal]} UTA`)
  *         }
@@ -45,9 +51,14 @@ import { ATU_BETWEEN_UPDATE } from '@/globals'
  * des variables en anglais (Architecture Time's Unit)
  */
 class Clock {
-    updateCallbacks // Array
-    totalATU // Number
-    prevATU // Number
+    // ------------------------------------------------------------------------
+    // Attributs.
+    updateCallbacks //: Array
+    totalATU //: Number
+    prevATU //: Number
+
+    // ------------------------------------------------------------------------
+    // Constructeur.
 
     constructor() {
         console.log('clock constructed')
@@ -55,6 +66,9 @@ class Clock {
         this.prevATU = 0
         this.updateCallbacks = []
     }
+
+    // ------------------------------------------------------------------------
+    // Méthodes publiques.
 
     /**
      * Cette méthode doit être appelée pour ajouter une fonction/méthode à
