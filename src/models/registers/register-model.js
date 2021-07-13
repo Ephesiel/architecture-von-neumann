@@ -63,8 +63,8 @@ export default class Register {
         this.inputs = inputs
         this.outputs = outputs
         this.signalClockTick = signalClockTick
-        this.currentValue = 0
-        this.nextValue = 0
+        this.currentValue = 0n
+        this.nextValue = 0n
     }
 
     // ------------------------------------------------------------------------

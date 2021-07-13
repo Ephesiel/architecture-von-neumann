@@ -7,15 +7,15 @@ const busOutput = new Bus()
 const insulator = new Insulator(busOutput, Signals.RIB1)
 
 test('Constructor', () => {
-    expect(insulator.value).toBe(0)
-    insulator.value = 73
-    expect(insulator.value).toBe(73)
+    expect(insulator.value).toBe(0n)
+    insulator.value = 73n
+    expect(insulator.value).toBe(73n)
     expect(busOutput.hasPower()).toBe(false)
-    expect(busOutput.value).toBe(0)
+    expect(busOutput.value).toBe(0n)
 })
 
 test('Allow value transfer', () => {
     insulator.update(1, { [Signals.RIB1]: true })
     expect(busOutput.hasPower()).toBe(true)
-    expect(busOutput.value).toBe(73)
+    expect(busOutput.value).toBe(73n)
 })

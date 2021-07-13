@@ -18,30 +18,30 @@ const register = new Register(
 )
 
 test('Output values', () => {
-    register.currentValue = 1
+    register.currentValue = 1n
     register.setOutputValue()
-    for (const bus of register.outputs) {
-        expect(bus.value).toBe(1)
+    for (const bus of register.getOutputs()) {
+        expect(bus.value).toBe(1n)
     }
 })
 
 test('Input one bus', () => {
-    busInput1.setValue(1)
-    busInput2.setValue(2)
+    busInput1.setValue(1n)
+    busInput2.setValue(2n)
 
     register.tryValueUpdate(busInput1, Signals.eRA, false, {
         [Signals.eRA]: true,
     })
-    expect(register.nextValue).toBe(1)
+    expect(register.nextValue).toBe(1n)
     register.tryValueUpdate(busInput2, Signals.eRB, false, {
         [Signals.eRB]: true,
     })
-    expect(register.nextValue).toBe(2)
+    expect(register.nextValue).toBe(2n)
 })
 
 test('Exception, 2', () => {
-    busInput1.setValue(1)
-    busInput2.setValue(2)
+    busInput1.setValue(1n)
+    busInput2.setValue(2n)
 
     expect(() => {
         register.tryValueUpdate(busInput1, Signals.eRA, true, {

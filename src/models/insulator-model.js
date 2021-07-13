@@ -26,7 +26,7 @@ import Clock from '@/models/clock'
 export default class Insulator {
     // ------------------------------------------------------------------------
     // Attributs.
-    value //: Number
+    value //: BigInt
     outputBus //: Bus
     powerOnSignal //: Signal
 
@@ -36,7 +36,7 @@ export default class Insulator {
     constructor(outputBus, powerOnSignal) {
         Clock.register(this.update.bind(this))
 
-        this.value = 0
+        this.value = 0n
         this.outputBus = outputBus
         this.powerOnSignal = powerOnSignal
     }
