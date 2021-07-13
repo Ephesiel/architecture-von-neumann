@@ -28,10 +28,9 @@ class SignalManager {
 
     constructor() {
         this.signals = {}
-        for (let signal in Signals) {
+        for (const signal in Signals) {
             this.signals[signal] = 0
         }
-        this.emit(Signals.eRAM, 12)
     }
 
     /**
@@ -40,11 +39,15 @@ class SignalManager {
      * @param {Number} ATU
      */
     updateSignals(ATU) {
-        for (let signal in this.signals) {
+        for (const signal in this.signals) {
             this.signals[signal] = Math.max(this.signals[signal] - ATU, 0)
         }
     }
 
+    /**
+     * Pour récupérer les signaux à un instant T, préférez enregistrer une
+     * fonction dans l'horloge au lieu d'appeler cette méthode.
+     */
     getSignals() {
         return this.signals
     }
@@ -56,9 +59,11 @@ class SignalManager {
      * @param {Number} ATU
      */
     emit(signal, ATU) {
-        if (typeof Signals[signal] !== 'undefined') {
-            this.signals[signal] = Math.max(ATU, this.signals[signal])
+        if (typeof Signals[signal] === 'undefined') {
+            throw new Error(`Le signal ${signal} n'existe pas`)
         }
+
+        this.signals[signal] = Math.max(ATU, this.signals[signal])
     }
 }
 
