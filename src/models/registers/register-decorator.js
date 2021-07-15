@@ -28,9 +28,7 @@ export default class RegisterDecorator extends Register {
         this.register = register
     }
 
-    update(ATU, signals) {
-        this.register.update(ATU, signals)
-    }
+    update() {}
 
     getCurrentValue() {
         return this.register.getCurrentValue()

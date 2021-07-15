@@ -6,6 +6,8 @@ import Helper from '@/helper'
 import ClassicComponent from '@/models/registers/classic-component'
 import InsulatorComponent from '@/models/registers/insulator-component'
 import Insulator from '@/models/insulator-model'
+import SignalManager from '@/models/signal-manager'
+import Clock from '@/models/clock'
 
 const busInput1 = new Bus()
 const busInput2 = new Bus()
@@ -24,15 +26,19 @@ test('T = T + 1 (ClassicComponent)', () => {
 
     busInput2.setValue(2)
 
-    classic.update(1, { [Signals.eRB]: true })
-    expect(classic.getNextValue()).toBe(2)
+    SignalManager.emit(Signals.eRB, 1)
+    Clock.waitAndTick(2)
+    expect(classic.getNextValue()).toBe(2n)
 
-    classic.update(1, { [Signals.REGSIGCLOCK]: true })
-    expect(classic.getCurrentValue()).toBe(2)
-    expect(classic.getNextValue()).toBe(2)
+    SignalManager.emit(Signals.REGSIGCLOCK, 1)
+    Clock.waitAndTick(2)
+
+    expect(classic.getCurrentValue()).toBe(2n)
+    expect(classic.getNextValue()).toBe(2n)
     busInput2.update(10)
-    classic.update(1, { [Signals.eRA]: true })
-    expect(classic.getNextValue()).toBe(0)
+    SignalManager.emit(Signals.eRA, 1)
+    Clock.waitAndTick(2)
+    expect(classic.getNextValue()).toBe(0n)
 })
 
 test('InsulatorComponent', () => {
@@ -48,22 +54,25 @@ test('InsulatorComponent', () => {
     )
 
     busInput2.setValue(2)
-    ins.update(1, { [Signals.eRB]: true })
-    ins.update(1, { [Signals.REGSIGCLOCK]: true })
+
+    SignalManager.emit(Signals.eRB, 1)
+    Clock.waitAndTick(2)
+    SignalManager.emit(Signals.REGSIGCLOCK, 1)
+    Clock.waitAndTick(2)
 
     for (const output of ins.register.outputs) {
         expect(output).toBeInstanceOf(Insulator)
     }
 
-    expect(busOutput1.getValue()).toBe(0)
-    expect(busOutput2.getValue()).toBe(0)
+    expect(busOutput1.getValue()).toBe(0n)
+    expect(busOutput2.getValue()).toBe(0n)
 
-    for (const output of ins.register.outputs) {
-        output.update(5, { [Signals.RAB1]: true, [Signals.RAB2]: true })
-    }
+    SignalManager.emit(Signals.RAB1, 5)
+    SignalManager.emit(Signals.RAB2, 5)
+    Clock.waitAndTick(5)
 
-    expect(busOutput1.getValue()).toBe(2)
-    expect(busOutput2.getValue()).toBe(2)
+    expect(busOutput1.getValue()).toBe(2n)
+    expect(busOutput2.getValue()).toBe(2n)
 })
 
 // Avec les 2 (un classic sur un insulator)
@@ -78,10 +87,12 @@ test('Both', () => {
     )
 
     busInput2.setValue(2)
-    both1.update(1, { [Signals.eRB]: true })
-    expect(both1.getNextValue()).toBe(2)
-    both1.update(1, { [Signals.REGSIGCLOCK]: true })
-    expect(both1.getCurrentValue()).toBe(2)
+    SignalManager.emit(Signals.eRB, 1)
+    Clock.waitAndTick(2)
+    expect(both1.getNextValue()).toBe(2n)
+    SignalManager.emit(Signals.REGSIGCLOCK, 1)
+    Clock.waitAndTick(2)
+    expect(both1.getCurrentValue()).toBe(2n)
 
     for (const output of both1.register.register.outputs) {
         expect(output).toBeInstanceOf(Insulator)
@@ -97,12 +108,14 @@ test('Both', () => {
     )
 
     busInput2.setValue(2)
-    both2.update(1, { [Signals.eRB]: true })
-    expect(both2.getNextValue()).toBe(2)
-    both2.update(1, { [Signals.REGSIGCLOCK]: true })
-    expect(both2.getCurrentValue()).toBe(2)
+    SignalManager.emit(Signals.eRB, 1)
+    Clock.waitAndTick(2)
+    expect(both2.getNextValue()).toBe(2n)
+    SignalManager.emit(Signals.REGSIGCLOCK, 1)
+    Clock.waitAndTick(2)
+    expect(both2.getCurrentValue()).toBe(2n)
 
-    /*for (const output of both2.register.register.outputs) {
+    for (const output of both2.getOutputs()) {
         expect(output).toBeInstanceOf(Insulator)
-    }*/
+    }
 })
