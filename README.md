@@ -4,9 +4,7 @@ Projet stage juillet 2021 - Arnaud Virazel
 
 ## Questions
 
-Comment marche les conditions dans l'architecture, qui commande quoi ? Comment sont-elles sélectionnées par le séquenceur via la valeur du cond dans REMM ?<br>
-Comment marche les registres au temps T et T + 1 ? Est-ce que REMM et RAMM ont la même logique ?<br>
-Comment sont incrémentées les phases du phi dans le séquenceur, qu'est-ce qui fait que c'est incrémenté ?
+Quelle est la différence entre une Unité Arithmétique et Logique (UAL) et un Opérateur Combinatoire (OC) ?
 
 ## Conception
 
