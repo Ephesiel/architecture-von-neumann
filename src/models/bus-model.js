@@ -3,6 +3,7 @@ import {
     MAX_NUMBER_OF_ARCH,
 } from '@/globals.js'
 import Clock from '@/models/clock'
+import Debug from '@/debug'
 
 // Nombre de bits ?
 
@@ -45,24 +46,32 @@ export default class Bus {
     value //: BigInt
     timeSinceLastModification //: Number
     power //: Boolean
+    maxValue //: BigInt
 
     // ------------------------------------------------------------------------
     // Constructeur.
 
-    constructor() {
+    constructor(bits) {
         Clock.register(this.update.bind(this))
 
         this.value = 0n
         this.timeSinceLastModification = 0
         this.power = false
+
+        if (typeof bits === 'undefined') {
+            this.maxValue = MAX_NUMBER_OF_ARCH
+        } else {
+            this.maxValue = 2n ** BigInt(bits)
+        }
     }
 
     // ------------------------------------------------------------------------
     // Méthodes publiques.
 
     setValue(val) {
-        if (BigInt(val) > MAX_NUMBER_OF_ARCH) {
-            throw new Error('Nombre trop grand pour les bus')
+        if (BigInt(val) > this.maxValue) {
+            Debug.crit('Nombre trop grand pour les bus')
+            return
         }
 
         this.value = BigInt(val)

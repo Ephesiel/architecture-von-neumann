@@ -45,7 +45,7 @@ export default class Insulator {
     // Méthodes publiques.
 
     update(_, signals) {
-        if (true === signals[this.powerOnSignal]) {
+        if (signals[this.powerOnSignal] > 0) {
             this.outputBus.setValue(this.value)
         }
     }

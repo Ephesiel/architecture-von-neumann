@@ -3,6 +3,7 @@ import { Signals } from '@/globals'
 import Bus from '@/models/bus-model'
 import Register from '@/models/registers/register-model'
 import Helper from '@/helper'
+import Debug, { Level } from '@/debug'
 
 const busInput1 = new Bus()
 const busInput2 = new Bus()
@@ -43,14 +44,14 @@ test('Exception, 2', () => {
     busInput1.setValue(1n)
     busInput2.setValue(2n)
 
-    expect(() => {
-        register.tryValueUpdate(busInput1, Signals.eRA, true, {
-            [Signals.eRA]: true,
-        })
-    }).toThrow()
-    expect(() => {
-        register.tryValueUpdate(busInput2, Signals.eRB, true, {
-            [Signals.eRB]: true,
-        })
-    }).toThrow()
+    const size = Debug.getMessages(Level.ERROR).length
+    register.tryValueUpdate(busInput1, Signals.eRA, true, {
+        [Signals.eRA]: true,
+    })
+    expect(Debug.getMessages(Level.ERROR).length).toBe(size + 1)
+    const size2 = Debug.getMessages(Level.ERROR).length
+    register.tryValueUpdate(busInput2, Signals.eRB, true, {
+        [Signals.eRB]: true,
+    })
+    expect(Debug.getMessages(Level.ERROR).length).toBe(size2 + 1)
 })

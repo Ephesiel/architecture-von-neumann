@@ -1,6 +1,7 @@
 import { test, expect } from '@jest/globals'
 import Bus from '@/models/bus-model'
-import { MAXIMUM_ALLOWED_BUS_POWER_TIME, MAX_NUMBER_OF_ARCH } from '@/globals'
+import { MAXIMUM_ALLOWED_BUS_POWER_TIME } from '@/globals'
+import Debug, { Level } from '@/debug'
 
 const bus = new Bus()
 
@@ -28,7 +29,8 @@ test('Update of MAXIMUM_ALLOWED_BUS_POWER_TIME + 1', () => {
 })
 
 test('Number too high', () => {
-    expect(() => {
-        bus.setValue(MAX_NUMBER_OF_ARCH + 1n)
-    }).toThrow()
+    const bus2 = new Bus(2)
+    const size = Debug.getMessages(Level.CRIT).length
+    bus2.setValue(5)
+    expect(Debug.getMessages(Level.CRIT).length).toBe(size + 1)
 })
