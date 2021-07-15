@@ -94,4 +94,8 @@ export default class Bus {
             this.value = 0n
         }
     }
+
+    getMaxValue() {
+        return this.maxValue
+    }
 }

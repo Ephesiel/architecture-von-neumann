@@ -1,6 +1,6 @@
 import { test, expect } from '@jest/globals'
 import Insulator from '@/models/insulator-model'
-import Signals from '@/globals'
+import { Signals } from '@/globals'
 import Bus from '@/models/bus-model'
 
 const busOutput = new Bus()
