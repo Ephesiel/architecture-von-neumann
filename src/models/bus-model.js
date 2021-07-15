@@ -69,6 +69,11 @@ export default class Bus {
     // Méthodes publiques.
 
     setValue(val) {
+        if (typeof val !== 'number' && typeof val !== 'bigint') {
+            Debug.crit('La valeur à affecter au bus doit être un nombre.')
+            return
+        }
+
         if (BigInt(val) > this.maxValue) {
             Debug.crit('Nombre trop grand pour les bus')
             return
