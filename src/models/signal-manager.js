@@ -34,7 +34,7 @@ class SignalManager {
 
     constructor() {
         this.signals = {}
-        for (const signal in Signals) {
+        for (const signal of Object.values(Signals)) {
             this.signals[signal] = 0
         }
     }
@@ -68,12 +68,28 @@ class SignalManager {
      * @param {Number} ATU
      */
     emit(signal, ATU) {
-        if (typeof Signals[signal] === 'undefined') {
+        if (this.signalExists(signal)) {
+            this.signals[signal] = Math.max(ATU, this.signals[signal])
+        }
+    }
+
+    /**
+     * Renvoie vrai si le signal existe. Par défaut, un message de warning est
+     * envoyé si le signal n'existe pas.
+     *
+     * @param {Signal} signal Le signal à vérifier
+     * @param {Boolean} warn Envoi un message de warning. Default = true
+     *
+     * @returns {Boolean}
+     */
+    signalExists(signal, warn = true) {
+        const exist = typeof this.signals[signal] !== 'undefined'
+
+        if (!exist && warn) {
             Debug.warn(`Le signal ${signal} n'existe pas`)
-            return
         }
 
-        this.signals[signal] = Math.max(ATU, this.signals[signal])
+        return exist
     }
 }
 

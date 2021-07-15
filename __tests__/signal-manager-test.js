@@ -13,9 +13,11 @@ test('Constructor', () => {
 })
 
 test('Emit error', () => {
-    expect(() => {
-        SignalManager.emit('nawak', 10)
-    }).toThrow()
+    SignalManager.emit('nawak', 10)
+
+    for (const signal in signals) {
+        expect(signals[signal]).toBe(0)
+    }
 })
 
 test('Emit', () => {
