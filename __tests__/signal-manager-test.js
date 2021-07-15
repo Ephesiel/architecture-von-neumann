@@ -1,6 +1,7 @@
 import { test, expect } from '@jest/globals'
 import SignalManager from '@/models/signal-manager'
 import { Signals } from '@/globals'
+import Debug, { Level } from '@/debug'
 
 const signals = SignalManager.getSignals()
 
@@ -13,9 +14,12 @@ test('Constructor', () => {
 })
 
 test('Emit error', () => {
-    expect(() => {
-        SignalManager.emit('nawak', 10)
-    }).toThrow()
+    let warn = Debug.getMessages(Level.WARN)
+    let nbBefore = warn.length
+    SignalManager.emit('nawak', 10)
+    let nbAfter = warn.length
+
+    expect(nbAfter).toBe(nbBefore + 1)
 })
 
 test('Emit', () => {
