@@ -55,22 +55,27 @@ class Debug {
 
     log(message) {
         this.addMessage(message, Level.LOG)
+        console.log(message)
     }
 
     info(message) {
         this.addMessage(message, Level.INFO)
+        console.info(message)
     }
 
     warn(message) {
         this.addMessage(message, Level.WARN)
+        console.warn(message)
     }
 
     error(message) {
         this.addMessage(message, Level.ERROR)
+        console.error(message)
     }
 
     crit(message) {
         this.addMessage(message, Level.CRIT)
+        console.error(message)
     }
 
     getMessages(level) {
