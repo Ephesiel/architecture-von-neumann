@@ -1,4 +1,5 @@
 import { Signals } from '@/globals'
+import Debug from '@/debug'
 
 /**
  * Gestionnaire des signaux dans l'architecture
@@ -24,7 +25,12 @@ import { Signals } from '@/globals'
  * sur une durée de 1 UTA sera quand même envoyé une fois.
  */
 class SignalManager {
-    signals // Object
+    // ------------------------------------------------------------------------
+    // Attributs.
+    signals //: Object
+
+    // ------------------------------------------------------------------------
+    // Constructeur.
 
     constructor() {
         this.signals = {}
@@ -32,6 +38,9 @@ class SignalManager {
             this.signals[signal] = 0
         }
     }
+
+    // ------------------------------------------------------------------------
+    // Méthodes publiques.
 
     /**
      * Tous les signaux doivent baisser de tant de UTA
@@ -60,7 +69,8 @@ class SignalManager {
      */
     emit(signal, ATU) {
         if (typeof Signals[signal] === 'undefined') {
-            throw new Error(`Le signal ${signal} n'existe pas`)
+            Debug.warn(`Le signal ${signal} n'existe pas`)
+            return
         }
 
         this.signals[signal] = Math.max(ATU, this.signals[signal])

@@ -305,10 +305,11 @@ class REMM extends Registre {
 
 ### Compteur de phases
 
- - Le signal de FIN le remet à 1
- - Sinon chaque boucle, il est incrémenté de 1
- - Le fait d'être à 1 envoi 1 dans le bus de valeur du multiplexeur du fetch
+ - Le signal de FIN le remet à 0 (afficher 1)
+ - Sinon à chaque boucle, il est incrémenté de 1
+ - Le fait d'être à 0 envoi 1 dans le bus de valeur du multiplexeur du fetch
  - Le fait d'être à autre chose renvoie 0
+ - On peut définir un maximum de 32 phases
 
 ```js
 class CompteurPhases {
@@ -328,16 +329,45 @@ class CompteurPhases {
 
  - Petit registre qui n'a qu'une seule sortie et qui renvoie toujours la valeur du fetch
 
+### Registre de flag
+
+ - Normalement, il y a une instruction qui passe par l'OC en comparant la valeur de B à 0 par exemple, mais pour l'implémentation, cette fonction est trop complexe alors qu'elle n'est pas utilisée
+ - Le registre devra donc posséder des conditions et être update en fonction, comme s'il connaissait toute l'architecture
+ - Pour ce faire, il utilise la même technique que l'OC à qui on donne de nouveaux signaux. Le registre de flag peut connaître de nouvelles conditions.
+ - Le nombre de bits de condition doit être connu et doit être le même que celui de REMM
+ - Une condition est donc affilié à un nombre. Si un nombre n'a aucune condition affilié, son bit sera toujours à 0
+
+```js
+class RegistreFlag {
+    int/Callback [] conditions
+    
+    constructor() {
+        for (int i = 0; i < 2^n; ++i) {
+            conditions.push(() => {
+                return 0
+            })
+        }
+    }
+    
+    setCondition(valeurCondition, callback) {
+        conditions[valeurCondition] = callback
+    }
+    
+    getCondValue(valeurCondition) {
+        return conditions[valeurCondition]()
+    }
+}
+```
+
 ### Séquenceur
 
  - Mémoire de microprogrammation
  - Registre REMM
  - Registre RAMM
- - 3 multiplexeurs
+ - 3 multiplexeurs + 1 multiplexeurs à 2^n entrées pour le registre de flag
  - Plus1
  - Compteur de phases
  - Les bus qui relient
- - Condition ? A réfléchir
 
 ### Registre instruction
 
