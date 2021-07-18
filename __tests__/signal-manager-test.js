@@ -23,7 +23,7 @@ test('Emit error', () => {
 test('Emit', () => {
     SignalManager.emit(Signals.eRAM, 10)
 
-    for (const signal in signals) {
+    for (const signal of Object.values(signals)) {
         if (signal === Signals.eRAM) {
             expect(signals[signal]).toBe(10)
         } else {
@@ -33,7 +33,7 @@ test('Emit', () => {
 
     SignalManager.updateSignals(4)
 
-    for (const signal in signals) {
+    for (const signal of Object.values(signals)) {
         if (signal === Signals.eRAM) {
             expect(signals[signal]).toBe(6)
         } else {
