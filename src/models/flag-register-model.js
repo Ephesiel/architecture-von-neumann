@@ -4,11 +4,11 @@ import Debug from '@/debug'
 /**
  * Implémentation du registre de flags.
  *
- * Le registre de flags gère les conditions de l'architecture. Son bus d'entré
+ * Le registre de flags gère les conditions de l'architecture. Son bus d'entrée
  * est connecté au REMM, et selon la valeur qu'il prend, il envoie la condition
  * à cet indice dans le tableau.
  *
- * Son bus de sorti est connecté au multiplexeur de conditions du séquenceur.
+ * Son bus de sortie est connecté au multiplexeur de conditions du séquenceur.
  * Ce bus doit être d'un seul bit, et ne doit ainsi accepter que les valeurs 0
  * ou 1. En conséquence, les callbacks de conditions doivent aussi retourner
  * seulement 0 ou 1.

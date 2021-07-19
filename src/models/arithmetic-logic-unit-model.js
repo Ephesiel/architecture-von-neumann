@@ -42,9 +42,14 @@ import Debug from '@/debug'
  * ```
  */
 export default class ArithmeticLogicUnit {
+    // ------------------------------------------------------------------------
+    // Attributs.
     operations //: Object
     inputBuses //: Array
     outputBuses //: Array
+
+    // ------------------------------------------------------------------------
+    // Constructeur.
 
     constructor(inputBuses, outputBuses) {
         this.inputBuses = inputBuses
@@ -53,6 +58,9 @@ export default class ArithmeticLogicUnit {
 
         Clock.register(this.update.bind(this))
     }
+
+    // ------------------------------------------------------------------------
+    // Méthodes publiques.
 
     /**
      * A chaque update, on vérifie si un signal d'opération a été envoyé.
