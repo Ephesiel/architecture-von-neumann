@@ -123,7 +123,7 @@ class Clock {
         ATU = Number(ATU)
         tickDiff = Number(tickDiff)
 
-        while (ATU > tickDiff) {
+        while (ATU >= tickDiff) {
             ATU -= tickDiff
             this.wait(tickDiff)
             this.tick()
