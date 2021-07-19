@@ -59,3 +59,9 @@ test('Error 2', () => {
     fRegister.getCondition(6)
     expect(Debug.getMessages(Level.ERROR).length).toBe(sizeBefore + 1)
 })
+
+test('0 on a condition not set', () => {
+    iBus.setValue(5)
+    Clock.waitAndTick(1, 1)
+    expect(oBus.getValue()).toBe(0n)
+})

@@ -1,6 +1,13 @@
 import Register from '@/models/registers/register-model'
 import { PulseSignals, LevelSignals } from '@/signals'
 import SignalManager from '@/models/signal-manager'
+import {
+    NB_BITS_MPM,
+    NB_BITS_INSTR,
+    NB_BITS_CONDS,
+    NB_BITS_SELMS,
+    NB_BITS_ADR,
+} from '@/globals'
 
 /**
  * Implémentation du Registre d'Échange de la Mémoire Microprogrammée (ERMM en
@@ -50,7 +57,9 @@ export default class ERMM extends Register {
         busSelMS,
         busCond,
         signalSendLevels,
-        signalSendPulses
+        signalSendPulses,
+        timeATULevels,
+        timeATUPulses
     ) {
         super([inputBus], [], signalClockTick)
         this.busNextAdr = busNextAdr
@@ -58,6 +67,8 @@ export default class ERMM extends Register {
         this.busCond = busCond
         this.signalSendLevels = signalSendLevels
         this.signalSendPulses = signalSendPulses
+        this.timeATULevels = timeATULevels
+        this.timeATUPulses = timeATUPulses
         this.pulses = []
         this.levels = []
     }
@@ -103,15 +114,22 @@ export default class ERMM extends Register {
     }
 
     formatValueForAdr() {
-        return this.getCurrentValue() >> 54n
+        return this.getCurrentValue() >> BigInt(NB_BITS_MPM - NB_BITS_ADR)
     }
 
     formatValueForSelMS() {
-        return (this.getCurrentValue() >> 52n) & 0b11n
+        return (
+            (this.getCurrentValue() >>
+                BigInt(NB_BITS_MPM - NB_BITS_ADR - NB_BITS_SELMS)) &
+            BigInt(2 ** NB_BITS_SELMS - 1)
+        )
     }
 
     formatValueForCond() {
-        return (this.getCurrentValue() >> 48n) & 0b1111n
+        return (
+            (this.getCurrentValue() >> BigInt(NB_BITS_INSTR)) &
+            BigInt(2 ** NB_BITS_CONDS - 1)
+        )
     }
 
     updateSignals() {
@@ -123,13 +141,23 @@ export default class ERMM extends Register {
         const value = this.formatValueForSignals()
 
         for (const bits of Object.values(obj)) {
-            if (value & ((1n << 64n) >> BigInt(bits))) {
+            const shift = 1n << (BigInt(NB_BITS_MPM - 2) - BigInt(bits))
+            if ((value & shift) === shift) {
                 arr.push(bits)
             }
         }
     }
 
     formatValueForSignals() {
-        return (this.getCurrentValue() & (BigInt(2 ** 38) - 1n)) << 12n
+        // HACK PARCE QUE JAVASCRIPT PUE SAMER.
+        // On met un 1 au début du nombre afin de garder les 0 au début des
+        // signaux parsés en bits. Sinon, javascript alloue automatiquement le
+        // nombre de bits a une variable, commençant par le premier 1. Par
+        // exemple, 2^10 serait sur 10 bits.
+        return (
+            2n ** (BigInt(NB_BITS_MPM) - 1n) +
+            ((this.getCurrentValue() & (2n ** BigInt(NB_BITS_INSTR) - 1n)) <<
+                BigInt(NB_BITS_ADR + NB_BITS_CONDS + NB_BITS_SELMS - 1))
+        )
     }
 }
