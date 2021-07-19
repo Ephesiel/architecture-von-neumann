@@ -64,7 +64,7 @@ export default class ArithmeticLogicUnit {
         for (const [signal, operation] of Object.entries(this.operations)) {
             if (signals[signal]) {
                 if (++op === 2) {
-                    Debug.error(
+                    Debug.crit(
                         "Plusieurs signaux d'opérations ont été envoyés simultanément"
                     )
                 }
