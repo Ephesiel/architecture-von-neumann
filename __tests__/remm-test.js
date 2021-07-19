@@ -24,9 +24,9 @@ const remm = new ERMM(
 const vAdrSuiv = 498n // 0b0111110010 en binaire
 const vSelMS = 2n // 0b10 en binaire
 const vConds = 3n // 0b0011 en binaire
-const instr = 0b00001011000010000010000010010000000100n // eRI, eM, eCO, RAB1, RIB1, sM, XS, FIN
+const instr = 0b000010110000100000100000100100000001000000000000n // eRI, eM, eCO, RAB1, RIB1, sM, XS, FIN
 inputBus.setValue(
-    0b0111110010100011000010110000001011000010000010000010010000000100n
+    0b0111110010100011000010110000100000100000100100000001000000000000n
 )
 SignalManager.emit(Signals.eRA, 1)
 Clock.waitAndTick(2, 1)
@@ -46,7 +46,7 @@ test('Conds', () => {
 })
 
 test('Instrs', () => {
-    expect(remm.formatValueForSignals()).toBe(2n ** 63n + (instr << 25n))
+    expect(remm.formatValueForSignals()).toBe(2n ** 63n + (instr << 15n))
 })
 
 test('Emited', () => {
@@ -65,8 +65,6 @@ test('Emited', () => {
     SignalManager.emit(Signals.SENDLEVELS, 1)
     SignalManager.emit(Signals.SENDPULSES, 1)
     Clock.waitAndTick(1, 1)
-
-    console.log(triggered)
 
     for (const [key, value] of Object.entries(sigs)) {
         if (triggered.includes(Number(key))) {
