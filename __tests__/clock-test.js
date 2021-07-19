@@ -11,12 +11,15 @@ test('Constructor', () => {
 test('Register', () => {
     let timePassed = 0
     let callTimes = 0
-
-    Clock.register((ATU, signals) => {
+    let totest = (ATU, signals) => {
         expect(isNaN(ATU)).toBe(false)
         expect(signals).toBeInstanceOf(Object)
         expect(ATU).toBe(timePassed)
         callTimes++
+    }
+
+    Clock.register((ATU, signals) => {
+        totest(ATU, signals)
     })
 
     timePassed = 10
@@ -33,4 +36,20 @@ test('Register', () => {
     expect(callTimes).toBe(9)
 
     expect(Clock.timePassedSinceStart()).toBe(20 + ATU_BETWEEN_UPDATE * 3)
+
+    let waitTime = 5
+    let lastWaitTime = 3
+    let lastWait = false
+
+    totest = (ATU) => {
+        if (!lastWait && ATU === lastWaitTime) {
+            lastWait = true
+            return
+        }
+
+        expect(ATU).toBe(waitTime)
+        expect(lastWait).toBe(false)
+    }
+
+    Clock.waitAndTick(13, 5)
 })
