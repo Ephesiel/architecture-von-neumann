@@ -38,15 +38,12 @@ import Debug from '@/debug'
  * ```
  */
 export default class Memory {
-    nbAddresses //: Nombre
     maxValue //: BigInt
     memory //: Array
 
     constructor(logHeight, width) {
-        this.nbAddresses = 2 ** logHeight
         this.maxValue = 2n ** BigInt(width) - 1n
-
-        this.memory = new Array(this.nbAddresses).fill(null)
+        this.memory = new Array(2 ** logHeight).fill(null)
     }
 
     /**
@@ -67,7 +64,7 @@ export default class Memory {
 
         // Adresse hors de la mémoire
         if (typeof value === 'undefined') {
-            Debug.error(`L'adresse ${address} n'existe pas dans la mémoire`)
+            Debug.crit(`L'adresse ${address} n'existe pas dans la mémoire`)
         }
         // La valeur n'a jamais été instanciée
         else {
@@ -78,7 +75,7 @@ export default class Memory {
         }
 
         // Renvoie d'une valeur aléatoire
-        return Math.floor(Math.random() * this.maxValue)
+        return BigInt(Math.floor(Math.random() * Number(this.maxValue)))
     }
 
     /**
@@ -92,7 +89,7 @@ export default class Memory {
      */
     setValue(address, value) {
         if (!(address in this.memory)) {
-            Debug.error(`L'adresse ${address} n'existe pas dans la mémoire`)
+            Debug.crit(`L'adresse ${address} n'existe pas dans la mémoire`)
             return
         }
 
