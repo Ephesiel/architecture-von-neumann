@@ -14,7 +14,7 @@ import Debug from '@/debug'
  *
  * S'il possède plus de 2^n bus d'entrée, alors une erreur critique sera
  * envoyée, car le multiplexeur ne pourra pas être créé. Ainsi, si l'update est
- * appelée de manière forcée, une autre avertissement sera envoyé.
+ * appelée de manière forcée, un autre avertissement sera envoyé.
  */
 export default class Multiplexer {
     // ------------------------------------------------------------------------

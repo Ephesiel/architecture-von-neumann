@@ -61,7 +61,7 @@ export default class Bus {
         if (typeof bits === 'undefined') {
             this.maxValue = MAX_NUMBER_OF_ARCH
         } else {
-            this.maxValue = 2n ** BigInt(bits)
+            this.maxValue = 2n ** BigInt(bits) - 1n
         }
     }
 
@@ -101,6 +101,6 @@ export default class Bus {
     }
 
     getMaxValue() {
-        return this.maxValue
+        return this.maxValue + 1n
     }
 }
