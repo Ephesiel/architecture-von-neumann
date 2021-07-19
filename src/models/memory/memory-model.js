@@ -74,8 +74,8 @@ export default class Memory {
             )
         }
 
-        // Renvoie d'une valeur aléatoire
-        return BigInt(Math.floor(Math.random() * Number(this.maxValue)))
+        // Renvoie 0 par défaut
+        return 0n
     }
 
     /**

@@ -1,4 +1,4 @@
-import Clock from '@/clock'
+import Clock from '@/models/clock'
 
 /**
  * Classe gérant la lecture d'une mémoire.
@@ -15,22 +15,22 @@ import Clock from '@/clock'
 export default class MemoryReader {
     memory //: Memory
     readSignal //: Signal
-    inputBus //: Bus
-    outputBus //: Bus
+    addressBus //: Bus
+    valueBus //: Bus
 
-    constructor(memory, readSignal, inputBus, outputBus) {
+    constructor(memory, readSignal, addressBus, valueBus) {
         this.memory = memory
         this.readSignal = readSignal
-        this.inputBus = inputBus
-        this.outputBus = outputBus
+        this.addressBus = addressBus
+        this.valueBus = valueBus
 
         Clock.register(this.update.bind(this))
     }
 
     update(ATU, signals) {
         if (signals[this.readSignal]) {
-            this.outputBus.setValue(
-                this.memory.getValue(this.inputBus.getValue())
+            this.valueBus.setValue(
+                this.memory.getValue(this.addressBus.getValue())
             )
         }
     }

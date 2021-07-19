@@ -1,4 +1,4 @@
-import Clock from '@/clock'
+import Clock from '@/models/clock'
 
 /**
  * Classe gérant l'écriture dans une mémoire.
