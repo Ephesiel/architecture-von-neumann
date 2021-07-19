@@ -38,13 +38,21 @@ import Debug from '@/debug'
  * ```
  */
 export default class Memory {
+    // ------------------------------------------------------------------------
+    // Attributs.
     maxValue //: BigInt
     memory //: Array
+
+    // ------------------------------------------------------------------------
+    // Constructeur.
 
     constructor(logHeight, width) {
         this.maxValue = 2n ** BigInt(width) - 1n
         this.memory = new Array(2 ** logHeight).fill(null)
     }
+
+    // ------------------------------------------------------------------------
+    // Méthodes publiques.
 
     /**
      * Renvoie la valeur de la mémoire à l'adresse donnée

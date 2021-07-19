@@ -18,7 +18,7 @@ import { Signals } from '@/globals'
  * calcul extérieur ne doit être réalisé pour ces valeurs, car tout est déjà
  * pris en charge par cette classe.
  *
- * Ainsi, le bus de sortie doit posséder un seul fil (être d'1 bit).
+ * Ainsi, le bus de sortie doit posséder un seul fil (être de 1 bit).
  */
 export default class PhaseCounter {
     // ------------------------------------------------------------------------

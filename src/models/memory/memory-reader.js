@@ -13,10 +13,15 @@ import Clock from '@/models/clock'
  * processus.
  */
 export default class MemoryReader {
+    // ------------------------------------------------------------------------
+    // Attributs.
     memory //: Memory
     readSignal //: Signal
     addressBus //: Bus
     valueBus //: Bus
+
+    // ------------------------------------------------------------------------
+    // Constructeur.
 
     constructor(memory, readSignal, addressBus, valueBus) {
         this.memory = memory
@@ -26,6 +31,9 @@ export default class MemoryReader {
 
         Clock.register(this.update.bind(this))
     }
+
+    // ------------------------------------------------------------------------
+    // Méthodes publiques.
 
     update(ATU, signals) {
         if (signals[this.readSignal]) {
