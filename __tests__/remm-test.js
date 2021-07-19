@@ -17,14 +17,16 @@ const remm = new ERMM(
     selMS,
     cond,
     Signals.SENDLEVELS,
-    Signals.SENDPULSES
+    Signals.SENDPULSES,
+    5,
+    1
 )
 const vAdrSuiv = 498n // 0b0111110010 en binaire
 const vSelMS = 2n // 0b10 en binaire
 const vConds = 3n // 0b0011 en binaire
-const instr = 0b00001011000100000100000100100000001000n // eRI, eM, eCO, RAB1, RIB1, sM, XS, FIN
+const instr = 0b00001011000010000010000010010000000100n // eRI, eM, eCO, RAB1, RIB1, sM, XS, FIN
 inputBus.setValue(
-    0b0111110010100011000010110000001011000100000100000100100000001000n
+    0b0111110010100011000010110000001011000010000010000010010000000100n
 )
 SignalManager.emit(Signals.eRA, 1)
 Clock.waitAndTick(2, 1)
@@ -44,7 +46,7 @@ test('Conds', () => {
 })
 
 test('Instrs', () => {
-    expect(remm.formatValueForSignals()).toBe(instr << 12n)
+    expect(remm.formatValueForSignals()).toBe(2n ** 63n + (instr << 25n))
 })
 
 test('Emited', () => {
@@ -55,13 +57,19 @@ test('Emited', () => {
         Signals.eCO,
         Signals.RAB1,
         Signals.RIB1,
-        Signals.SM,
+        Signals.sM,
         Signals.XS,
         Signals.FIN,
     ]
 
+    SignalManager.emit(Signals.SENDLEVELS, 1)
+    SignalManager.emit(Signals.SENDPULSES, 1)
+    Clock.waitAndTick(1, 1)
+
+    console.log(triggered)
+
     for (const [key, value] of Object.entries(sigs)) {
-        if (triggered.includes(key)) {
+        if (triggered.includes(Number(key))) {
             expect(value).toBeGreaterThan(0)
         } else {
             expect(value).toBe(0)

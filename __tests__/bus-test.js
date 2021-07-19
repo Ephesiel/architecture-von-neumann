@@ -34,3 +34,9 @@ test('Number too high', () => {
     bus2.setValue(5)
     expect(Debug.getMessages(Level.CRIT).length).toBe(size + 1)
 })
+
+test('Put a string', () => {
+    const sizeBefore = Debug.getMessages(Level.CRIT).length
+    bus.setValue('Je suis une chaîne')
+    expect(Debug.getMessages(Level.CRIT).length).toBe(sizeBefore + 1)
+})

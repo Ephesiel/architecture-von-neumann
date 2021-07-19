@@ -50,7 +50,9 @@ export default class ERMM extends Register {
         busSelMS,
         busCond,
         signalSendLevels,
-        signalSendPulses
+        signalSendPulses,
+        timeATULevels,
+        timeATUPulses
     ) {
         super([inputBus], [], signalClockTick)
         this.busNextAdr = busNextAdr
@@ -58,6 +60,8 @@ export default class ERMM extends Register {
         this.busCond = busCond
         this.signalSendLevels = signalSendLevels
         this.signalSendPulses = signalSendPulses
+        this.timeATULevels = timeATULevels
+        this.timeATUPulses = timeATUPulses
         this.pulses = []
         this.levels = []
     }
@@ -123,13 +127,19 @@ export default class ERMM extends Register {
         const value = this.formatValueForSignals()
 
         for (const bits of Object.values(obj)) {
-            if (value & ((1n << 64n) >> BigInt(bits))) {
+            const decalage = 1n << (62n - BigInt(bits))
+            if ((value & decalage) === decalage) {
                 arr.push(bits)
             }
         }
     }
 
     formatValueForSignals() {
-        return (this.getCurrentValue() & (BigInt(2 ** 38) - 1n)) << 12n
+        // HACK PARCE QUE JAVASCRIPT PUE SAMER.
+        // On met un 1 au début du nombre afin de garder les 0 au début des
+        // signaux parsés en bits. Sinon, javascript alloue automatiquement le
+        // nombre de bits a une variable, commençant par le premier 1. Par
+        // exemple, 2^10 serait sur 10 bits.
+        return 2n ** 63n + ((this.getCurrentValue() & (2n ** 38n - 1n)) << 25n)
     }
 }

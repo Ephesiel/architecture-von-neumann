@@ -5,8 +5,6 @@ import {
 import Clock from '@/models/clock'
 import Debug from '@/debug'
 
-// Nombre de bits ?
-
 /**
  * Représentation abstraite d'un bus de données.
  *
