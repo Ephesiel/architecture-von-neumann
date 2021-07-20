@@ -67,6 +67,7 @@
  *
  * Les opérations définies sont les suivantes :
  *  - addition (+)
+ *  - opposée (- unaire)
  *
  * Il est possible de les appeler avec les mêmes choses que pour créer un
  * Integer (Nombre, BigInt...) ou avec un autre Integer.
@@ -89,6 +90,22 @@
  * // 15, même si la valeur est -3, l'addition bit à bit renvoie 16 bits et le
  * // 4ème bit ne représente plus le signe !
  * int(2, 16)['+'](int(-3, 4))
+ * ```
+ *
+ * ### L'opposée
+ *
+ * Envoie l'inverse d'un integer. Ne marche évidememnt pas correctement sur les
+ * entiers non signés
+ *
+ * Mot clés : `.opposite()`, `['-']()`
+ *
+ * Exemples :
+ *
+ * ```js
+ * // -3
+ * int(3, 16).opposite()
+ * // 65533, le complément à 2 n'est pas fait pour les entiers non signés
+ * int(3, 16, false)['-']()
  * ```
  */
 class Integer {
@@ -301,7 +318,7 @@ class Integer {
         const signed = this.signed && x.signed
 
         // Le tableau qui va servir pour créer le nombre
-        let arr = new Array(size)
+        let bits = new Array(size)
         let retainer = 0
 
         // On commence par le bit avec le poids le plus faible (celui qui est
@@ -315,29 +332,51 @@ class Integer {
             switch (bit) {
                 case 0:
                     retainer = 0
-                    arr[i] = 0
+                    bits[i] = 0
                     break
                 case 1:
                     retainer = 0
-                    arr[i] = 1
+                    bits[i] = 1
                     break
                 case 2:
                     retainer = 1
-                    arr[i] = 0
+                    bits[i] = 0
                     break
                 case 3:
                     retainer = 1
-                    arr[i] = 1
+                    bits[i] = 1
                     break
             }
         }
 
-        return new Integer(arr, size, signed)
+        return new Integer(bits, size, signed)
+    }
+
+    /**
+     * Opération - unaire
+     *
+     * Envoi l'opposée de cet Integer.
+     * Il est évident que cette fonction ne devrait être appelée que sur les
+     * entiers signés. Si c'est fait, le résultat sera bizarre pour un entier
+     * non signé car on fait l'inversion des bits selon le complément à deux.
+     *
+     * @returns Un nouvel Integer
+     */
+    opposite() {
+        return new Integer(
+            this.twosComplement().reverse(),
+            this.size,
+            this.signed
+        )
     }
 }
 
 Integer.prototype['+'] = function (x) {
     return this.add(x)
+}
+
+Integer.prototype['-'] = function () {
+    return this.opposite()
 }
 
 export function int(value, size = 64, signed = true) {

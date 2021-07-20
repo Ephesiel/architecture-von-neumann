@@ -245,3 +245,19 @@ test('Addition', () => {
     expect(x.add(int(-3, 16)).toNumber()).toBe(-1)
     expect(x['+'](int(-3, 4)).toNumber()).toBe(15)
 })
+
+test('Opposite', () => {
+    let x = int(3, 16)
+    x = x['-']()
+
+    expect(x.toNumber()).toBe(-3)
+    expect(x.toBigInt()).toBe(-3n)
+    expect(x.toBinary()).toEqual('1111111111111101')
+
+    x = int(3, 16, false)
+    x = x.opposite()
+
+    expect(x.toNumber()).toBe(65533)
+    expect(x.toBigInt()).toBe(65533n)
+    expect(x.toBinary()).toEqual('1111111111111101')
+})
