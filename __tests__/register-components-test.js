@@ -14,6 +14,7 @@ const busInput2 = new Bus()
 const busOutput1 = new Bus()
 const busOutput2 = new Bus()
 const register = new Register(
+    'test',
     [
         Helper.makeRObj(busInput1, Signals.eRA),
         Helper.makeRObj(busInput2, Signals.eRB),
@@ -44,6 +45,7 @@ test('T = T + 1 (ClassicComponent)', () => {
 test('InsulatorComponent', () => {
     const ins = new InsulatorComponent(
         new Register(
+            'test',
             register.inputs,
             [
                 Helper.makeRObj(busOutput1, Signals.RAB1),
@@ -79,7 +81,7 @@ test('InsulatorComponent', () => {
 test('Both', () => {
     const both1 = new ClassicComponent(
         new InsulatorComponent(
-            new Register(register.inputs, [
+            new Register('test', register.inputs, [
                 Helper.makeRObj(busOutput1, Signals.RAB1),
                 Helper.makeRObj(busOutput2, Signals.RAB2),
             ])
@@ -100,7 +102,7 @@ test('Both', () => {
 
     const both2 = new InsulatorComponent(
         new ClassicComponent(
-            new Register(register.inputs, [
+            new Register('test', register.inputs, [
                 Helper.makeRObj(busOutput1, Signals.RAB1),
                 Helper.makeRObj(busOutput2, Signals.RAB2),
             ])

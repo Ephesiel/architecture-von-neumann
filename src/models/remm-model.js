@@ -61,7 +61,7 @@ export default class ERMM extends Register {
         timeATULevels,
         timeATUPulses
     ) {
-        super([inputBus], [], signalClockTick)
+        super('REMM', [inputBus], [], signalClockTick)
         this.busNextAdr = busNextAdr
         this.busSelMS = busSelMS
         this.busCond = busCond
@@ -78,6 +78,11 @@ export default class ERMM extends Register {
 
     update(ATU, signals) {
         super.update(ATU, signals)
+
+        if (signals[this.signalClockTick]) {
+            this.levels = []
+            this.pulses = []
+        }
 
         this.updateSignals()
 
@@ -100,17 +105,18 @@ export default class ERMM extends Register {
 
     sendLevels() {
         this.sendSignals(this.levels, this.timeATULevels)
+        this.levels = []
     }
 
     sendPulses() {
         this.sendSignals(this.pulses, this.timeATUPulses)
+        this.pulses = []
     }
 
     sendSignals(arr, time) {
         arr.map((signal) => {
             SignalManager.emit(signal, time)
         })
-        arr = []
     }
 
     formatValueForAdr() {
@@ -142,7 +148,7 @@ export default class ERMM extends Register {
 
         for (const bits of Object.values(obj)) {
             const shift = 1n << (BigInt(NB_BITS_MPM - 2) - BigInt(bits))
-            if ((value & shift) === shift) {
+            if ((value & shift) === shift && !arr.includes(bits)) {
                 arr.push(bits)
             }
         }
@@ -155,8 +161,8 @@ export default class ERMM extends Register {
         // nombre de bits a une variable, commençant par le premier 1. Par
         // exemple, 2^10 serait sur 10 bits.
         return (
-            2n ** (BigInt(NB_BITS_MPM) - 1n) +
-            ((this.getCurrentValue() & (2n ** BigInt(NB_BITS_INSTR) - 1n)) <<
+            BigInt(2 ** (NB_BITS_MPM - 1)) +
+            ((this.getCurrentValue() & (BigInt(2 ** NB_BITS_INSTR) - 1n)) <<
                 BigInt(NB_BITS_ADR + NB_BITS_CONDS + NB_BITS_SELMS - 1))
         )
     }

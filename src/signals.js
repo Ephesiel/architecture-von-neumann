@@ -2,6 +2,10 @@ export const InternSignals = {
     REGSIGCLOCK: 'REGSIGCLOCK',
     SENDLEVELS: 'SENDLEVELS',
     SENDPULSES: 'SENDPULSES',
+    SWITCH_RAMM: 'SWITCH_RAMM',
+    SWITCH_REMM: 'SWITCH_REMM',
+    eRAMM: 'eRAMM',
+    eREMM: 'eREMM',
 }
 
 export const PulseSignals = {
@@ -14,7 +18,7 @@ export const PulseSignals = {
     eM: 6,
     eCO: 7,
     eRAM: 8,
-    eRP: 9,
+    eSP: 9,
 }
 
 export const LevelSignals = {
@@ -33,8 +37,8 @@ export const LevelSignals = {
     COB1: 22,
     COB2: 23,
     sM: 24,
-    RPB1: 25,
-    RPB2: 26,
+    SPB1: 25,
+    SPB2: 26,
     XS: 27,
     XP1: 28,
     ADD: 29,

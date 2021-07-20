@@ -47,7 +47,7 @@ export default class Memory {
     // Constructeur.
 
     constructor(logHeight, width) {
-        this.maxValue = 2n ** BigInt(width) - 1n
+        this.maxValue = BigInt(2 ** width) - 1n
         this.memory = new Array(2 ** logHeight).fill(null)
     }
 

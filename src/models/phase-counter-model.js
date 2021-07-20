@@ -26,6 +26,7 @@ export default class PhaseCounter {
     endSignalSent //: Boolean
     currentPhase //: Number
     busOutput //: Bus
+    switched //: Boolean
 
     // ------------------------------------------------------------------------
     // Constructeur.
@@ -36,6 +37,7 @@ export default class PhaseCounter {
         this.endSignalSent = false
         this.currentPhase = 1
         this.busOutput = busOutput
+        this.switched = false
     }
 
     // ------------------------------------------------------------------------
@@ -46,9 +48,12 @@ export default class PhaseCounter {
             if (this.endSignalSent) {
                 this.currentPhase = 1
                 this.endSignalSent = false
-            } else {
+            } else if (!this.switched) {
                 this.currentPhase += 1
+                this.switched = true
             }
+        } else {
+            this.switched = false
         }
 
         if (signals[Signals.FIN] > 0) {

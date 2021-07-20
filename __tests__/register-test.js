@@ -10,6 +10,7 @@ const busInput2 = new Bus()
 const busOutput1 = new Bus()
 const busOutput2 = new Bus()
 const register = new Register(
+    'test',
     [
         Helper.makeRObj(busInput1, Signals.eRA),
         Helper.makeRObj(busInput2, Signals.eRB),

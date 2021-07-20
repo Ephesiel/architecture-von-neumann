@@ -54,11 +54,12 @@ export default class Register {
     currentValue //: Number
     nextValue //: Number
     signalClockTick //: Signal
+    name //: String
 
     // ------------------------------------------------------------------------
     // Constructeur.
 
-    constructor(inputs, outputs, signalClockTick) {
+    constructor(name, inputs, outputs, signalClockTick) {
         Clock.register(this.update.bind(this))
 
         this.inputs = inputs
@@ -66,6 +67,7 @@ export default class Register {
         this.signalClockTick = signalClockTick
         this.currentValue = 0n
         this.nextValue = 0n
+        this.name = name
     }
 
     // ------------------------------------------------------------------------
@@ -122,7 +124,7 @@ export default class Register {
      * @returns {Boolean} Si oui ou non la valeur T+1 a été modifiée.
      */
     tryValueUpdate(input, signal, alreadyModified, signals) {
-        if (typeof signals[signal] !== 'undefined' && signals[signal] > 0) {
+        if (typeof signal === 'undefined' || signals[signal] > 0) {
             if (alreadyModified) {
                 Debug.error(
                     'Erreur: 2 bus essaient de modifier le même registre.'

@@ -21,7 +21,7 @@ export default class InstructionRegister extends Register {
     // Constructeur.
 
     constructor(inputs, outputs, sequencerBus) {
-        super(inputs, outputs, Signals.REGSIGCLOCK)
+        super('RI', inputs, outputs, Signals.REGSIGCLOCK)
 
         this.sequencerBus = sequencerBus
     }
@@ -41,6 +41,6 @@ export default class InstructionRegister extends Register {
     }
 
     getRA() {
-        return this.currentValue & (2n ** BigInt(NB_BITS_RA) - 1n)
+        return this.currentValue & (BigInt(2 ** NB_BITS_RA) - 1n)
     }
 }
