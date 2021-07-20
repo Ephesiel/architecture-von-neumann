@@ -222,4 +222,26 @@ test('Addition', () => {
     expect(z.toNumber()).toBe(-6)
     expect(z.toBigInt()).toBe(-6n)
     expect(z.toBinary()).toEqual('1111111111111010')
+
+    x = int(2, 3, false)
+    y = int(2, 3, false)
+    z = x['+'](y)
+
+    expect(z.toNumber()).toBe(4)
+    expect(z.toBigInt()).toBe(4n)
+    expect(z.toBinary()).toEqual('100')
+
+    x = int(2, 3)
+    y = int(2, 3)
+    z = x['+'](y)
+
+    expect(z.toNumber()).toBe(-4)
+    expect(z.toBigInt()).toBe(-4n)
+    expect(z.toBinary()).toEqual('100')
+
+    x = int(2, 16)
+
+    expect(x.add(-3).toNumber()).toBe(-1)
+    expect(x.add(int(-3, 16)).toNumber()).toBe(-1)
+    expect(x['+'](int(-3, 4)).toNumber()).toBe(15)
 })

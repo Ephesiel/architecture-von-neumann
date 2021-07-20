@@ -1,22 +1,24 @@
 /**
+ * ## Motivation :
+ *
  * Les signaux électrique d'une architecture permettent d'envoyer dans les fils
  * des 0 ou des 1, représentant l'information.
  *
- * Les bus sont une multitude de fils permettant de représenter des mots
+ * Les bus représentent plusieurs fils permettant de représenter des mots
  * binaires.
  * Techniquement, il est possible que ces bus puissent prendre un nombre
  * quelconque de fils.
  *
- * L'information est donc représentée sur une quantité de bits non identiques
- * en fonction des différents bus, il peut y avoir 1, 2, 32, 64 bits... De
- * manière générale, il y a souvent une puissance de deux, mais ce n'est pas
+ * L'information est donc représentée sur une quantité de bits non identique en
+ * fonction des différents bus, il peut y avoir 1, 2, 32, 64 bits... De manière
+ * générale, il y en a souvent une puissance de deux, mais ce n'est pas
  * obligatoire.
  *
  * Il est donc important de connaître l'information de ces bus et de pouvoir la
  * stocker dans notre programme sans trop de mal.
  * C'est à ça que sert cette classe, à stocker un nombre en fonction de sa
  * taille.
- * Il est également possible d'effectuer des opérations élémentaires et de voir
+ * Il est également possible d'effectuer des opérations élémentaires et d'avoir
  * les bits tronqués dans le cas où le résultat serait "trop grand", permettant
  * de simuler au mieux l'architecture.
  *
@@ -24,15 +26,70 @@
  * nombre. Lorsqu'il est trop grand, le chiffre est déformé.
  *
  * Il existe la possibilité de faire des BigInt pour les grands nombres, mais
- * leur utilisation est fastidieuse et cette classe permet cette utilisation
- * cachée aux yeux des utilisateurs.
+ * leur utilisation est fastidieuse et cette classe permet de cacher cette
+ * utilisation aux yeux des utilisateurs.
  *
- * Le nombre de cette classe est représenté par un tableau de n entier qui sont
- * 0 ou 1 (les bits). Le MSB est le chiffre d'indice n - 1 et le LSB l'indice
- * 0.
+ * Les bits sont représentés par un tableau de n entier qui valent 0 ou 1. Le
+ * MSB (Most Significant Bit) est le chiffre d'indice n - 1 et le LSB (least
+ * Significant Bit) l'indice 0.
+ *
+ * ## Création :
+ *
+ * Il est possible de créer un Integer de différentes façons :
+ *  - Depuis un nombre
+ *  - Depuis un BigInt
+ *  - Depuis une string ou un tableau représentant un nombre binaire
+ *
+ * Il faut ensuite lui donner sa taille et dire s'il est signé ou non (signé
+ * par défaut)
+ *
+ * ```js
+ * // Entier signé sur 32 bits valant 12
+ * new Integer(12, 32, true)
+ *
+ * // Entier non signé sur 64 bits valant 9223372036854775807
+ * new Integer(9223372036854775807n, 64, false)
+ *
+ * // Entier signé sur 10 bits valant 4
+ * new Integer('0100', 10)
+ *
+ * // Entier signé sur 3 bits valant 4
+ * new Integer([0, 1, 0, 0], 3)
+ * ```
+ *
+ * Il est possible d'appeler la méthode `int(...)` qui est un alias de `new
+ * Integer(...)`
+ *
+ * ## Opérations :
  *
  * Les opérations sont toutes créées à la main pour être plus proche des
- * opérations de l'architecture
+ * opérations de l'architecture.
+ *
+ * Les opérations définies sont les suivantes :
+ *  - addition (+)
+ *
+ * Il est possible de les appeler avec les mêmes choses que pour créer un
+ * Integer (Nombre, BigInt...) ou avec un autre Integer.
+ *
+ * ### L'addition
+ *
+ * Ajoute un integer à un autre. Attention à la taille de ces derniers ! En
+ * effet la taille du nombre renvoyée sera la plus grande des deux nombres
+ * donnés et les signes peuvent être modifié en fonction de cette taille !
+ *
+ * Mots clés : `.add()`, `['+']()`
+ *
+ * Exemples :
+ *
+ * ```js
+ * // -1
+ * int(2, 16).add(-3)
+ * // -1
+ * int(2, 16).add(int(-3, 16))
+ * // 15, même si la valeur est -3, l'addition bit à bit renvoie 16 bits et le
+ * // 4ème bit ne représente plus le signe !
+ * int(2, 16)['+'](int(-3, 4))
+ * ```
  */
 class Integer {
     // ------------------------------------------------------------------------
@@ -213,7 +270,7 @@ class Integer {
      * @param {Number} n
      */
     bit(n) {
-        if (n < this.size) {
+        if (n < this.size && n >= 0) {
             return this.bits[this.size - n - 1]
         }
         return 0
@@ -238,8 +295,10 @@ class Integer {
         }
 
         // On choisit la taille du plus gros des deux
+        // Le nombre retourné est signé uniquement si les deux nombres le sont
         // Ainsi x + y === y + x
         const size = Math.max(this.size, x.size)
+        const signed = this.signed && x.signed
 
         // Le tableau qui va servir pour créer le nombre
         let arr = new Array(size)
@@ -248,7 +307,10 @@ class Integer {
         // On commence par le bit avec le poids le plus faible (celui qui est
         // le plus à droite)
         for (let i = size - 1; i >= 0; --i) {
-            const bit = x.bit(i) + this.bit(i) + retainer
+            const bit =
+                x.bit(x.size - size + i) +
+                this.bit(this.size - size + i) +
+                retainer
 
             switch (bit) {
                 case 0:
@@ -270,7 +332,7 @@ class Integer {
             }
         }
 
-        return new Integer(arr, size)
+        return new Integer(arr, size, signed)
     }
 }
 
