@@ -131,6 +131,12 @@ test('Strange values', () => {
     expect(x.toNumber()).toBe(0)
     expect(x.toBigInt()).toBe(0n)
     expect(x.toBinary()).toEqual('0')
+
+    x = int(-1, 8, false)
+
+    expect(x.toNumber()).toBe(255)
+    expect(x.toBigInt()).toBe(255n)
+    expect(x.toBinary()).toBe('11111111')
 })
 
 test('Bits', () => {
@@ -235,6 +241,26 @@ test('Slice', () => {
     expect(y.toNumber()).toEqual(1)
 })
 
+test('Absolute', () => {
+    let x = int(3, 16)
+    let y = x.abs()
+
+    expect(x.toNumber()).toBe(3)
+    expect(y.toNumber()).toBe(3)
+
+    x = int(-3, 16)
+    y = x.abs()
+
+    expect(x.toNumber()).toBe(-3)
+    expect(y.toNumber()).toBe(3)
+
+    x = int(-1, 8, false)
+    y = x.abs()
+
+    expect(x.toNumber()).toBe(255)
+    expect(y.toNumber()).toBe(255)
+})
+
 test('Addition', () => {
     let x = int(3, 16)
     let y = int(3, 16)
@@ -290,6 +316,57 @@ test('Addition', () => {
     expect(x.add(-3).toNumber()).toBe(-1)
     expect(x.add(int(-3, 16)).toNumber()).toBe(-1)
     expect(x['+'](int(-3, 4)).toNumber()).toBe(15)
+})
+
+test('Multiplication', () => {
+    let x = int(3, 8)
+    let y = int(2, 8)
+    let z = x.mult(y)
+
+    expect(z.toNumber()).toBe(6)
+
+    z = x.mult(x)
+
+    expect(z.toNumber()).toBe(9)
+
+    x = int(-3, 8)
+    y = int(2, 8)
+    z = x.mult(y)
+
+    expect(z.toNumber()).toBe(-6)
+
+    z = x.mult(x)
+
+    expect(z.toNumber()).toBe(9)
+
+    z = x.mult(-3)
+
+    expect(z.toNumber()).toBe(9)
+
+    x = int(3, 8)
+    z = x.mult(72)
+
+    expect(z.toNumber()).toBe(-40)
+    expect(z.toBinary()).toBe('11011000')
+
+    x = int(40, 8)
+    y = int(40, 13)
+    z = y.mult(52)
+
+    expect(z.toNumber()).toBe(2080)
+    expect(z.toBinary()).toBe('0100000100000')
+
+    z = x.mult(52)
+    expect(z.toNumber()).toBe(32)
+    expect(z.toBinary()).toBe('00100000')
+
+    x = int(40, 8)
+    y = int(52, 13)
+    z = y.mult(x)
+
+    expect(z.toNumber()).toBe(x['*'](y).toNumber())
+    expect(z.toNumber()).toBe(2080)
+    expect(z.toBinary()).toBe('0100000100000')
 })
 
 test('Opposite', () => {

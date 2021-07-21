@@ -114,6 +114,39 @@
  * int(3, 16, false)['-']()
  * ```
  *
+ * ### La multiplication
+ *
+ * Multiplie un integer avec un autre, attention à ce que le résultat ne
+ * dépasse pasla taille, le retour serait alors innatendu
+ *
+ * Mots clés : `.mult()`, `['*']()`
+ *
+ * Exemples :
+ *
+ * ```js
+ * // 9
+ * int(3, 8).mult(3)
+ * // -6
+ * int(-3, 8).mult(int(2, 8))
+ * // -40, même si la valeur est 216, le résultat est sur 8 bits signés !
+ * int(3, 8)['*'](72)
+ * ```
+ *
+ * ### La valeur absolue
+ *
+ * Renvoie la valeur absolue d'un nombre
+ *
+ * Mot clé : `.abs()`
+ *
+ * Exemples :
+ *
+ * ```js
+ * // 3
+ * int(3, 8).abs()
+ * // 3
+ * int(-3, 8).abs()
+ * ```
+ *
  * ### Les décalages de bits
  *
  * Décale les bits vers la droite ou vers la gauche selon le sens voulu.
@@ -178,10 +211,9 @@ class Integer {
 
     // /!\ IMPORTANT /!\
     // Les bits sont stockés de LSB vers MSB, l'inverse de l'habitude de
-    // lecture de nombres. Ainsi, lorsque l'on créé un nombre depuis une string
+    // lecture de nombres. Mais, lorsque l'on créé un nombre depuis une string
     // ou un tableau, on attend une valeur dans le "bon sens" qui est ensuite
-    // retournée. C'est également pour ça que la plupart des opérations utilise
-    // la méthode `reverse()` sur les bits
+    // retournée.
     bits //: Array de 0 et 1 de LSB vers MSB
     size //: Number
     signed //: Boolean
@@ -392,78 +424,6 @@ class Integer {
     // Opérations.
 
     /**
-     * Opération + avec un autre integer
-     *
-     * La taille du retour sera celle du plus grand des deux
-     *
-     * Attention à la taille des nombres fournis !
-     * Si la taille d'un nombre est inférieur à l'autre et qu'il est négatif,
-     * la valeur retournée sera faussée.
-     *
-     * Si l'opération + est faite sur des nombres signés, faites en sorte
-     * qu'ils aient la même taille !
-     *
-     * @param {Integer|BigInt|Number} x
-     * @returns Un nouvel Integer
-     */
-    add(x) {
-        if (!(x instanceof Integer)) {
-            x = new Integer(x, this.size)
-        }
-        if (this.size < x.size) {
-            return x.add(this)
-        }
-
-        let result = this.copy()
-
-        // retenu de l'addition
-        let retainer = 0
-
-        for (let i = 0; i < x.size; ++i) {
-            const bit = x.bit(i) + this.bit(i) + retainer
-
-            switch (bit) {
-                case 0:
-                    retainer = 0
-                    result.bits[i] = 0
-                    break
-                case 1:
-                    retainer = 0
-                    result.bits[i] = 1
-                    break
-                case 2:
-                    retainer = 1
-                    result.bits[i] = 0
-                    break
-                case 3:
-                    retainer = 1
-                    result.bits[i] = 1
-                    break
-            }
-        }
-
-        return result
-    }
-
-    /**
-     * Opération - unaire
-     *
-     * Envoi l'opposée de cet Integer.
-     * Il est évident que cette fonction ne devrait être appelée que sur les
-     * entiers signés. Si c'est fait, le résultat sera bizarre pour un entier
-     * non signé car on fait l'inversion des bits selon le complément à deux.
-     *
-     * @returns Un nouvel Integer
-     */
-    opposite() {
-        return new Integer(
-            this.twosComplement().reverse(),
-            this.size,
-            this.signed
-        )
-    }
-
-    /**
      * Décalage de bits vers la gauche. On les décale de n bits.
      * Les bits les plus à gauche sont perdus
      * Les bits ajoutés à droite sont mis à 0
@@ -590,6 +550,128 @@ class Integer {
 
         return result
     }
+
+    /**
+     * Opération + avec un autre integer
+     *
+     * La taille du retour sera celle du plus grand des deux
+     *
+     * Attention à la taille des nombres fournis !
+     * Si la taille d'un nombre est inférieur à l'autre et qu'il est négatif,
+     * la valeur retournée sera faussée.
+     *
+     * Si l'opération + est faite sur des nombres signés, faites en sorte
+     * qu'ils aient la même taille !
+     *
+     * @param {Integer|BigInt|Number} x
+     * @returns Un nouvel Integer
+     */
+    add(x) {
+        if (!(x instanceof Integer)) {
+            x = new Integer(x, this.size)
+        }
+        if (this.size < x.size) {
+            return x.add(this)
+        }
+
+        let result = this.copy()
+
+        // retenu de l'addition
+        let retainer = 0
+
+        for (let i = 0; i < x.size; ++i) {
+            const bit = x.bit(i) + this.bit(i) + retainer
+
+            switch (bit) {
+                case 0:
+                    retainer = 0
+                    result.bits[i] = 0
+                    break
+                case 1:
+                    retainer = 0
+                    result.bits[i] = 1
+                    break
+                case 2:
+                    retainer = 1
+                    result.bits[i] = 0
+                    break
+                case 3:
+                    retainer = 1
+                    result.bits[i] = 1
+                    break
+            }
+        }
+
+        return result
+    }
+
+    /**
+     * Opération - unaire
+     *
+     * Envoi l'opposée de cet Integer.
+     * Il est évident que cette fonction ne devrait être appelée que sur les
+     * entiers signés. Si c'est fait, le résultat sera bizarre pour un entier
+     * non signé car on fait l'inversion des bits selon le complément à deux.
+     *
+     * @returns Un nouvel Integer
+     */
+    opposite() {
+        return new Integer(
+            this.twosComplement().reverse(),
+            this.size,
+            this.signed
+        )
+    }
+
+    /**
+     * Valeur absolue
+     *
+     * @returns Un nouvel integer
+     */
+    abs() {
+        return this.isNegative() ? this.opposite() : this.copy()
+    }
+
+    /**
+     * Opération * avec un autre integer
+     *
+     * La taille du retour sera celle du plus grand des deux
+     *
+     * @param {Integer|BigInt|Number} x Avec lequel faire la multiplication
+     * @returns Un nouvel Integer
+     */
+    mult(x) {
+        if (!(x instanceof Integer)) {
+            x = new Integer(x, this.size)
+        }
+        if (this.size < x.size) {
+            return x.mult(this)
+        }
+
+        const signed = this.signed && x.signed
+
+        // Comme on ne sait pas faire de multiplication sur les entiers
+        // relatifs, on doit mettre les entiers en valeur absolu, puis, si
+        // l'un des deux était négatif, on inverse la valeur
+        const negative = signed && this.isNegative() ^ x.isNegative()
+
+        x = x.abs()
+        let y = this.abs()
+
+        let result = new Integer(0, this.size, signed)
+
+        for (let i = 0; i < x.size; ++i) {
+            if (x.bits[i] === 1) {
+                result = result.add(y.leftShift(i))
+            }
+        }
+
+        if (negative) {
+            result = result.opposite()
+        }
+
+        return result
+    }
 }
 
 Integer.prototype['+'] = function (x) {
@@ -598,6 +680,10 @@ Integer.prototype['+'] = function (x) {
 
 Integer.prototype['-'] = function () {
     return this.opposite()
+}
+
+Integer.prototype['*'] = function (x) {
+    return this.mult(x)
 }
 
 Integer.prototype['<<'] = function (x) {
