@@ -138,6 +138,10 @@ class Integer {
         }
     }
 
+    copy() {
+        return new Integer(this, this.size, this.signed)
+    }
+
     // ------------------------------------------------------------------------
     // Méthodes utilisées par la classe.
 
@@ -291,6 +295,26 @@ class Integer {
             return this.bits[this.size - n - 1]
         }
         return 0
+    }
+
+    /**
+     * "Coupe" le nombre en prenant un certain nombre de bits adjacents.
+     * Le sens de la découpe est de LSB vers MSB
+     *
+     * Le signe du nouvel integer est le même que celui donné en paramètre
+     * n ne doit pas être négatif
+     *
+     * @param {Number} n      Premier bits du découpage
+     * @param {Number} length Longueur du découpage
+     *
+     * @returns Un nouvel Integer de taille `length`
+     */
+    slice(n, length) {
+        return new Integer(
+            this.bits.slice(n, n + length).reverse(),
+            length,
+            this.signed
+        )
     }
 
     /**

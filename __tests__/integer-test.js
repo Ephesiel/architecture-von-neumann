@@ -197,6 +197,43 @@ test('Size', () => {
     expect(x.toBinary()).toEqual('1')
 })
 
+test('Copy', () => {
+    let x = int(-40, 32)
+    let y = x.copy()
+
+    expect(x.getSize()).toBe(y.getSize())
+    expect(x.toNumber()).toBe(y.toNumber())
+    expect(x.toBigInt()).toBe(y.toBigInt())
+    expect(x.toBinary()).toBe(y.toBinary())
+    expect(x.toString()).toBe(y.toString())
+    expect(x.isNegative()).toBe(y.isNegative())
+
+    x.size = 0
+
+    expect(y.size).toBe(32)
+})
+
+test('Slice', () => {
+    let x = int(-44, 8)
+    let y = x.slice(0, 5)
+
+    expect(x.toBinary()).toEqual('11010100')
+    expect(y.toBinary()).toEqual('10100')
+    expect(y.toNumber()).toEqual(-12)
+
+    y.bits = [0, 0, 0, 0, 0]
+
+    expect(y.toBinary()).toEqual('00000')
+    expect(y.toNumber()).toEqual(0)
+    expect(x.toBinary()).toEqual('11010100')
+    expect(x.toNumber()).toEqual(-44)
+
+    y = x.slice(7, 12)
+
+    expect(y.toBinary()).toEqual('000000000001')
+    expect(y.toNumber()).toEqual(1)
+})
+
 test('Addition', () => {
     let x = int(3, 16)
     let y = int(3, 16)
