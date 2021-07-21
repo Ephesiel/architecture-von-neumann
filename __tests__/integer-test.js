@@ -316,3 +316,45 @@ test('Shift', () => {
     expect(y.toBinary()).toEqual('00011111')
     expect(z.toBinary()).toEqual('00000011')
 })
+
+test('Logic', () => {
+    let x = int(5, 8)
+    let y = int(-431, 12)
+    let z = int(-13, 8)
+
+    expect(x.toBinary()).toEqual('00000101')
+    expect(y.toBinary()).toEqual('111001010001')
+    expect(z.toBinary()).toEqual('11110011')
+
+    // not
+    expect(x.not().toBinary()).toEqual('11111010')
+    expect(y.not().toBinary()).toEqual('000110101110')
+    expect(z.not().toBinary()).toEqual('00001100')
+
+    // or
+    expect(x.or(y).toNumber()).toBe(y.or(x).toNumber())
+    expect(x.or(z).toNumber()).toBe(z.or(x).toNumber())
+    expect(y.or(z).toNumber()).toBe(z.or(y).toNumber())
+
+    expect(x.or(y).toBinary()).toEqual('111001010101')
+    expect(x.or(z).toBinary()).toEqual('11110111')
+    expect(y.or(z).toBinary()).toEqual('111011110011')
+
+    // and
+    expect(x.and(y).toNumber()).toBe(y.and(x).toNumber())
+    expect(x.and(z).toNumber()).toBe(z.and(x).toNumber())
+    expect(y.and(z).toNumber()).toBe(z.and(y).toNumber())
+
+    expect(x.and(y).toBinary()).toEqual('000000000001')
+    expect(x.and(z).toBinary()).toEqual('00000001')
+    expect(y.and(z).toBinary()).toEqual('000001010001')
+
+    // xor
+    expect(x.xor(y).toNumber()).toBe(y.xor(x).toNumber())
+    expect(x.xor(z).toNumber()).toBe(z.xor(x).toNumber())
+    expect(y.xor(z).toNumber()).toBe(z.xor(y).toNumber())
+
+    expect(x.xor(y).toBinary()).toEqual('111001010100')
+    expect(x.xor(z).toBinary()).toEqual('11110110')
+    expect(y.xor(z).toBinary()).toEqual('111010100010')
+})

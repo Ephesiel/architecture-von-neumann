@@ -444,16 +444,16 @@ class Integer {
      * @returns Un nouvel integer
      */
     leftShift(n) {
-        let bits = [...this.bits].reverse()
+        let result = this.copy()
 
-        for (let i = 0; i < this.size - n; ++i) {
-            bits[i] = bits[i + n]
+        for (let i = result.size - 1; i >= n; --i) {
+            result.bits[i] = result.bits[i - n]
         }
-        for (let i = this.size - n; i < this.size; ++i) {
-            bits[i] = 0
+        for (let i = n - 1; i >= 0; --i) {
+            result.bits[i] = 0
         }
 
-        return new Integer(bits, this.size, this.signed)
+        return result
     }
 
     /**
@@ -466,16 +466,100 @@ class Integer {
      * @returns Un nouvel integer
      */
     rightShift(n) {
-        let bits = [...this.bits]
+        let result = this.copy()
 
-        for (let i = 0; i < this.size - n; ++i) {
-            bits[i] = bits[i + n]
+        for (let i = 0; i < result.size - n; ++i) {
+            result.bits[i] = result.bits[i + n]
         }
-        for (let i = this.size - n; i < this.size; ++i) {
-            bits[i] = 0
+        for (let i = result.size - n; i < result.size; ++i) {
+            result.bits[i] = 0
         }
 
-        return new Integer(bits.reverse(), this.size, this.signed)
+        return result
+    }
+
+    /**
+     * Permet de faire un non logique de cet integer
+     *
+     * @returns Un nouvel integer
+     */
+    not() {
+        let result = this.copy()
+
+        for (let i = 0; i < result.size; ++i) {
+            result.bits[i] = result.bits[i] === 0 ? 1 : 0
+        }
+
+        return result
+    }
+
+    /**
+     * Permet de faire un ou logique entre un integer et un autre
+     *
+     * La taille du retour sera celle du plus grand des deux
+     *
+     * @param {Integer} int Avec lequel faire le ou logique
+     * @returns Un nouvel integer
+     */
+    or(int) {
+        if (this.size < int.size) {
+            return int.or(this)
+        }
+
+        let result = this.copy()
+
+        for (let i = 0; i < int.size; ++i) {
+            result.bits[i] |= int.bits[i]
+        }
+
+        return result
+    }
+
+    /**
+     * Permet de faire un et logique entre un integer et un autre
+     *
+     * La taille du retour sera celle du plus grand des deux
+     *
+     * @param {Integer} int Avec lequel faire le et logique
+     * @returns Un nouvel integer
+     */
+    and(int) {
+        if (this.size < int.size) {
+            return int.and(this)
+        }
+
+        let result = this.copy()
+
+        for (let i = 0; i < int.size; ++i) {
+            result.bits[i] &= int.bits[i]
+        }
+        for (let i = int.size; i < this.size; ++i) {
+            result.bits[i] = 0
+        }
+
+        return result
+    }
+
+    /**
+     * Permet de faire un ou exclusif logique entre un integer et un autre
+     *
+     * La taille du retour sera celle du plus grand des deux
+     *
+     * @param {Integer} int Avec lequel faire le ou exclusif logique
+     * @returns Un nouvel integer
+     */
+    xor(int) {
+        if (this.size < int.size) {
+            return int.xor(this)
+        }
+
+        let result = this.copy()
+
+        for (let i = 0; i < int.size; ++i) {
+            result.bits[i] ^= int.bits[i]
+        }
+
+        return result
     }
 }
 
