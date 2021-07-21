@@ -70,6 +70,10 @@
  *  - opposée (- unaire)
  *  - décalage de bits vers la gauche (<<)
  *  - décalage de bits vers la droite (>>)
+ *  - non logique
+ *  - ou logique
+ *  - et logique
+ *  - xor logique
  *
  * Il est possible de les appeler avec les mêmes choses que pour créer un
  * Integer (Nombre, BigInt...) ou avec un autre Integer.
@@ -116,7 +120,9 @@
  * Le décalage de bits vers la gauche représente une puissance de 2
  * Le décalage de bits vers la droite représente un log base 2
  *
- * Mot clés : `.leftShift()`, `['<<']()`, `.rightShift()`, `['>>']()`
+ * Mot clés :
+ *  - `.leftShift()`, `['<<']()`
+ *  - `.rightShift()`, `['>>']()`
  *
  * Exemples :
  *
@@ -136,6 +142,34 @@
  * x.toBinary() // '11111011'
  * y.toBinary() // '00011111'
  * z.toBinary() // '00000011'
+ * ```
+ *
+ * ### Opérateur logique
+ *
+ * Permet de faire des opérations logiques sur les bits des nombres sans les
+ * modifier. Le nombre renvoyé est de la taille du plus gros des deux.
+ *
+ * Mots clés :
+ *  - `.not()`, `['~']()`
+ *  - `.or()`, `['|']()`
+ *  - `.and()`, `['&']()`
+ *  - `.xor()`, `['^']()`
+ *
+ * Exemples :
+ *
+ * ```js
+ * let x = int(5, 8)
+ * let y = int(-13, 8)
+ *
+ * x.toBinary() // '00000101'
+ * y.toBinary() // '11110011'
+ *
+ * x.not().toBinary() // 11111010
+ * y.not().toBinary() // 00001100
+ *
+ * x.or(y).toBinary() // 11110111
+ * x.and(y).toBinary() // 00000001
+ * x.xor(y).toBinary() // 11110110
  * ```
  */
 class Integer {
@@ -577,6 +611,22 @@ Integer.prototype['<<'] = function (x) {
 
 Integer.prototype['>>'] = function (x) {
     return this.rightShift(x)
+}
+
+Integer.prototype['~'] = function () {
+    return this.not()
+}
+
+Integer.prototype['&'] = function (x) {
+    return this.and(x)
+}
+
+Integer.prototype['|'] = function (x) {
+    return this.or(x)
+}
+
+Integer.prototype['^'] = function (x) {
+    return this.xor(x)
 }
 
 export function int(value, size = 64, signed = true) {
