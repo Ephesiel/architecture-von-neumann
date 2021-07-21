@@ -406,41 +406,98 @@ test('Shift', () => {
 test('Logic', () => {
     let x = int(5, 8)
     let y = int(-431, 12)
-    let z = int(-13, 8)
+    let z = -13
 
     expect(x.toBinary()).toEqual('00000101')
     expect(y.toBinary()).toEqual('111001010001')
-    expect(z.toBinary()).toEqual('11110011')
+    expect(int(z, 8).toBinary()).toEqual('11110011')
+    expect(int(z, 12).toBinary()).toEqual('111111110011')
 
     // not
     expect(x.not().toBinary()).toEqual('11111010')
-    expect(y.not().toBinary()).toEqual('000110101110')
-    expect(z['~']().toBinary()).toEqual('00001100')
+    expect(y['~']().toBinary()).toEqual('000110101110')
 
     // or
     expect(x.or(y).toNumber()).toBe(y.or(x).toNumber())
-    expect(x.or(z).toNumber()).toBe(z.or(x).toNumber())
-    expect(y['|'](z).toNumber()).toBe(z.or(y).toNumber())
 
     expect(x.or(y).toBinary()).toEqual('111001010101')
     expect(x.or(z).toBinary()).toEqual('11110111')
-    expect(y['|'](z).toBinary()).toEqual('111011110011')
+    expect(y['|'](z).toBinary()).toEqual('111111110011')
 
     // and
     expect(x.and(y).toNumber()).toBe(y.and(x).toNumber())
-    expect(x.and(z).toNumber()).toBe(z.and(x).toNumber())
-    expect(y['&'](z).toNumber()).toBe(z.and(y).toNumber())
 
     expect(x.and(y).toBinary()).toEqual('000000000001')
     expect(x.and(z).toBinary()).toEqual('00000001')
-    expect(y['&'](z).toBinary()).toEqual('000001010001')
+    expect(y['&'](z).toBinary()).toEqual('111001010001')
 
     // xor
     expect(x.xor(y).toNumber()).toBe(y.xor(x).toNumber())
-    expect(x.xor(z).toNumber()).toBe(z.xor(x).toNumber())
-    expect(y['^'](z).toNumber()).toBe(z.xor(y).toNumber())
 
     expect(x.xor(y).toBinary()).toEqual('111001010100')
     expect(x.xor(z).toBinary()).toEqual('11110110')
-    expect(y['^'](z).toBinary()).toEqual('111010100010')
+    expect(y['^'](z).toBinary()).toEqual('000110100010')
+})
+
+test('Comparison', () => {
+    let x = int(3, 64)
+    let y = int(-4, 32)
+    let z = uint(5, 16)
+    let a = int(5, 15)
+    let b = int(-3, 4)
+
+    expect(x.eq(y)).toBe(false)
+    expect(x.eq(z)).toBe(false)
+    expect(x.eq(a)).toBe(false)
+    expect(y.eq(z)).toBe(false)
+    expect(y.eq(a)).toBe(false)
+    expect(z.eq(a)).toBe(true)
+    expect(x.eq(2)).toBe(false)
+    expect(x.eq(3)).toBe(true)
+    expect(x.eq(4)).toBe(false)
+    expect(y['=='](b)).toBe(false)
+
+    expect(x.gt(y)).toBe(true)
+    expect(x.gt(z)).toBe(false)
+    expect(x.gt(a)).toBe(false)
+    expect(y.gt(z)).toBe(false)
+    expect(y.gt(a)).toBe(false)
+    expect(z.gt(a)).toBe(false)
+    expect(x.gt(2)).toBe(true)
+    expect(x.gt(3)).toBe(false)
+    expect(x.gt(4)).toBe(false)
+    expect(y['>'](b)).toBe(false)
+
+    expect(x.lt(y)).toBe(false)
+    expect(x.lt(z)).toBe(true)
+    expect(x.lt(a)).toBe(true)
+    expect(y.lt(z)).toBe(true)
+    expect(y.lt(a)).toBe(true)
+    expect(z.lt(a)).toBe(false)
+    expect(x.lt(2)).toBe(false)
+    expect(x.lt(3)).toBe(false)
+    expect(x.lt(4)).toBe(true)
+    expect(y['<'](b)).toBe(true)
+
+    expect(x.ge(y)).toBe(true)
+    expect(x.ge(z)).toBe(false)
+    expect(x.ge(a)).toBe(false)
+    expect(y.ge(z)).toBe(false)
+    expect(y.ge(a)).toBe(false)
+    expect(z.ge(a)).toBe(true)
+    expect(x.ge(2)).toBe(true)
+    expect(x.ge(3)).toBe(true)
+    expect(x.ge(4)).toBe(false)
+    expect(y['>='](b)).toBe(false)
+
+    expect(x.le(y)).toBe(false)
+    expect(x.le(z)).toBe(true)
+    expect(x.le(a)).toBe(true)
+    expect(y.le(z)).toBe(true)
+    expect(y.le(a)).toBe(true)
+    expect(z.le(a)).toBe(true)
+    expect(x.le(2)).toBe(false)
+    expect(x.le(3)).toBe(true)
+    expect(x.le(4)).toBe(true)
+    expect(y['<='](b)).toBe(true)
 })
