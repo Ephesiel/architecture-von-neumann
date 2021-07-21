@@ -5,6 +5,7 @@ import InstructionRegister from '@/models/instruction-register-model'
 import Clock from '@/models/clock'
 import SignalManager from '@/models/signal-manager'
 import Helper from '@/helper'
+import { int32 } from '@/integer'
 
 const busInput = new Bus()
 const busOutput = new Bus()
@@ -16,17 +17,17 @@ const iRegister = new InstructionRegister(
     sequencerBus
 )
 
-const COPMA = 0b10010110n
-const RA = 73n
-const COPMARA = (COPMA << BigInt(NB_BITS_RA)) | RA
+const COPMA = 0b10010110
+const RA = 73
+const COPMARA = (COPMA << NB_BITS_RA) | RA
 
 test('Correct values of COPMA / RA', () => {
-    busInput.setValue(COPMARA)
+    busInput.setValue(int32(COPMARA))
     SignalManager.emit(Signals.eRA, 3)
     Clock.waitAndTick(3, 1)
     SignalManager.emit(Signals.REGSIGCLOCK, 3)
     Clock.waitAndTick(3, 1)
-    expect(iRegister.getCurrentValue()).toBe(COPMARA)
-    expect(iRegister.getCOPMA()).toBe(COPMA)
-    expect(iRegister.getRA()).toBe(RA)
+    expect(iRegister.getCurrentValue().toNumber()).toBe(COPMARA)
+    expect(iRegister.getCOPMA().toNumber()).toBe(COPMA)
+    expect(iRegister.getRA().toNumber()).toBe(RA)
 })

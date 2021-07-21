@@ -4,12 +4,14 @@ import Bus from '@/models/bus-model'
 import Register from '@/models/registers/register-model'
 import Helper from '@/helper'
 import Debug, { Level } from '@/debug'
+import { int } from '@/integer'
 
 const busInput1 = new Bus()
 const busInput2 = new Bus()
 const busOutput1 = new Bus()
 const busOutput2 = new Bus()
 const register = new Register(
+    'test',
     [
         Helper.makeRObj(busInput1, Signals.eRA),
         Helper.makeRObj(busInput2, Signals.eRB),
@@ -19,30 +21,30 @@ const register = new Register(
 )
 
 test('Output values', () => {
-    register.currentValue = 1n
+    register.currentValue = int(1)
     register.setOutputValue()
     for (const bus of register.getOutputs()) {
-        expect(bus.value).toBe(1n)
+        expect(bus.value.toNumber()).toBe(1)
     }
 })
 
 test('Input one bus', () => {
-    busInput1.setValue(1n)
-    busInput2.setValue(2n)
+    busInput1.setValue(int(1))
+    busInput2.setValue(int(2))
 
     register.tryValueUpdate(busInput1, Signals.eRA, false, {
         [Signals.eRA]: true,
     })
-    expect(register.nextValue).toBe(1n)
+    expect(register.nextValue.toNumber()).toBe(1)
     register.tryValueUpdate(busInput2, Signals.eRB, false, {
         [Signals.eRB]: true,
     })
-    expect(register.nextValue).toBe(2n)
+    expect(register.nextValue.toNumber()).toBe(2)
 })
 
 test('Exception, 2', () => {
-    busInput1.setValue(1n)
-    busInput2.setValue(2n)
+    busInput1.setValue(int(1))
+    busInput2.setValue(int(2))
 
     const size = Debug.getMessages(Level.ERROR).length
     register.tryValueUpdate(busInput1, Signals.eRA, true, {

@@ -4,6 +4,7 @@ import {
 } from '@/globals.js'
 import Clock from '@/models/clock'
 import Debug from '@/debug'
+import Integer, { uint, int } from '@/integer'
 
 /**
  * Représentation abstraite d'un bus de données.
@@ -41,25 +42,33 @@ import Debug from '@/debug'
 export default class Bus {
     // ------------------------------------------------------------------------
     // Attributs.
-    value //: BigInt
+    value //: Integer
     timeSinceLastModification //: Number
     power //: Boolean
-    maxValue //: BigInt
+    maxValue //: Integer
+    bits //: Number
+    signed //: Boolean
 
     // ------------------------------------------------------------------------
     // Constructeur.
 
-    constructor(bits) {
+    constructor(bits, signed = true) {
         Clock.register(this.update.bind(this))
 
-        this.value = 0n
+        if (signed) {
+            this.value = int(0, bits)
+        } else {
+            this.value = uint(0, bits)
+        }
+        this.signed = signed
         this.timeSinceLastModification = 0
         this.power = false
+        this.bits = bits
 
         if (typeof bits === 'undefined') {
             this.maxValue = MAX_NUMBER_OF_ARCH
         } else {
-            this.maxValue = 2n ** BigInt(bits) - 1n
+            this.maxValue = uint(0, bits).not()
         }
     }
 
@@ -67,17 +76,32 @@ export default class Bus {
     // Méthodes publiques.
 
     setValue(val) {
-        if (typeof val !== 'number' && typeof val !== 'bigint') {
+        if (!(val instanceof Integer)) {
             Debug.crit('La valeur à affecter au bus doit être un nombre.')
             return
         }
 
-        if (BigInt(val) > this.maxValue) {
-            Debug.crit('Nombre trop grand pour les bus')
-            return
+        if (val.getSize() > this.bits) {
+            const trunc = this.signed
+                ? int(val, this.bits)
+                : uint(val, this.bits)
+            if (trunc.toBigInt() === val.toBigInt()) {
+                val = trunc
+            } else {
+                Debug.crit(
+                    `Nombre ${val.toBigInt()} trop grand pour ce bus (qui peut contenir au maximum ${
+                        this.bits
+                    } bits)`
+                )
+                return
+            }
         }
 
-        this.value = BigInt(val)
+        if (this.signed) {
+            this.value = int(val, this.bits)
+        } else {
+            this.value = uint(val, this.bits)
+        }
         this.timeSinceLastModification = 0
         this.power = true
     }
@@ -94,11 +118,7 @@ export default class Bus {
         this.timeSinceLastModification += Number(ATU)
         if (this.timeSinceLastModification > MAXIMUM_ALLOWED_BUS_POWER_TIME) {
             this.power = false
-            this.value = 0n
+            this.value = int(0, this.bits)
         }
-    }
-
-    getMaxValue() {
-        return this.maxValue + 1n
     }
 }

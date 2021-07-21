@@ -1,4 +1,5 @@
 import Clock from '@/models/clock'
+import { int } from '@/integer'
 
 /**
  * Un isolateur choisi si une valeur est passée ou non dans un bus.
@@ -26,7 +27,7 @@ import Clock from '@/models/clock'
 export default class Insulator {
     // ------------------------------------------------------------------------
     // Attributs.
-    value //: BigInt
+    value //: Integer
     outputBus //: Bus
     powerOnSignal //: Signal
 
@@ -36,7 +37,7 @@ export default class Insulator {
     constructor(outputBus, powerOnSignal) {
         Clock.register(this.update.bind(this))
 
-        this.value = 0n
+        this.value = int(0)
         this.outputBus = outputBus
         this.powerOnSignal = powerOnSignal
     }

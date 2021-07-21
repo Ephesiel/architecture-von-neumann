@@ -1,5 +1,6 @@
 import Clock from '@/models/clock'
 import Debug from '@/debug'
+import { int } from '@/integer'
 
 /**
  * Implémentation d'un registre à décalage SISO.
@@ -51,21 +52,23 @@ export default class Register {
     // Attributs.
     inputs //: []Object{signal, bus}
     outputs //: []Bus
-    currentValue //: Number
-    nextValue //: Number
+    currentValue //: Integer
+    nextValue //: Integer
     signalClockTick //: Signal
+    name //: String
 
     // ------------------------------------------------------------------------
     // Constructeur.
 
-    constructor(inputs, outputs, signalClockTick) {
+    constructor(name, inputs, outputs, signalClockTick) {
         Clock.register(this.update.bind(this))
 
         this.inputs = inputs
         this.outputs = outputs
         this.signalClockTick = signalClockTick
-        this.currentValue = 0n
-        this.nextValue = 0n
+        this.currentValue = int(0)
+        this.nextValue = int(0)
+        this.name = name
     }
 
     // ------------------------------------------------------------------------
@@ -122,7 +125,7 @@ export default class Register {
      * @returns {Boolean} Si oui ou non la valeur T+1 a été modifiée.
      */
     tryValueUpdate(input, signal, alreadyModified, signals) {
-        if (typeof signals[signal] !== 'undefined' && signals[signal] > 0) {
+        if (typeof signal === 'undefined' || signals[signal] > 0) {
             if (alreadyModified) {
                 Debug.error(
                     'Erreur: 2 bus essaient de modifier le même registre.'

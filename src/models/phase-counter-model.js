@@ -1,5 +1,6 @@
 import Clock from '@/models/clock'
 import { Signals } from '@/globals'
+import { uint } from '@/integer'
 
 /**
  * Implémentation du compteur de phases d'un micro-séquenceur.
@@ -26,6 +27,7 @@ export default class PhaseCounter {
     endSignalSent //: Boolean
     currentPhase //: Number
     busOutput //: Bus
+    switched //: Boolean
 
     // ------------------------------------------------------------------------
     // Constructeur.
@@ -34,8 +36,9 @@ export default class PhaseCounter {
         Clock.register(this.update.bind(this))
 
         this.endSignalSent = false
-        this.currentPhase = 1
+        this.currentPhase = uint(1)
         this.busOutput = busOutput
+        this.switched = false
     }
 
     // ------------------------------------------------------------------------
@@ -44,11 +47,14 @@ export default class PhaseCounter {
     update(_, signals) {
         if (signals[Signals.REGSIGCLOCK] > 0) {
             if (this.endSignalSent) {
-                this.currentPhase = 1
+                this.currentPhase = uint(1)
                 this.endSignalSent = false
-            } else {
-                this.currentPhase += 1
+            } else if (!this.switched) {
+                this.currentPhase = this.currentPhase.add(1)
             }
+            this.switched = true
+        } else {
+            this.switched = false
         }
 
         if (signals[Signals.FIN] > 0) {
@@ -62,6 +68,8 @@ export default class PhaseCounter {
     // Méthodes utilisées par la classe.
 
     setBusValue() {
-        this.busOutput.setValue(Number(this.currentPhase === 1))
+        this.busOutput.setValue(
+            uint(Number(this.currentPhase.toNumber() === 1), 1)
+        )
     }
 }

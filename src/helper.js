@@ -1,3 +1,8 @@
+import ClassicComponent from '@/models/registers/classic-component'
+import InsulatorComponent from '@/models/registers/insulator-component'
+import Register from '@/models/registers/register-model'
+import InstructionRegister from '@/models/instruction-register-model'
+
 /**
  * Classe qui regroupe des fonctions d'aide.
  *
@@ -22,6 +27,32 @@ class Helper {
                 signal: signal,
             }
         }
+    }
+
+    makeReg(name, inputObjects, outputObjects) {
+        return new ClassicComponent(
+            new Register(name, inputObjects, outputObjects)
+        )
+    }
+
+    makeArchReg(name, inputObjects, outputObjects) {
+        return new ClassicComponent(
+            new InsulatorComponent(
+                new Register(name, inputObjects, outputObjects)
+            )
+        )
+    }
+
+    makeRI(inputObjects, outputObjects, sequencerBus) {
+        return new ClassicComponent(
+            new InsulatorComponent(
+                new InstructionRegister(
+                    inputObjects,
+                    outputObjects,
+                    sequencerBus
+                )
+            )
+        )
     }
 }
 
