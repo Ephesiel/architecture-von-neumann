@@ -8,6 +8,7 @@ import {
     NB_BITS_SELMS,
     NB_BITS_ADR,
 } from '@/globals'
+import { uint } from '@/integer'
 
 /**
  * Implémentation du Registre d'Échange de la Mémoire Microprogrammée (ERMM en
@@ -120,22 +121,19 @@ export default class ERMM extends Register {
     }
 
     formatValueForAdr() {
-        return this.getCurrentValue() >> BigInt(NB_BITS_MPM - NB_BITS_ADR)
+        return this.getCurrentValue().rightShift(NB_BITS_MPM - NB_BITS_ADR)
     }
 
     formatValueForSelMS() {
-        return (
-            (this.getCurrentValue() >>
-                BigInt(NB_BITS_MPM - NB_BITS_ADR - NB_BITS_SELMS)) &
-            BigInt(2 ** NB_BITS_SELMS - 1)
-        )
+        return this.getCurrentValue()
+            .rightShift(NB_BITS_MPM - NB_BITS_ADR - NB_BITS_SELMS)
+            .and(uint(0, NB_BITS_SELMS).not())
     }
 
     formatValueForCond() {
-        return (
-            (this.getCurrentValue() >> BigInt(NB_BITS_INSTR)) &
-            BigInt(2 ** NB_BITS_CONDS - 1)
-        )
+        return this.getCurrentValue()
+            .rightShift(NB_BITS_INSTR)
+            .and(uint(0, NB_BITS_CONDS).not())
     }
 
     updateSignals() {
@@ -147,23 +145,18 @@ export default class ERMM extends Register {
         const value = this.formatValueForSignals()
 
         for (const bits of Object.values(obj)) {
-            const shift = 1n << (BigInt(NB_BITS_MPM - 2) - BigInt(bits))
-            if ((value & shift) === shift && !arr.includes(bits)) {
+            if (
+                value.bit(NB_BITS_MPM - bits - 1) === 1 &&
+                !arr.includes(bits)
+            ) {
                 arr.push(bits)
             }
         }
     }
 
     formatValueForSignals() {
-        // HACK PARCE QUE JAVASCRIPT PUE SAMER.
-        // On met un 1 au début du nombre afin de garder les 0 au début des
-        // signaux parsés en bits. Sinon, javascript alloue automatiquement le
-        // nombre de bits a une variable, commençant par le premier 1. Par
-        // exemple, 2^10 serait sur 10 bits.
-        return (
-            BigInt(2 ** (NB_BITS_MPM - 1)) +
-            ((this.getCurrentValue() & (BigInt(2 ** NB_BITS_INSTR) - 1n)) <<
-                BigInt(NB_BITS_ADR + NB_BITS_CONDS + NB_BITS_SELMS - 1))
+        return this.getCurrentValue().leftShift(
+            NB_BITS_ADR + NB_BITS_CONDS + NB_BITS_SELMS
         )
     }
 }

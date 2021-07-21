@@ -6,6 +6,7 @@ import MemoryWriter from '@/models/memory/memory-writer'
 import Clock from '@/models/clock'
 import SignalManager from '@/models/signal-manager'
 import { Signals } from '@/globals'
+import { uint, int } from '@/integer'
 
 const busRAM = new Bus()
 const busInputRE = new Bus()
@@ -16,8 +17,8 @@ new MemoryReader(memory, Signals.sM, busRAM, busOutputRE)
 new MemoryWriter(memory, Signals.eM, busRAM, busInputRE)
 
 test('Reader', () => {
-    memory.setValue(1, 10)
-    busRAM.setValue(1)
+    memory.setValue(uint(1), int(10))
+    busRAM.setValue(uint(1))
 
     let valOutput = busOutputRE.getValue()
     Clock.waitAndTick(1, 1)
@@ -27,20 +28,20 @@ test('Reader', () => {
     SignalManager.emit(Signals.sM, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(busOutputRE.getValue()).toBe(10n)
+    expect(busOutputRE.getValue().toNumber()).toBe(10)
 })
 
 test('Writer', () => {
-    busRAM.setValue(2)
-    busInputRE.setValue(15)
+    busRAM.setValue(uint(2))
+    busInputRE.setValue(int(15))
 
-    let valMemory = memory.getValue(2)
+    let valMemory = memory.getValue(uint(2))
     Clock.waitAndTick(1, 1)
 
-    expect(memory.getValue(2)).toBe(valMemory)
+    expect(memory.getValue(uint(2))).toStrictEqual(valMemory)
 
     SignalManager.emit(Signals.eM, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(memory.getValue(2)).toBe(15n)
+    expect(memory.getValue(uint(2)).toNumber()).toBe(15)
 })

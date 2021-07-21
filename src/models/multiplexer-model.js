@@ -27,12 +27,12 @@ export default class Multiplexer {
     // Constructeur.
 
     constructor(inputs, output, selectorBus) {
-        if (inputs.length < selectorBus.getMaxValue()) {
+        if (inputs.length <= 2 ** selectorBus.getValue().getSize()) {
             Debug.warn(
                 "Le nombre de bus d'entrée est inférieur au nombre de " +
                     'possibilités du bus sélecteur.'
             )
-        } else if (inputs.length > selectorBus.getMaxValue()) {
+        } else if (inputs.length >= 2 ** selectorBus.getValue().getSize()) {
             Debug.crit(
                 "Le nombre de bus d'entrée est supérieur au nombre maximum " +
                     "de possibilités du bus sélecteur. Le multiplexeur n'a " +
@@ -60,8 +60,9 @@ export default class Multiplexer {
             Debug.warn("Appel d'update() avec un multiplexeur non instancié.")
             return
         }
+
         this.output.setValue(
-            this.inputs[this.selectorBus.getValue()].getValue()
+            this.inputs[this.selectorBus.getValue().toNumber()].getValue()
         )
     }
 }

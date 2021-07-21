@@ -5,6 +5,7 @@ import { Signals } from '@/globals'
 import Clock from '@/models/clock'
 import SignalManager from '@/models/signal-manager'
 import Debug, { Level } from '@/debug'
+import { int } from '@/integer'
 
 const busX = new Bus()
 const busY = new Bus()
@@ -21,63 +22,63 @@ test('Constructor', () => {
 
 test('Operation 1 bus', () => {
     OC.addOperation(Signals.XP1, (x) => {
-        return x + 1n
+        return x.add(1)
     })
 
-    const valX = busX.getValue()
+    const valX = busX.getValue().toNumber()
 
     SignalManager.emit(Signals.XP1, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(outputBus1.getValue()).toEqual(valX + 1n)
-    expect(outputBus2.getValue()).toEqual(valX + 1n)
+    expect(outputBus1.getValue().toNumber()).toEqual(valX + 1)
+    expect(outputBus2.getValue().toNumber()).toEqual(valX + 1)
 
     OC.addOperation(Signals.XP1, () => {
-        return 0n
+        return int(0)
     })
 
     SignalManager.emit(Signals.XP1, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(outputBus1.getValue()).toEqual(0n)
-    expect(outputBus2.getValue()).toEqual(0n)
+    expect(outputBus1.getValue().toNumber()).toEqual(0)
+    expect(outputBus2.getValue().toNumber()).toEqual(0)
 })
 
 test('Operation 2 bus', () => {
     OC.addOperation(Signals.ADD, (x, y) => {
-        return x + y
+        return x.add(y)
     })
 
-    busX.setValue(5)
-    busY.setValue(12)
-    busZ.setValue(33)
+    busX.setValue(int(5))
+    busY.setValue(int(12))
+    busZ.setValue(int(33))
 
     SignalManager.emit(Signals.ADD, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(outputBus1.getValue()).toEqual(17n)
-    expect(outputBus2.getValue()).toEqual(17n)
+    expect(outputBus1.getValue().toNumber()).toEqual(17)
+    expect(outputBus2.getValue().toNumber()).toEqual(17)
 })
 
 test('Operation 3 bus', () => {
     OC.addOperation(Signals.ADD, (x, y, z) => {
-        return x + y + z
+        return x.add(y).add(z)
     })
 
-    busX.setValue(5)
-    busY.setValue(12)
-    busZ.setValue(33)
+    busX.setValue(int(5))
+    busY.setValue(int(12))
+    busZ.setValue(int(33))
 
     SignalManager.emit(Signals.ADD, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(outputBus1.getValue()).toEqual(50n)
-    expect(outputBus2.getValue()).toEqual(50n)
+    expect(outputBus1.getValue().toNumber()).toEqual(50)
+    expect(outputBus2.getValue().toNumber()).toEqual(50)
 })
 
 test('Bad signals', () => {
     OC.addOperation(Signals.BADSIG, (x) => {
-        return x + 1n
+        return x.add(1)
     })
 
     const val1 = outputBus1.getValue()
@@ -91,8 +92,8 @@ test('Bad signals', () => {
 })
 
 test('Multiple signals', () => {
-    OC.addOperation(Signals.ADD, () => 0)
-    OC.addOperation(Signals.XP1, () => 0)
+    OC.addOperation(Signals.ADD, () => int(0))
+    OC.addOperation(Signals.XP1, () => int(0))
 
     SignalManager.emit(Signals.ADD, 1)
     SignalManager.emit(Signals.XP1, 1)

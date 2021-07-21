@@ -9,16 +9,19 @@ import {
 } from '@/globals'
 import Clock from '@/models/clock'
 import SignalManager from '@/models/signal-manager'
+import { uint } from '@/integer'
 
 const arch = new Architecture()
 
 test('Step by step', () => {
     arch.stepByStep()
-    expect(arch.sequencer.RAMM.getCurrentValue()).toBe(
-        BigInt(FETCH_PHASE1_ADDR)
+    expect(arch.sequencer.RAMM.getCurrentValue().toNumber()).toBe(
+        FETCH_PHASE1_ADDR.toNumber()
     )
     arch.stepByStep()
-    expect(arch.sequencer.REMM.getCurrentValue()).toBe(FETCH_PHI1)
+    expect(arch.sequencer.REMM.getCurrentValue().toNumber()).toBe(
+        FETCH_PHI1.toNumber()
+    )
 
     let passed = []
     const testSignals = (ATU, signals) => {
@@ -37,30 +40,32 @@ test('Step by step', () => {
         Signals.XS.toString(),
         Signals.SENDPULSES,
         Signals.eRAM.toString(),
-        Signals.REGSIGCLOCK,
     ])
 
     arch.stepByStep()
-    expect(arch.sequencer.RAMM.getCurrentValue()).toBe(
-        BigInt(FETCH_PHASE1_ADDR + 1)
+    expect(arch.sequencer.RAMM.getCurrentValue().toNumber()).toBe(
+        FETCH_PHASE1_ADDR.add(1).toNumber()
     )
     arch.stepByStep()
-    expect(arch.sequencer.REMM.getCurrentValue()).toBe(FETCH_PHI2)
+    expect(arch.sequencer.REMM.getCurrentValue().toNumber()).toBe(
+        FETCH_PHI2.toNumber()
+    )
     passed = []
     arch.stepByStep()
     expect(passed).toStrictEqual([
         Signals.SENDLEVELS,
         Signals.sM.toString(),
         Signals.SENDPULSES,
-        Signals.REGSIGCLOCK,
     ])
 
     arch.stepByStep()
-    expect(arch.sequencer.RAMM.getCurrentValue()).toBe(
-        BigInt(FETCH_PHASE1_ADDR + 2)
+    expect(arch.sequencer.RAMM.getCurrentValue().toNumber()).toBe(
+        FETCH_PHASE1_ADDR.add(2).toNumber()
     )
     arch.stepByStep()
-    expect(arch.sequencer.REMM.getCurrentValue()).toBe(FETCH_PHI3)
+    expect(arch.sequencer.REMM.getCurrentValue().toNumber()).toBe(
+        FETCH_PHI3.toNumber()
+    )
     passed = []
     arch.stepByStep()
     expect(passed).toStrictEqual([
@@ -69,18 +74,17 @@ test('Step by step', () => {
         Signals.XS.toString(),
         Signals.SENDPULSES,
         Signals.eRI.toString(),
-        Signals.REGSIGCLOCK,
     ])
 })
 
 test('ALU & Flag Register', () => {
-    expect(arch.RA.getCurrentValue()).toBe(0n)
-    expect(arch.flagRegister.getCondition(1)).toBe(1)
-    expect(arch.flagRegister.getCondition(2)).toBe(1)
-    expect(arch.flagRegister.getCondition(3)).toBe(0)
-    expect(arch.flagRegister.getCondition(4)).toBe(0)
-    expect(arch.flagRegister.getCondition(5)).toBe(1)
-    expect(arch.flagRegister.getCondition(6)).toBe(1)
+    expect(arch.RA.getCurrentValue().toNumber()).toBe(0)
+    expect(arch.flagRegister.getCondition(uint(1)).toNumber()).toBe(1)
+    expect(arch.flagRegister.getCondition(uint(2)).toNumber()).toBe(1)
+    expect(arch.flagRegister.getCondition(uint(3)).toNumber()).toBe(0)
+    expect(arch.flagRegister.getCondition(uint(4)).toNumber()).toBe(0)
+    expect(arch.flagRegister.getCondition(uint(5)).toNumber()).toBe(1)
+    expect(arch.flagRegister.getCondition(uint(6)).toNumber()).toBe(1)
 
     SignalManager.emit(Signals.RAB1, 5)
     SignalManager.emit(Signals.XP1, 5)
@@ -90,10 +94,10 @@ test('ALU & Flag Register', () => {
     SignalManager.emit(Signals.REGSIGCLOCK, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(arch.RA.getCurrentValue()).toBe(1n)
-    expect(arch.flagRegister.getCondition(1)).toBe(0)
-    expect(arch.flagRegister.getCondition(3)).toBe(1)
-    expect(arch.flagRegister.getCondition(5)).toBe(0)
+    expect(arch.RA.getCurrentValue().toNumber()).toBe(1)
+    expect(arch.flagRegister.getCondition(uint(1)).toNumber()).toBe(0)
+    expect(arch.flagRegister.getCondition(uint(3)).toNumber()).toBe(1)
+    expect(arch.flagRegister.getCondition(uint(5)).toNumber()).toBe(0)
 
     SignalManager.emit(Signals.RBB1, 5)
     SignalManager.emit(Signals.XP1, 5)
@@ -103,7 +107,7 @@ test('ALU & Flag Register', () => {
     SignalManager.emit(Signals.REGSIGCLOCK, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(arch.RB.getCurrentValue()).toBe(1n)
+    expect(arch.RB.getCurrentValue().toNumber()).toBe(1)
 
     SignalManager.emit(Signals.RAB1, 5)
     SignalManager.emit(Signals.RBB2, 5)
@@ -114,7 +118,7 @@ test('ALU & Flag Register', () => {
     SignalManager.emit(Signals.REGSIGCLOCK, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(arch.RA.getCurrentValue()).toBe(2n)
+    expect(arch.RA.getCurrentValue().toNumber()).toBe(2)
 
     SignalManager.emit(Signals.RAB1, 5)
     SignalManager.emit(Signals.RAB2, 5)
@@ -125,7 +129,7 @@ test('ALU & Flag Register', () => {
     SignalManager.emit(Signals.REGSIGCLOCK, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(arch.RA.getCurrentValue()).toBe(4n)
+    expect(arch.RA.getCurrentValue().toNumber()).toBe(4)
 
     SignalManager.emit(Signals.RAB1, 5)
     SignalManager.emit(Signals.RBB2, 5)
@@ -136,7 +140,7 @@ test('ALU & Flag Register', () => {
     SignalManager.emit(Signals.REGSIGCLOCK, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(arch.RB.getCurrentValue()).toBe(3n)
+    expect(arch.RB.getCurrentValue().toNumber()).toBe(3)
 
     SignalManager.emit(Signals.RAB1, 5)
     SignalManager.emit(Signals.RBB2, 5)
@@ -147,7 +151,7 @@ test('ALU & Flag Register', () => {
     SignalManager.emit(Signals.REGSIGCLOCK, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(arch.RA.getCurrentValue()).toBe(7n)
+    expect(arch.RA.getCurrentValue().toNumber()).toBe(7)
 
     SignalManager.emit(Signals.RAB1, 5)
     SignalManager.emit(Signals.RBB2, 5)
@@ -158,7 +162,7 @@ test('ALU & Flag Register', () => {
     SignalManager.emit(Signals.REGSIGCLOCK, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(arch.RA.getCurrentValue()).toBe(3n)
+    expect(arch.RA.getCurrentValue().toNumber()).toBe(3)
 
     SignalManager.emit(Signals.RAB1, 5)
     SignalManager.emit(Signals.RBB2, 5)
@@ -169,5 +173,5 @@ test('ALU & Flag Register', () => {
     SignalManager.emit(Signals.REGSIGCLOCK, 1)
     Clock.waitAndTick(1, 1)
 
-    expect(arch.RA.getCurrentValue()).toBe(0n)
+    expect(arch.RA.getCurrentValue().toNumber()).toBe(0)
 })

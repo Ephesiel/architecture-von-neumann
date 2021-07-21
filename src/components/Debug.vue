@@ -64,6 +64,7 @@
 <script>
 import Architecture from '@/models/von-neumann-architecture-model'
 import { MPM_BITS_ADDRESSES } from '@/globals'
+import { uint } from '@/integer'
 
 export default {
     name: 'Debug',
@@ -91,28 +92,31 @@ export default {
             this.update()
         },
         updatePhase() {
-            this.phase = this.arch.sequencer.phaseCounter.currentPhase
+            this.phase =
+                this.arch.sequencer.phaseCounter.currentPhase.toNumber()
         },
         updateREMM() {
-            this.remm = this.arch.sequencer.REMM.getCurrentValue().toString(2)
+            this.remm = this.arch.sequencer.REMM.getCurrentValue().toBinary()
         },
         updateRAMM() {
-            this.ramm = this.arch.sequencer.RAMM.getCurrentValue()
+            this.ramm = this.arch.sequencer.RAMM.getCurrentValue().toNumber()
         },
         updateCOPMA() {
-            this.copma = this.arch.sequencer.COPMA.getCurrentValue().toString(2)
+            this.copma = this.arch.sequencer.COPMA.getCurrentValue().toBinary()
         },
         updateFetch() {
-            this.fetch = this.arch.sequencer.fetch.getCurrentValue()
+            this.fetch = this.arch.sequencer.fetch.getCurrentValue().toNumber()
         },
         updateMemoryData() {
             const obj = {}
             for (let i = 0; i < 2 ** MPM_BITS_ADDRESSES; ++i) {
-                const tmp = this.arch.sequencer.microprogammedMemory.getValue(i)
-                if (tmp !== 0n) {
+                const tmp = this.arch.sequencer.microprogammedMemory.getValue(
+                    uint(i)
+                )
+                if (tmp.toNumber() !== 0) {
                     obj[i] = {
                         key: i,
-                        val: tmp.toString(2),
+                        val: tmp.toBinary(),
                     }
                 }
             }
@@ -123,14 +127,16 @@ export default {
             for (const k in this.arch.sequencer.conditiontMult.inputs) {
                 obj[k] = {
                     key: k,
-                    val: this.arch.sequencer.conditiontMult.inputs[
-                        k
-                    ].getValue(),
+                    val: this.arch.sequencer.conditiontMult.inputs[k]
+                        .getValue()
+                        .toNumber(),
                 }
             }
             obj['val'] = {
                 key: 'val',
-                val: this.arch.sequencer.conditiontMult.selectorBus.getValue(),
+                val: this.arch.sequencer.conditiontMult.selectorBus
+                    .getValue()
+                    .toNumber(),
             }
             this.conditionMultData = obj
         },
@@ -144,7 +150,9 @@ export default {
             }
             obj['val'] = {
                 key: 'val',
-                val: this.arch.sequencer.phaseMult.selectorBus.getValue(),
+                val: this.arch.sequencer.phaseMult.selectorBus
+                    .getValue()
+                    .toNumber(),
             }
             this.phaseMultData = obj
         },
@@ -153,12 +161,16 @@ export default {
             for (const k in this.arch.sequencer.nextAddrMult.inputs) {
                 obj[k] = {
                     key: k,
-                    val: this.arch.sequencer.nextAddrMult.inputs[k].getValue(),
+                    val: this.arch.sequencer.nextAddrMult.inputs[k]
+                        .getValue()
+                        .toNumber(),
                 }
             }
             obj['val'] = {
                 key: 'val',
-                val: this.arch.sequencer.nextAddrMult.selectorBus.getValue(),
+                val: this.arch.sequencer.nextAddrMult.selectorBus
+                    .getValue()
+                    .toNumber(),
             }
             this.nextAddrMultData = obj
         },

@@ -27,6 +27,6 @@ export default class Plus1 {
     // Méthodes publiques.
 
     update() {
-        this.output.setValue(this.input.getValue() + 1n)
+        this.output.setValue(this.input.getValue().add(1))
     }
 }

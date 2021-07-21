@@ -205,7 +205,7 @@
  * x.xor(y).toBinary() // 11110110
  * ```
  */
-class Integer {
+export default class Integer {
     // ------------------------------------------------------------------------
     // Attributs.
 
@@ -710,6 +710,41 @@ Integer.prototype['^'] = function (x) {
     return this.xor(x)
 }
 
-export function int(value, size = 64, signed = true) {
-    return new Integer(value, size, signed)
+export function int(value, size = 32) {
+    return new Integer(value, size, true)
+}
+
+export function uint(value, size = 32) {
+    return new Integer(value, size, false)
+}
+
+export function int8(value) {
+    return new Integer(value, 8, true)
+}
+export function uint8(value) {
+    return new Integer(value, 8, false)
+}
+
+export function int16(value) {
+    return new Integer(value, 16, true)
+}
+
+export function uint16(value) {
+    return new Integer(value, 16, false)
+}
+
+export function int32(value) {
+    return new Integer(value, 32, true)
+}
+
+export function uint32(value) {
+    return new Integer(value, 32, false)
+}
+
+export function int64(value) {
+    return new Integer(value, 64, true)
+}
+
+export function uint64(value) {
+    return new Integer(value, 64, false)
 }

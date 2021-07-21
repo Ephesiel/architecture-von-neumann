@@ -5,6 +5,7 @@ import {
     NB_BITS_MPM,
 } from '@/globals'
 import { PulseSignals, LevelSignals } from '@/signals'
+import { uint } from '@/integer'
 
 class MicroprogrammedMemoryParser {
     /**
@@ -15,9 +16,11 @@ class MicroprogrammedMemoryParser {
      * @param {Array} signals, un tableau avec les signaux
      */
     parse(nextAddr, selMS, cond, signals) {
-        let value = BigInt(nextAddr)
-        value = (value << BigInt(NB_BITS_SELMS)) | BigInt(selMS)
-        value = (value << BigInt(NB_BITS_CONDS)) | BigInt(cond)
+        // Création d'un entier sur le nombre de bits de la mémoire de
+        // microprogrammation.
+        let value = uint(nextAddr, NB_BITS_MPM)
+        value = value.leftShift(NB_BITS_SELMS).add(selMS)
+        value = value.leftShift(NB_BITS_CONDS).add(cond)
 
         let totalBits = NB_BITS_ADR + NB_BITS_SELMS + NB_BITS_CONDS
         const watchedSignals = {
@@ -25,14 +28,14 @@ class MicroprogrammedMemoryParser {
             ...LevelSignals,
         }
         for (const val of Object.values(watchedSignals)) {
-            value <<= 1n
+            value = value.leftShift(1)
             if (signals.includes(val)) {
-                value |= 1n
+                value = value.add(1)
             }
             totalBits += 1
         }
 
-        value <<= BigInt(NB_BITS_MPM - totalBits)
+        value = value.leftShift(NB_BITS_MPM - totalBits)
 
         return value
     }

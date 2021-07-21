@@ -1,5 +1,6 @@
 import signals from '@/signals'
 import MMParser from '@/microprogrammed-memory-parser'
+import { uint } from '@/integer'
 
 export const Signals = signals
 export const MAXIMUM_ALLOWED_BUS_POWER_TIME = 5 // Un bus aura du courant pendant 5 ATU une fois qu'il a été activé.
@@ -15,11 +16,11 @@ export const TIME_ATU_FOR_LEVELS = 5 // Temps d'émission des signaux de niveaux
 export const TIME_ATU_FOR_PULSES = 1 // Temps d'émission des signaux d'impulsion
 export const NB_BITS_ADDRESSES = 10 // 2^10 adresses dans la mémoire
 
-export const FETCH_PHASE1_ADDR = 2 ** MPM_BITS_ADDRESSES - 3 // Ne pas modifier
+export const FETCH_PHASE1_ADDR = uint(2 ** MPM_BITS_ADDRESSES - 3) // Ne pas modifier
 export const NB_BITS_RA = NB_BITS_ARCH - NB_BITS_COPMA
 export const NB_BITS_MPM =
     NB_BITS_ADR + NB_BITS_SELMS + NB_BITS_CONDS + NB_BITS_INSTR // Ne pas modifier
-export const MAX_NUMBER_OF_ARCH = BigInt(Math.pow(2, NB_BITS_ARCH)) - 1n // Ne pas modifier
+export const MAX_NUMBER_OF_ARCH = uint(0, NB_BITS_ARCH).not() // Ne pas modifier
 export const FETCH_PHI1 = MMParser.parse(0, 0, 0, [
     signals.COB1,
     signals.XS,

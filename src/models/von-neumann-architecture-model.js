@@ -15,6 +15,7 @@ import {
     NB_BITS_COPMA,
     NB_BITS_ADDRESSES,
 } from '@/globals'
+import { uint } from '@/integer'
 
 /**
  * Représentation de l'architecture d'un ordinateur.
@@ -72,6 +73,7 @@ export default class VonNeumannArchitecture {
     memoryReader //: MemoryReader
     memoryWriter //: MemoryWriter
     stepByStepQueue //: Queue
+    canUpdateRegisters //: Boolean
 
     // ------------------------------------------------------------------------
     // Constructeur.
@@ -81,12 +83,12 @@ export default class VonNeumannArchitecture {
         this.bus1 = new Bus(NB_BITS_ARCH)
         this.bus2 = new Bus(NB_BITS_ARCH)
         this.bus3 = new Bus(NB_BITS_ARCH)
-        this.busCondInput = new Bus(NB_BITS_CONDS)
-        this.busCondOutput = new Bus(1)
-        this.busCOPMA = new Bus(NB_BITS_COPMA)
+        this.busCondInput = new Bus(NB_BITS_CONDS, false)
+        this.busCondOutput = new Bus(1, false)
+        this.busCOPMA = new Bus(NB_BITS_COPMA, false)
         this.busSM = new Bus(NB_BITS_ARCH)
         this.busEM = new Bus(NB_BITS_ARCH)
-        this.busRAM = new Bus(NB_BITS_ADDRESSES)
+        this.busRAM = new Bus(NB_BITS_ADDRESSES, false)
 
         // Instanciation des registres
         this.CO = Helper.makeArchReg(
@@ -201,34 +203,42 @@ export default class VonNeumannArchitecture {
             this.eREMM.bind(this),
             this.sendSignals.bind(this),
         ]
+
+        this.canUpdateRegisters = false
     }
 
     setupFlagRegister() {
         const isANull = () => {
-            return Number(this.RA.getCurrentValue() === 0n)
+            return uint(Number(this.RA.getCurrentValue().toNumber() === 0), 1)
         }
         const isBNull = () => {
-            return Number(this.RB.getCurrentValue() === 0n)
+            return uint(Number(this.RB.getCurrentValue().toNumber() === 0), 1)
         }
         const aGreaterThan0 = () => {
-            return Number(this.RA.getCurrentValue() > 0n)
+            return uint(Number(this.RA.getCurrentValue().toNumber() > 0), 1)
         }
         const bGreaterThan0 = () => {
-            return Number(this.RB.getCurrentValue() > 0n)
+            return uint(Number(this.RB.getCurrentValue().toNumber() > 0), 1)
         }
         const aPair = () => {
-            return Number((this.RA.getCurrentValue() & 1n) === 0n)
+            return uint(
+                Number(this.RA.getCurrentValue().and(1).toNumber() === 0),
+                1
+            )
         }
         const bPair = () => {
-            return Number((this.RB.getCurrentValue() & 1n) === 0n)
+            return uint(
+                Number(this.RB.getCurrentValue().and(1).toNumber() === 0),
+                1
+            )
         }
         // Condition 0 => pas de condition
-        this.flagRegister.setCondition(1, isANull)
-        this.flagRegister.setCondition(2, isBNull)
-        this.flagRegister.setCondition(3, aGreaterThan0)
-        this.flagRegister.setCondition(4, bGreaterThan0)
-        this.flagRegister.setCondition(5, aPair)
-        this.flagRegister.setCondition(6, bPair)
+        this.flagRegister.setCondition(uint(1), isANull)
+        this.flagRegister.setCondition(uint(2), isBNull)
+        this.flagRegister.setCondition(uint(3), aGreaterThan0)
+        this.flagRegister.setCondition(uint(4), bGreaterThan0)
+        this.flagRegister.setCondition(uint(5), aPair)
+        this.flagRegister.setCondition(uint(6), bPair)
     }
 
     setupALU() {
@@ -236,25 +246,25 @@ export default class VonNeumannArchitecture {
             return x
         })
         this.ALU.addOperation(Signals.XP1, (x) => {
-            return x + 1n
+            return x.add(1)
         })
         this.ALU.addOperation(Signals.ADD, (x, y) => {
-            return x + y
+            return x.add(y)
         })
         this.ALU.addOperation(Signals.SUB, (x, y) => {
-            return x - y
+            return x.add(-y)
         })
         this.ALU.addOperation(Signals.MUL, (x, y) => {
-            return x * y
+            return x.mult(y)
         })
         this.ALU.addOperation(Signals.AND, (x, y) => {
-            return x & y
+            return x.and(y)
         })
         this.ALU.addOperation(Signals.OR, (x, y) => {
-            return x | y
+            return x.or(y)
         })
         this.ALU.addOperation(Signals.XOR, (x, y) => {
-            return x ^ y
+            return x.xor(y)
         })
     }
 
@@ -278,6 +288,11 @@ export default class VonNeumannArchitecture {
     }
 
     eRAMM() {
+        // Update seulement lorsque eRAMM, eREMM et sendSignals ont été
+        // appelées au moins une fois.
+        if (this.canUpdateRegisters) {
+            this.updateRegisters()
+        }
         console.log('eRAMM')
         SignalManager.emit(Signals.eRAMM, 15)
         Clock.waitAndTick(5, 1)
@@ -299,6 +314,10 @@ export default class VonNeumannArchitecture {
         Clock.waitAndTick(170)
         SignalManager.emit(Signals.SENDPULSES, 1)
         Clock.waitAndTick(15, 1)
+        this.canUpdateRegisters = true
+    }
+
+    updateRegisters() {
         SignalManager.emit(Signals.REGSIGCLOCK, 10)
         Clock.waitAndTick(15, 1)
     }

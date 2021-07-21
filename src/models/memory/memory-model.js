@@ -1,4 +1,6 @@
 import Debug from '@/debug'
+import Integer, { uint, int } from '@/integer'
+import { NB_BITS_ARCH } from '@/globals'
 
 /**
  * La mémoire est un tableau ayant 2^n entrées. Chacune est référencée par une
@@ -40,14 +42,14 @@ import Debug from '@/debug'
 export default class Memory {
     // ------------------------------------------------------------------------
     // Attributs.
-    maxValue //: BigInt
+    maxValue //: Integer
     memory //: Array
 
     // ------------------------------------------------------------------------
     // Constructeur.
 
     constructor(logHeight, width) {
-        this.maxValue = BigInt(2 ** width) - 1n
+        this.maxValue = uint(0, width).not()
         this.memory = new Array(2 ** logHeight).fill(null)
     }
 
@@ -60,13 +62,13 @@ export default class Memory {
      * Si l'adresse est trop grande ou si elle n'a jamais été instanciée,
      * renvoie un nombre aléatoire
      *
-     * @param {Number} address L'adresse où récupérer une valeur
+     * @param {Integer} address L'adresse où récupérer une valeur
      */
     getValue(address) {
-        let value = this.memory[address]
+        const value = this.memory[address.toNumber()]
 
         // Bonne valeur
-        if (typeof value === 'number' || typeof value === 'bigint') {
+        if (value instanceof Integer) {
             return value
         }
 
@@ -83,7 +85,7 @@ export default class Memory {
         }
 
         // Renvoie 0 par défaut
-        return 0n
+        return int(0, NB_BITS_ARCH)
     }
 
     /**
@@ -92,8 +94,8 @@ export default class Memory {
      * L'adresse doit être dans la mémoire et la valeur doit être une valeur
      * possible (pas trop grande)
      *
-     * @param {Number} address L'adresse où mettre la valeur
-     * @param {Number} value La valeur à mettre dans la mémoirie
+     * @param {Integer} address L'adresse où mettre la valeur
+     * @param {Integer} value La valeur à mettre dans la mémoirie
      */
     setValue(address, value) {
         if (!(address in this.memory)) {
@@ -101,18 +103,18 @@ export default class Memory {
             return
         }
 
-        if (typeof value !== 'number' && typeof value !== 'bigint') {
+        if (!(value instanceof Integer)) {
             Debug.crit(
                 'La valeur à affecter à une mémoire doit être un nombre.'
             )
             return
         }
 
-        if (BigInt(value) > this.maxValue) {
+        if (value.toBigInt() > this.maxValue.toBigInt()) {
             Debug.crit('Nombre trop grand pour cette mémoire')
             return
         }
 
-        this.memory[address] = BigInt(value)
+        this.memory[address.toNumber()] = value
     }
 }

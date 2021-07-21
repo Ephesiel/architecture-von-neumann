@@ -1,5 +1,6 @@
 import Clock from '@/models/clock'
 import Debug from '@/debug'
+import { int } from '@/integer'
 
 /**
  * Implémentation du registre de flags.
@@ -32,7 +33,7 @@ export default class FlagRegister {
     constructor(n, inputBus, outputBus) {
         Clock.register(this.update.bind(this))
         this.conditions = Array(n).fill(() => {
-            return 0
+            return int(0)
         })
         this.inputBus = inputBus
         this.outputBus = outputBus
@@ -51,24 +52,24 @@ export default class FlagRegister {
     // Méthodes utilisées par la classe.
 
     setCondition(valCond, callback) {
-        if (!(valCond in this.conditions)) {
+        if (!(valCond.toNumber() in this.conditions)) {
             Debug.error(
                 `L'indice donné (${valCond}) est supérieur au nombre de ` +
                     `conditions maximum ${this.conditions.length} (setCondition).`
             )
             return
         }
-        this.conditions[valCond] = callback
+        this.conditions[valCond.toNumber()] = callback
     }
 
     getCondition(index) {
-        if (!(index in this.conditions)) {
+        if (!(index.toNumber() in this.conditions)) {
             Debug.error(
                 `L'indice donné (${index}) est supérieur au nombre de ` +
                     `conditions maximum ${this.conditions.length} (getCondition).`
             )
             return 0
         }
-        return this.conditions[index]()
+        return this.conditions[index.toNumber()]()
     }
 }

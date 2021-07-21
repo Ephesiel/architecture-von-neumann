@@ -1,5 +1,6 @@
 import Clock from '@/models/clock'
 import Debug from '@/debug'
+import { int } from '@/integer'
 
 /**
  * Implémentation d'un registre à décalage SISO.
@@ -51,8 +52,8 @@ export default class Register {
     // Attributs.
     inputs //: []Object{signal, bus}
     outputs //: []Bus
-    currentValue //: Number
-    nextValue //: Number
+    currentValue //: Integer
+    nextValue //: Integer
     signalClockTick //: Signal
     name //: String
 
@@ -65,8 +66,8 @@ export default class Register {
         this.inputs = inputs
         this.outputs = outputs
         this.signalClockTick = signalClockTick
-        this.currentValue = 0n
-        this.nextValue = 0n
+        this.currentValue = int(0)
+        this.nextValue = int(0)
         this.name = name
     }
 

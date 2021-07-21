@@ -1,5 +1,6 @@
 import Register from '@/models/registers/register-model'
 import { Signals, NB_BITS_RA } from '@/globals'
+import { uint } from '@/integer'
 
 /**
  * Implémentation du registre d'instructions.
@@ -37,10 +38,10 @@ export default class InstructionRegister extends Register {
     }
 
     getCOPMA() {
-        return this.currentValue >> BigInt(NB_BITS_RA)
+        return this.currentValue.rightShift(NB_BITS_RA)
     }
 
     getRA() {
-        return this.currentValue & (BigInt(2 ** NB_BITS_RA) - 1n)
+        return this.getCurrentValue().and(uint(0, NB_BITS_RA).not())
     }
 }

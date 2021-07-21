@@ -1,5 +1,5 @@
 import { test, expect } from '@jest/globals'
-import { Signals } from '@/globals'
+import { Signals, NB_BITS_ADR, NB_BITS_CONDS, NB_BITS_SELMS } from '@/globals'
 import Bus from '@/models/bus-model'
 import ERMM from '@/models/remm-model'
 import Clock from '@/models/clock'
@@ -22,12 +22,12 @@ const remm = new ERMM(
     5,
     1
 )
-const vAdrSuiv = 498n // 0b0111110010 en binaire
-const vSelMS = 2n // 0b10 en binaire
-const vConds = 3n // 0b0011 en binaire
+const vAdrSuiv = 498 // 0b0111110010 en binaire
+const vSelMS = 2 // 0b10 en binaire
+const vConds = 3 // 0b0011 en binaire
 const instr = 0b000010110000100000100000100100000001000000000000n // eRI, eM, eCO, RAB1, RIB1, sM, XS, FIN
 inputBus.setValue(
-    MMParser.parse(498, 2, 3, [
+    MMParser.parse(vAdrSuiv, vSelMS, vConds, [
         Signals.eRI,
         Signals.eM,
         Signals.eCO,
@@ -47,7 +47,7 @@ Clock.waitAndTick(2, 1)
 
 test('Parse', () => {
     expect(
-        MMParser.parse(498, 2, 3, [
+        MMParser.parse(vAdrSuiv, vSelMS, vConds, [
             Signals.eRI,
             Signals.eM,
             Signals.eCO,
@@ -56,24 +56,26 @@ test('Parse', () => {
             Signals.sM,
             Signals.XS,
             Signals.FIN,
-        ])
+        ]).toBigInt()
     ).toBe(0b0111110010100011000010110000100000100000100100000001000000000000n)
 })
 
 test('Next adress', () => {
-    expect(nextAdr.getValue()).toBe(vAdrSuiv)
+    expect(nextAdr.getValue().toNumber()).toBe(vAdrSuiv)
 })
 
 test('SelMs', () => {
-    expect(selMS.getValue()).toBe(vSelMS)
+    expect(selMS.getValue().toNumber()).toBe(vSelMS)
 })
 
 test('Conds', () => {
-    expect(cond.getValue()).toBe(vConds)
+    expect(cond.getValue().toNumber()).toBe(vConds)
 })
 
 test('Instrs', () => {
-    expect(remm.formatValueForSignals()).toBe(2n ** 63n + (instr << 15n))
+    expect(remm.formatValueForSignals().toBigInt()).toBe(
+        instr << BigInt(NB_BITS_ADR + NB_BITS_CONDS + NB_BITS_SELMS)
+    )
 })
 
 test('Emited', () => {
