@@ -62,7 +62,7 @@ const GREATER = 3
  * ```
  *
  * Il est possible d'appeler la méthode `int(...)` qui est un alias de `new
- * Integer(...)`
+ * Integer(..., true)` et `uint(..., false)` pour créer un entier non signé
  *
  * ## Opérations :
  *
@@ -82,11 +82,13 @@ const GREATER = 3
  * Il est possible de les appeler avec les mêmes choses que pour créer un
  * Integer (Nombre, BigInt...) ou avec un autre Integer.
  *
+ * Attention à la taille des paramètres envoyés ! En effet la taille du nombre
+ * renvoyé sera la plus grande des deux nombres donnés et les signes peuvent
+ * être modifié en fonction de cette taille !
+ *
  * ### L'addition
  *
- * Ajoute un integer à un autre. Attention à la taille de ces derniers ! En
- * effet la taille du nombre renvoyée sera la plus grande des deux nombres
- * donnés et les signes peuvent être modifié en fonction de cette taille !
+ * Ajoute un integer à un autre.
  *
  * Mots clés : `.add()`, `['+']()`
  *
@@ -115,7 +117,23 @@ const GREATER = 3
  * // -3
  * int(3, 16).opposite()
  * // 65533, le complément à 2 n'est pas fait pour les entiers non signés
- * int(3, 16, false)['-']()
+ * uint(3, 16)['-']()
+ * ```
+ *
+ * ### La soustraction
+ *
+ * la soustraction est équivalente à l'opposition mise à part qu'elle prend un
+ * paramètre.
+ *
+ * Mots clés : `.sub()`, `['-']()`
+ *
+ * Exemples :
+ *
+ * ```js
+ * // 0
+ * int(3, 16).sub(3)
+ * // 10, Marche aussi sur les entiers non signés
+ * uint(7, 4)['-'](int(-3, 4))
  * ```
  *
  * ### La multiplication
@@ -659,6 +677,14 @@ export default class Integer {
         return result
     }
 
+    sub(x) {
+        if (!(x instanceof Integer)) {
+            x = new Integer(x, this.size, this.signed)
+        }
+
+        return this.add(x.opposite())
+    }
+
     /**
      * Opération - unaire
      *
@@ -800,8 +826,11 @@ Integer.prototype['+'] = function (x) {
     return this.add(x)
 }
 
-Integer.prototype['-'] = function () {
-    return this.opposite()
+Integer.prototype['-'] = function (x) {
+    if (typeof x === 'undefined') {
+        return this.opposite()
+    }
+    return this.sub(x)
 }
 
 Integer.prototype['*'] = function (x) {

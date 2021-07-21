@@ -316,6 +316,37 @@ test('Addition', () => {
     expect(x.add(-3).toNumber()).toBe(-1)
     expect(x.add(int(-3, 16)).toNumber()).toBe(-1)
     expect(x['+'](int(-3, 4)).toNumber()).toBe(15)
+
+    x = int(-128, 8)
+
+    expect(x.add(255).toNumber()).toBe(127)
+})
+
+test('Subtraction', () => {
+    let x = int(2, 4)
+    let y = int(3, 8)
+    let z = x.sub(y)
+
+    expect(z.toNumber()).toBe(x['-'](y).toNumber())
+    expect(z.toNumber()).toBe(-1)
+    expect(z.getSize()).toBe(8)
+
+    x = int(7, 4)
+    y = uint(15, 4)
+    z = x.sub(y)
+
+    expect(z.toNumber()).toBe(-8)
+
+    x = int(7, 4)
+
+    expect(x.sub(15).toNumber()).toBe(-8)
+    expect(x.sub(7).toNumber()).toBe(0)
+
+    x = uint(7, 4)
+    y = int(-3, 4)
+    z = x.sub(y)
+
+    expect(z.toNumber()).toBe(10)
 })
 
 test('Multiplication', () => {
