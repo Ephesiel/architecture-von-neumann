@@ -68,6 +68,8 @@
  * Les opérations définies sont les suivantes :
  *  - addition (+)
  *  - opposée (- unaire)
+ *  - décalage de bits vers la gauche (<<)
+ *  - décalage de bits vers la droite (>>)
  *
  * Il est possible de les appeler avec les mêmes choses que pour créer un
  * Integer (Nombre, BigInt...) ou avec un autre Integer.
@@ -107,11 +109,46 @@
  * // 65533, le complément à 2 n'est pas fait pour les entiers non signés
  * int(3, 16, false)['-']()
  * ```
+ *
+ * ### Les décalages de bits
+ *
+ * Décale les bits vers la droite ou vers la gauche selon le sens voulu.
+ * Le décalage de bits vers la gauche représente une puissance de 2
+ * Le décalage de bits vers la droite représente un log base 2
+ *
+ * Mot clés : `.leftShift()`, `['<<']()`, `.rightShift()`, `['>>']()`
+ *
+ * Exemples :
+ *
+ * ```js
+ * let x = int(5, 8)
+ * let y = x.leftShift(3)
+ * let z = y['<<'](3)
+ *
+ * x.toBinary() // '00000101'
+ * y.toBinary() // '00101000'
+ * z.toBinary() // '01000000'
+ *
+ * x = int(-5, 8)
+ * y = x.rightShift(3)
+ * z = y['>>'](3)
+ *
+ * x.toBinary() // '11111011'
+ * y.toBinary() // '00011111'
+ * z.toBinary() // '00000011'
+ * ```
  */
 class Integer {
     // ------------------------------------------------------------------------
     // Attributs.
-    bits //: Array de 0 et 1
+
+    // /!\ IMPORTANT /!\
+    // Les bits sont stockés de LSB vers MSB, l'inverse de l'habitude de
+    // lecture de nombres. Ainsi, lorsque l'on créé un nombre depuis une string
+    // ou un tableau, on attend une valeur dans le "bon sens" qui est ensuite
+    // retournée. C'est également pour ça que la plupart des opérations utilise
+    // la méthode `reverse()` sur les bits
+    bits //: Array de 0 et 1 de LSB vers MSB
     size //: Number
     signed //: Boolean
 
@@ -317,6 +354,9 @@ class Integer {
         )
     }
 
+    // ------------------------------------------------------------------------
+    // Opérations.
+
     /**
      * Opération + avec un autre integer
      *
@@ -393,6 +433,50 @@ class Integer {
             this.signed
         )
     }
+
+    /**
+     * Décalage de bits vers la gauche. On les décale de n bits.
+     * Les bits les plus à gauche sont perdus
+     * Les bits ajoutés à droite sont mis à 0
+     * Peut être utilisé pour la puissance de 2.
+     *
+     * @param {Number} n le nombre de bits de décalage
+     * @returns Un nouvel integer
+     */
+    leftShift(n) {
+        let bits = [...this.bits].reverse()
+
+        for (let i = 0; i < this.size - n; ++i) {
+            bits[i] = bits[i + n]
+        }
+        for (let i = this.size - n; i < this.size; ++i) {
+            bits[i] = 0
+        }
+
+        return new Integer(bits, this.size, this.signed)
+    }
+
+    /**
+     * Décalage de bits vers la droite. On les décale de n bits.
+     * Les bits les plus à droite sont perdus
+     * Les bits ajoutés à gauche sont mis à 0
+     * Peut être utilisé pour le log base 2.
+     *
+     * @param {Number} n le nombre de bits de décalage
+     * @returns Un nouvel integer
+     */
+    rightShift(n) {
+        let bits = [...this.bits]
+
+        for (let i = 0; i < this.size - n; ++i) {
+            bits[i] = bits[i + n]
+        }
+        for (let i = this.size - n; i < this.size; ++i) {
+            bits[i] = 0
+        }
+
+        return new Integer(bits.reverse(), this.size, this.signed)
+    }
 }
 
 Integer.prototype['+'] = function (x) {
@@ -401,6 +485,14 @@ Integer.prototype['+'] = function (x) {
 
 Integer.prototype['-'] = function () {
     return this.opposite()
+}
+
+Integer.prototype['<<'] = function (x) {
+    return this.leftShift(x)
+}
+
+Integer.prototype['>>'] = function (x) {
+    return this.rightShift(x)
 }
 
 export function int(value, size = 64, signed = true) {

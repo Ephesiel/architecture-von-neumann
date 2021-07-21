@@ -298,3 +298,21 @@ test('Opposite', () => {
     expect(x.toBigInt()).toBe(65533n)
     expect(x.toBinary()).toEqual('1111111111111101')
 })
+
+test('Shift', () => {
+    let x = int(5, 8)
+    let y = x.leftShift(3)
+    let z = y['<<'](3)
+
+    expect(x.toBinary()).toEqual('00000101')
+    expect(y.toBinary()).toEqual('00101000')
+    expect(z.toBinary()).toEqual('01000000')
+
+    x = int(-5, 8)
+    y = x.rightShift(3)
+    z = y['>>'](3)
+
+    expect(x.toBinary()).toEqual('11111011')
+    expect(y.toBinary()).toEqual('00011111')
+    expect(z.toBinary()).toEqual('00000011')
+})
