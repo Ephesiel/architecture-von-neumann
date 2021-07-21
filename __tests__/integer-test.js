@@ -131,15 +131,22 @@ test('Strange values', () => {
     expect(x.toNumber()).toBe(0)
     expect(x.toBigInt()).toBe(0n)
     expect(x.toBinary()).toEqual('0')
+
+    x = int(-1, 8, false)
+
+    expect(x.toNumber()).toBe(255)
+    expect(x.toBigInt()).toBe(255n)
+    expect(x.toBinary()).toBe('11111111')
 })
 
 test('Bits', () => {
     let x = int(-5, 4)
 
     expect(x.toBinary()).toEqual('1011')
+    expect(x.bit(-1)).toEqual(0)
     expect(x.bit(0)).toEqual(1)
-    expect(x.bit(1)).toEqual(0)
-    expect(x.bit(2)).toEqual(1)
+    expect(x.bit(1)).toEqual(1)
+    expect(x.bit(2)).toEqual(0)
     expect(x.bit(3)).toEqual(1)
     expect(x.bit(4)).toEqual(0)
     expect(x.bit(5)).toEqual(0)
@@ -234,6 +241,26 @@ test('Slice', () => {
     expect(y.toNumber()).toEqual(1)
 })
 
+test('Absolute', () => {
+    let x = int(3, 16)
+    let y = x.abs()
+
+    expect(x.toNumber()).toBe(3)
+    expect(y.toNumber()).toBe(3)
+
+    x = int(-3, 16)
+    y = x.abs()
+
+    expect(x.toNumber()).toBe(-3)
+    expect(y.toNumber()).toBe(3)
+
+    x = int(-1, 8, false)
+    y = x.abs()
+
+    expect(x.toNumber()).toBe(255)
+    expect(y.toNumber()).toBe(255)
+})
+
 test('Addition', () => {
     let x = int(3, 16)
     let y = int(3, 16)
@@ -276,11 +303,70 @@ test('Addition', () => {
     expect(z.toBigInt()).toBe(-4n)
     expect(z.toBinary()).toEqual('100')
 
+    x = int(2, 3)
+    y = int(2, 5)
+    z = x['+'](y)
+
+    expect(z.toNumber()).toBe(4)
+    expect(z.toBigInt()).toBe(4n)
+    expect(z.toBinary()).toEqual('00100')
+
     x = int(2, 16)
 
     expect(x.add(-3).toNumber()).toBe(-1)
     expect(x.add(int(-3, 16)).toNumber()).toBe(-1)
     expect(x['+'](int(-3, 4)).toNumber()).toBe(15)
+})
+
+test('Multiplication', () => {
+    let x = int(3, 8)
+    let y = int(2, 8)
+    let z = x.mult(y)
+
+    expect(z.toNumber()).toBe(6)
+
+    z = x.mult(x)
+
+    expect(z.toNumber()).toBe(9)
+
+    x = int(-3, 8)
+    y = int(2, 8)
+    z = x.mult(y)
+
+    expect(z.toNumber()).toBe(-6)
+
+    z = x.mult(x)
+
+    expect(z.toNumber()).toBe(9)
+
+    z = x.mult(-3)
+
+    expect(z.toNumber()).toBe(9)
+
+    x = int(3, 8)
+    z = x.mult(72)
+
+    expect(z.toNumber()).toBe(-40)
+    expect(z.toBinary()).toBe('11011000')
+
+    x = int(40, 8)
+    y = int(40, 13)
+    z = y.mult(52)
+
+    expect(z.toNumber()).toBe(2080)
+    expect(z.toBinary()).toBe('0100000100000')
+
+    z = x.mult(52)
+    expect(z.toNumber()).toBe(32)
+    expect(z.toBinary()).toBe('00100000')
+
+    x = int(40, 8)
+    y = int(52, 13)
+    z = y.mult(x)
+
+    expect(z.toNumber()).toBe(x['*'](y).toNumber())
+    expect(z.toNumber()).toBe(2080)
+    expect(z.toBinary()).toBe('0100000100000')
 })
 
 test('Opposite', () => {
@@ -315,4 +401,46 @@ test('Shift', () => {
     expect(x.toBinary()).toEqual('11111011')
     expect(y.toBinary()).toEqual('00011111')
     expect(z.toBinary()).toEqual('00000011')
+})
+
+test('Logic', () => {
+    let x = int(5, 8)
+    let y = int(-431, 12)
+    let z = int(-13, 8)
+
+    expect(x.toBinary()).toEqual('00000101')
+    expect(y.toBinary()).toEqual('111001010001')
+    expect(z.toBinary()).toEqual('11110011')
+
+    // not
+    expect(x.not().toBinary()).toEqual('11111010')
+    expect(y.not().toBinary()).toEqual('000110101110')
+    expect(z['~']().toBinary()).toEqual('00001100')
+
+    // or
+    expect(x.or(y).toNumber()).toBe(y.or(x).toNumber())
+    expect(x.or(z).toNumber()).toBe(z.or(x).toNumber())
+    expect(y['|'](z).toNumber()).toBe(z.or(y).toNumber())
+
+    expect(x.or(y).toBinary()).toEqual('111001010101')
+    expect(x.or(z).toBinary()).toEqual('11110111')
+    expect(y['|'](z).toBinary()).toEqual('111011110011')
+
+    // and
+    expect(x.and(y).toNumber()).toBe(y.and(x).toNumber())
+    expect(x.and(z).toNumber()).toBe(z.and(x).toNumber())
+    expect(y['&'](z).toNumber()).toBe(z.and(y).toNumber())
+
+    expect(x.and(y).toBinary()).toEqual('000000000001')
+    expect(x.and(z).toBinary()).toEqual('00000001')
+    expect(y['&'](z).toBinary()).toEqual('000001010001')
+
+    // xor
+    expect(x.xor(y).toNumber()).toBe(y.xor(x).toNumber())
+    expect(x.xor(z).toNumber()).toBe(z.xor(x).toNumber())
+    expect(y['^'](z).toNumber()).toBe(z.xor(y).toNumber())
+
+    expect(x.xor(y).toBinary()).toEqual('111001010100')
+    expect(x.xor(z).toBinary()).toEqual('11110110')
+    expect(y['^'](z).toBinary()).toEqual('111010100010')
 })

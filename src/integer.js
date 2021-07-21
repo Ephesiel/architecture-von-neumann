@@ -70,6 +70,10 @@
  *  - opposée (- unaire)
  *  - décalage de bits vers la gauche (<<)
  *  - décalage de bits vers la droite (>>)
+ *  - non logique
+ *  - ou logique
+ *  - et logique
+ *  - xor logique
  *
  * Il est possible de les appeler avec les mêmes choses que pour créer un
  * Integer (Nombre, BigInt...) ou avec un autre Integer.
@@ -110,13 +114,48 @@
  * int(3, 16, false)['-']()
  * ```
  *
+ * ### La multiplication
+ *
+ * Multiplie un integer avec un autre, attention à ce que le résultat ne
+ * dépasse pasla taille, le retour serait alors innatendu
+ *
+ * Mots clés : `.mult()`, `['*']()`
+ *
+ * Exemples :
+ *
+ * ```js
+ * // 9
+ * int(3, 8).mult(3)
+ * // -6
+ * int(-3, 8).mult(int(2, 8))
+ * // -40, même si la valeur est 216, le résultat est sur 8 bits signés !
+ * int(3, 8)['*'](72)
+ * ```
+ *
+ * ### La valeur absolue
+ *
+ * Renvoie la valeur absolue d'un nombre
+ *
+ * Mot clé : `.abs()`
+ *
+ * Exemples :
+ *
+ * ```js
+ * // 3
+ * int(3, 8).abs()
+ * // 3
+ * int(-3, 8).abs()
+ * ```
+ *
  * ### Les décalages de bits
  *
  * Décale les bits vers la droite ou vers la gauche selon le sens voulu.
  * Le décalage de bits vers la gauche représente une puissance de 2
  * Le décalage de bits vers la droite représente un log base 2
  *
- * Mot clés : `.leftShift()`, `['<<']()`, `.rightShift()`, `['>>']()`
+ * Mot clés :
+ *  - `.leftShift()`, `['<<']()`
+ *  - `.rightShift()`, `['>>']()`
  *
  * Exemples :
  *
@@ -137,6 +176,34 @@
  * y.toBinary() // '00011111'
  * z.toBinary() // '00000011'
  * ```
+ *
+ * ### Opérateur logique
+ *
+ * Permet de faire des opérations logiques sur les bits des nombres sans les
+ * modifier. Le nombre renvoyé est de la taille du plus gros des deux.
+ *
+ * Mots clés :
+ *  - `.not()`, `['~']()`
+ *  - `.or()`, `['|']()`
+ *  - `.and()`, `['&']()`
+ *  - `.xor()`, `['^']()`
+ *
+ * Exemples :
+ *
+ * ```js
+ * let x = int(5, 8)
+ * let y = int(-13, 8)
+ *
+ * x.toBinary() // '00000101'
+ * y.toBinary() // '11110011'
+ *
+ * x.not().toBinary() // 11111010
+ * y.not().toBinary() // 00001100
+ *
+ * x.or(y).toBinary() // 11110111
+ * x.and(y).toBinary() // 00000001
+ * x.xor(y).toBinary() // 11110110
+ * ```
  */
 class Integer {
     // ------------------------------------------------------------------------
@@ -144,10 +211,9 @@ class Integer {
 
     // /!\ IMPORTANT /!\
     // Les bits sont stockés de LSB vers MSB, l'inverse de l'habitude de
-    // lecture de nombres. Ainsi, lorsque l'on créé un nombre depuis une string
+    // lecture de nombres. Mais, lorsque l'on créé un nombre depuis une string
     // ou un tableau, on attend une valeur dans le "bon sens" qui est ensuite
-    // retournée. C'est également pour ça que la plupart des opérations utilise
-    // la méthode `reverse()` sur les bits
+    // retournée.
     bits //: Array de 0 et 1 de LSB vers MSB
     size //: Number
     signed //: Boolean
@@ -323,13 +389,13 @@ class Integer {
     }
 
     /**
-     * Renvoie le nième bit du nombre
+     * Renvoie le nième bit du nombre en partant du LSB
      *
      * @param {Number} n
      */
     bit(n) {
         if (n < this.size && n >= 0) {
-            return this.bits[this.size - n - 1]
+            return this.bits[n]
         }
         return 0
     }
@@ -358,7 +424,137 @@ class Integer {
     // Opérations.
 
     /**
+     * Décalage de bits vers la gauche. On les décale de n bits.
+     * Les bits les plus à gauche sont perdus
+     * Les bits ajoutés à droite sont mis à 0
+     * Peut être utilisé pour la puissance de 2.
+     *
+     * @param {Number} n le nombre de bits de décalage
+     * @returns Un nouvel integer
+     */
+    leftShift(n) {
+        let result = this.copy()
+
+        for (let i = result.size - 1; i >= n; --i) {
+            result.bits[i] = result.bits[i - n]
+        }
+        for (let i = n - 1; i >= 0; --i) {
+            result.bits[i] = 0
+        }
+
+        return result
+    }
+
+    /**
+     * Décalage de bits vers la droite. On les décale de n bits.
+     * Les bits les plus à droite sont perdus
+     * Les bits ajoutés à gauche sont mis à 0
+     * Peut être utilisé pour le log base 2.
+     *
+     * @param {Number} n le nombre de bits de décalage
+     * @returns Un nouvel integer
+     */
+    rightShift(n) {
+        let result = this.copy()
+
+        for (let i = 0; i < result.size - n; ++i) {
+            result.bits[i] = result.bits[i + n]
+        }
+        for (let i = result.size - n; i < result.size; ++i) {
+            result.bits[i] = 0
+        }
+
+        return result
+    }
+
+    /**
+     * Permet de faire un non logique de cet integer
+     *
+     * @returns Un nouvel integer
+     */
+    not() {
+        let result = this.copy()
+
+        for (let i = 0; i < result.size; ++i) {
+            result.bits[i] = result.bits[i] === 0 ? 1 : 0
+        }
+
+        return result
+    }
+
+    /**
+     * Permet de faire un ou logique entre un integer et un autre
+     *
+     * La taille du retour sera celle du plus grand des deux
+     *
+     * @param {Integer} int Avec lequel faire le ou logique
+     * @returns Un nouvel integer
+     */
+    or(int) {
+        if (this.size < int.size) {
+            return int.or(this)
+        }
+
+        let result = this.copy()
+
+        for (let i = 0; i < int.size; ++i) {
+            result.bits[i] |= int.bits[i]
+        }
+
+        return result
+    }
+
+    /**
+     * Permet de faire un et logique entre un integer et un autre
+     *
+     * La taille du retour sera celle du plus grand des deux
+     *
+     * @param {Integer} int Avec lequel faire le et logique
+     * @returns Un nouvel integer
+     */
+    and(int) {
+        if (this.size < int.size) {
+            return int.and(this)
+        }
+
+        let result = this.copy()
+
+        for (let i = 0; i < int.size; ++i) {
+            result.bits[i] &= int.bits[i]
+        }
+        for (let i = int.size; i < this.size; ++i) {
+            result.bits[i] = 0
+        }
+
+        return result
+    }
+
+    /**
+     * Permet de faire un ou exclusif logique entre un integer et un autre
+     *
+     * La taille du retour sera celle du plus grand des deux
+     *
+     * @param {Integer} int Avec lequel faire le ou exclusif logique
+     * @returns Un nouvel integer
+     */
+    xor(int) {
+        if (this.size < int.size) {
+            return int.xor(this)
+        }
+
+        let result = this.copy()
+
+        for (let i = 0; i < int.size; ++i) {
+            result.bits[i] ^= int.bits[i]
+        }
+
+        return result
+    }
+
+    /**
      * Opération + avec un autre integer
+     *
+     * La taille du retour sera celle du plus grand des deux
      *
      * Attention à la taille des nombres fournis !
      * Si la taille d'un nombre est inférieur à l'autre et qu'il est négatif,
@@ -374,46 +570,39 @@ class Integer {
         if (!(x instanceof Integer)) {
             x = new Integer(x, this.size)
         }
+        if (this.size < x.size) {
+            return x.add(this)
+        }
 
-        // On choisit la taille du plus gros des deux
-        // Le nombre retourné est signé uniquement si les deux nombres le sont
-        // Ainsi x + y === y + x
-        const size = Math.max(this.size, x.size)
-        const signed = this.signed && x.signed
+        let result = this.copy()
 
-        // Le tableau qui va servir pour créer le nombre
-        let bits = new Array(size)
+        // retenu de l'addition
         let retainer = 0
 
-        // On commence par le bit avec le poids le plus faible (celui qui est
-        // le plus à droite)
-        for (let i = size - 1; i >= 0; --i) {
-            const bit =
-                x.bit(x.size - size + i) +
-                this.bit(this.size - size + i) +
-                retainer
+        for (let i = 0; i < x.size; ++i) {
+            const bit = x.bit(i) + this.bit(i) + retainer
 
             switch (bit) {
                 case 0:
                     retainer = 0
-                    bits[i] = 0
+                    result.bits[i] = 0
                     break
                 case 1:
                     retainer = 0
-                    bits[i] = 1
+                    result.bits[i] = 1
                     break
                 case 2:
                     retainer = 1
-                    bits[i] = 0
+                    result.bits[i] = 0
                     break
                 case 3:
                     retainer = 1
-                    bits[i] = 1
+                    result.bits[i] = 1
                     break
             }
         }
 
-        return new Integer(bits, size, signed)
+        return result
     }
 
     /**
@@ -435,47 +624,53 @@ class Integer {
     }
 
     /**
-     * Décalage de bits vers la gauche. On les décale de n bits.
-     * Les bits les plus à gauche sont perdus
-     * Les bits ajoutés à droite sont mis à 0
-     * Peut être utilisé pour la puissance de 2.
+     * Valeur absolue
      *
-     * @param {Number} n le nombre de bits de décalage
      * @returns Un nouvel integer
      */
-    leftShift(n) {
-        let bits = [...this.bits].reverse()
-
-        for (let i = 0; i < this.size - n; ++i) {
-            bits[i] = bits[i + n]
-        }
-        for (let i = this.size - n; i < this.size; ++i) {
-            bits[i] = 0
-        }
-
-        return new Integer(bits, this.size, this.signed)
+    abs() {
+        return this.isNegative() ? this.opposite() : this.copy()
     }
 
     /**
-     * Décalage de bits vers la droite. On les décale de n bits.
-     * Les bits les plus à droite sont perdus
-     * Les bits ajoutés à gauche sont mis à 0
-     * Peut être utilisé pour le log base 2.
+     * Opération * avec un autre integer
      *
-     * @param {Number} n le nombre de bits de décalage
-     * @returns Un nouvel integer
+     * La taille du retour sera celle du plus grand des deux
+     *
+     * @param {Integer|BigInt|Number} x Avec lequel faire la multiplication
+     * @returns Un nouvel Integer
      */
-    rightShift(n) {
-        let bits = [...this.bits]
-
-        for (let i = 0; i < this.size - n; ++i) {
-            bits[i] = bits[i + n]
+    mult(x) {
+        if (!(x instanceof Integer)) {
+            x = new Integer(x, this.size)
         }
-        for (let i = this.size - n; i < this.size; ++i) {
-            bits[i] = 0
+        if (this.size < x.size) {
+            return x.mult(this)
         }
 
-        return new Integer(bits.reverse(), this.size, this.signed)
+        const signed = this.signed && x.signed
+
+        // Comme on ne sait pas faire de multiplication sur les entiers
+        // relatifs, on doit mettre les entiers en valeur absolu, puis, si
+        // l'un des deux était négatif, on inverse la valeur
+        const negative = signed && this.isNegative() ^ x.isNegative()
+
+        x = x.abs()
+        let y = this.abs()
+
+        let result = new Integer(0, this.size, signed)
+
+        for (let i = 0; i < x.size; ++i) {
+            if (x.bits[i] === 1) {
+                result = result.add(y.leftShift(i))
+            }
+        }
+
+        if (negative) {
+            result = result.opposite()
+        }
+
+        return result
     }
 }
 
@@ -487,12 +682,32 @@ Integer.prototype['-'] = function () {
     return this.opposite()
 }
 
+Integer.prototype['*'] = function (x) {
+    return this.mult(x)
+}
+
 Integer.prototype['<<'] = function (x) {
     return this.leftShift(x)
 }
 
 Integer.prototype['>>'] = function (x) {
     return this.rightShift(x)
+}
+
+Integer.prototype['~'] = function () {
+    return this.not()
+}
+
+Integer.prototype['&'] = function (x) {
+    return this.and(x)
+}
+
+Integer.prototype['|'] = function (x) {
+    return this.or(x)
+}
+
+Integer.prototype['^'] = function (x) {
+    return this.xor(x)
 }
 
 export function int(value, size = 64, signed = true) {
