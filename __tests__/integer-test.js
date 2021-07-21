@@ -137,9 +137,10 @@ test('Bits', () => {
     let x = int(-5, 4)
 
     expect(x.toBinary()).toEqual('1011')
+    expect(x.bit(-1)).toEqual(0)
     expect(x.bit(0)).toEqual(1)
-    expect(x.bit(1)).toEqual(0)
-    expect(x.bit(2)).toEqual(1)
+    expect(x.bit(1)).toEqual(1)
+    expect(x.bit(2)).toEqual(0)
     expect(x.bit(3)).toEqual(1)
     expect(x.bit(4)).toEqual(0)
     expect(x.bit(5)).toEqual(0)
@@ -275,6 +276,14 @@ test('Addition', () => {
     expect(z.toNumber()).toBe(-4)
     expect(z.toBigInt()).toBe(-4n)
     expect(z.toBinary()).toEqual('100')
+
+    x = int(2, 3)
+    y = int(2, 5)
+    z = x['+'](y)
+
+    expect(z.toNumber()).toBe(4)
+    expect(z.toBigInt()).toBe(4n)
+    expect(z.toBinary()).toEqual('00100')
 
     x = int(2, 16)
 

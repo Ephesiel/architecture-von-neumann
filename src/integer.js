@@ -357,13 +357,13 @@ class Integer {
     }
 
     /**
-     * Renvoie le nième bit du nombre
+     * Renvoie le nième bit du nombre en partant du LSB
      *
      * @param {Number} n
      */
     bit(n) {
         if (n < this.size && n >= 0) {
-            return this.bits[this.size - n - 1]
+            return this.bits[n]
         }
         return 0
     }
@@ -394,6 +394,8 @@ class Integer {
     /**
      * Opération + avec un autre integer
      *
+     * La taille du retour sera celle du plus grand des deux
+     *
      * Attention à la taille des nombres fournis !
      * Si la taille d'un nombre est inférieur à l'autre et qu'il est négatif,
      * la valeur retournée sera faussée.
@@ -408,46 +410,39 @@ class Integer {
         if (!(x instanceof Integer)) {
             x = new Integer(x, this.size)
         }
+        if (this.size < x.size) {
+            return x.add(this)
+        }
 
-        // On choisit la taille du plus gros des deux
-        // Le nombre retourné est signé uniquement si les deux nombres le sont
-        // Ainsi x + y === y + x
-        const size = Math.max(this.size, x.size)
-        const signed = this.signed && x.signed
+        let result = this.copy()
 
-        // Le tableau qui va servir pour créer le nombre
-        let bits = new Array(size)
+        // retenu de l'addition
         let retainer = 0
 
-        // On commence par le bit avec le poids le plus faible (celui qui est
-        // le plus à droite)
-        for (let i = size - 1; i >= 0; --i) {
-            const bit =
-                x.bit(x.size - size + i) +
-                this.bit(this.size - size + i) +
-                retainer
+        for (let i = 0; i < x.size; ++i) {
+            const bit = x.bit(i) + this.bit(i) + retainer
 
             switch (bit) {
                 case 0:
                     retainer = 0
-                    bits[i] = 0
+                    result.bits[i] = 0
                     break
                 case 1:
                     retainer = 0
-                    bits[i] = 1
+                    result.bits[i] = 1
                     break
                 case 2:
                     retainer = 1
-                    bits[i] = 0
+                    result.bits[i] = 0
                     break
                 case 3:
                     retainer = 1
-                    bits[i] = 1
+                    result.bits[i] = 1
                     break
             }
         }
 
-        return new Integer(bits, size, signed)
+        return result
     }
 
     /**
