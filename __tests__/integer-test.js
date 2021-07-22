@@ -507,6 +507,80 @@ test('Division', () => {
     expect(x.mod(y).toNumber()).toBe(6)
 })
 
+test('Parity', () => {
+    let x = int(1, 2)
+
+    expect(x.isOdd()).toBe(true)
+    expect(x.isEven()).toBe(false)
+
+    x = int(-1, 2)
+
+    expect(x.isOdd()).toBe(true)
+    expect(x.isEven()).toBe(false)
+
+    x = int(-2, 2)
+
+    expect(x.isOdd()).toBe(false)
+    expect(x.isEven()).toBe(true)
+
+    x = uint(4, 2)
+
+    expect(x.isOdd()).toBe(false)
+    expect(x.isEven()).toBe(true)
+
+    x = uint(0, 2)
+
+    expect(x.isOdd()).toBe(false)
+    expect(x.isEven()).toBe(true)
+
+    x = uint(1, 2)
+
+    expect(x.isOdd()).toBe(true)
+    expect(x.isEven()).toBe(false)
+})
+
+test('Power', () => {
+    let x = int(2, 4)
+    let y = int(3, 4)
+
+    expect(x['**'](y).toNumber()).toBe(-8)
+    expect(y['**'](x).toNumber()).toBe(-7)
+
+    x = x.toUint()
+    expect(x.pow(y).toNumber()).toBe(8)
+    expect(y.pow(x).toNumber()).toBe(-7)
+
+    y = y.toUint()
+    expect(x.pow(y).toNumber()).toBe(8)
+    expect(y.pow(x).toNumber()).toBe(9)
+
+    expect(y.pow(5).toBinary()).toBe('0011')
+    y = y.extend(4)
+    expect(y.pow(5).toBinary()).toBe('11110011')
+
+    x = x.extend(60)
+    expect(x.pow(31).toBinary()).toBe(
+        '0000000000000000000000000000000010000000000000000000000000000000'
+    )
+    expect(x.pow(63).toBinary()).toBe(
+        '1000000000000000000000000000000000000000000000000000000000000000'
+    )
+    expect(x.pow(64).sub(1).toBinary()).toBe(
+        '1111111111111111111111111111111111111111111111111111111111111111'
+    )
+
+    expect(x.pow(0).toNumber()).toBe(1)
+    expect(y.pow(0).toNumber()).toBe(1)
+
+    expect(() => {
+        x.pow(int(-1, 2))
+    }).toThrow()
+
+    y = int(-3, 8)
+
+    expect(y.pow(3).toNumber()).toBe(-27)
+})
+
 test('Shift', () => {
     let x = int(5, 8)
     let y = x.leftShift(3)
@@ -586,6 +660,17 @@ test('Comparison', () => {
     expect(x.eq(3)).toBe(true)
     expect(x.eq(4)).toBe(false)
     expect(y['=='](b)).toBe(false)
+
+    expect(x.neq(y)).toBe(true)
+    expect(x.neq(z)).toBe(true)
+    expect(x.neq(a)).toBe(true)
+    expect(y.neq(z)).toBe(true)
+    expect(y.neq(a)).toBe(true)
+    expect(z.neq(a)).toBe(false)
+    expect(x.neq(2)).toBe(true)
+    expect(x.neq(3)).toBe(false)
+    expect(x.neq(4)).toBe(true)
+    expect(y['!='](b)).toBe(true)
 
     expect(x.gt(y)).toBe(true)
     expect(x.gt(z)).toBe(false)

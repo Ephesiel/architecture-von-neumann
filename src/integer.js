@@ -158,6 +158,24 @@ const UNSIGNED = false
  * int(3, 8)['*'](72)
  * ```
  *
+ * ### La puissance
+ *
+ * Met un int à la puissance d'un autre, attention, la puissance ne peut être
+ * négative car nous sommes sur des entiers !
+ *
+ * Mots clés : `.pow()`, `['**']()`
+ *
+ * Exemples :
+ *
+ * ```js
+ * // 8
+ * int(2, 8).pow(3)
+ * // -27
+ * int(-3, 8)['**'](3)
+ * // Erreur ! Impossible de faire une puissance négative
+ * int(3, 8).pow(-3)
+ * ```
+ *
  * ### La valeur absolue
  *
  * Renvoie la valeur absolue d'un nombre
@@ -233,12 +251,13 @@ const UNSIGNED = false
  *
  * ### Comparaisons
  *
- * Les opérateurs de comparaisons habituels ont également été ajoutés : ==, >,
- * <, >=, <=.
+ * Les opérateurs de comparaisons habituels ont également été ajoutés : ==, !=,
+ * >, <, >=, <=.
  * Ils renvoient des booléens
  *
  * Mots clés :
  *  - `.eq()`, `['==']()`
+ *  - `.neq()`, `['!=']()`
  *  - `.gt()`, `['>']()`
  *  - `.lt()`, `['<']()`
  *  - `.ge()`, `['>=']()`
@@ -254,6 +273,10 @@ const UNSIGNED = false
  * x.eq(y)    // false
  * x['=='](z) // false
  * y.eq(z)    // true
+ *
+ * x.neq(y)   // true
+ * x['!='](z) // true
+ * y.neq(z)   // false
  *
  * x.gt(y)    // true
  * x['>'](z)  // true
@@ -520,6 +543,20 @@ export default class Integer {
             length,
             this.signed
         )
+    }
+
+    /**
+     * Retourne vrai si la valeur est impaire
+     */
+    isOdd() {
+        return this.bit(0) === 1
+    }
+
+    /**
+     * Retourne vrai si la valeur est paire
+     */
+    isEven() {
+        return this.bit(0) === 0
     }
 
     // ------------------------------------------------------------------------
@@ -790,6 +827,41 @@ export default class Integer {
     }
 
     /**
+     * Opération ** avec un autre integer
+     *
+     * La taille du retour sera celle du nombre qui fait l'opération
+     * La puissance ne doit pas être négative car nous travaillons sur des
+     * entiers
+     *
+     * @param {Integer|BigInt|Number} x Avec lequel faire la multiplication
+     * @throws Error Si x est négatif
+     * @returns Un nouvel Integer
+     */
+    pow(x) {
+        if (!(x instanceof Integer)) {
+            x = new Integer(x, this.size, UNSIGNED)
+        }
+
+        if (x.isNegative()) {
+            throw new Error(`La valeur de ${x} doit être positive`)
+        }
+
+        if (x.eq(0)) {
+            return new Integer(1, this.size, this.signed)
+        }
+
+        if (x.eq(1)) {
+            return this.copy()
+        }
+
+        if (x.isEven()) {
+            return this.mult(this).pow(x.rightShift(1))
+        }
+
+        return this.mult(this.mult(this).pow(x.rightShift(1)))
+    }
+
+    /**
      * Permet de combiner le modulo et la division en une seule fonction
      * Ne pas appeler cette méthode depuis l'extérieur, privilégier `div` et
      * `mod`
@@ -937,6 +1009,10 @@ Integer.prototype['-'] = function (x) {
 
 Integer.prototype['*'] = function (x) {
     return this.mult(x)
+}
+
+Integer.prototype['**'] = function (x) {
+    return this.pow(x)
 }
 
 Integer.prototype['/'] = function (x) {
