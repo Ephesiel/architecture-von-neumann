@@ -312,6 +312,14 @@ export default class Integer {
         return new Integer(this, this.size, this.signed)
     }
 
+    toUint() {
+        return new Integer(this, this.size, false)
+    }
+
+    toInt() {
+        return new Integer(this, this.size, true)
+    }
+
     // ------------------------------------------------------------------------
     // Méthodes utilisées par la classe.
 
@@ -456,6 +464,33 @@ export default class Integer {
     }
 
     /**
+     * Ajoute n MSBits mis à 0
+     *
+     * Attention, si le nombre est négatif, il deviendra positif
+     *
+     * @param {Number} n Le nombre de bits à ajouter
+     * @returns Un nouvel Integer
+     */
+    extend(n) {
+        return new Integer(this, this.size + n, this.signed)
+    }
+
+    /**
+     * Renvoie le même int mais sans tous les zéros devant
+     * La taille sera modifiée, attention au nombre signé, ils seront toujours
+     * négatifs à la sortie de cette méthode !
+     *
+     * @returns Un nouvel integer
+     */
+    removeZeroes() {
+        for (let i = this.size - 1; i >= 0; --i) {
+            if (this.bit(i) === 1) {
+                return this.truncate(this.size - 1 - i)
+            }
+        }
+    }
+
+    /**
      * Renvoie le nième bit du nombre en partant du LSB
      *
      * @param {Number} n
@@ -501,6 +536,7 @@ export default class Integer {
      */
     leftShift(n) {
         let result = this.copy()
+        n = Math.min(this.size, n)
 
         for (let i = result.size - 1; i >= n; --i) {
             result.bits[i] = result.bits[i - n]
@@ -523,6 +559,7 @@ export default class Integer {
      */
     rightShift(n) {
         let result = this.copy()
+        n = Math.min(this.size, n)
 
         for (let i = 0; i < result.size - n; ++i) {
             result.bits[i] = result.bits[i + n]
@@ -639,7 +676,7 @@ export default class Integer {
      * Si l'opération + est faite sur des nombres signés, faites en sorte
      * qu'ils aient la même taille !
      *
-     * @param {Integer|BigInt|Number} x
+     * @param {Integer|BigInt|Number} x Avec lequel faire l'addition
      * @returns Un nouvel Integer
      */
     add(x) {
@@ -681,6 +718,14 @@ export default class Integer {
         return result
     }
 
+    /**
+     * Opération - binaire
+     *
+     * La taille du retour sera celle du plus grand des deux
+     *
+     * @param {Integer|BigInt|Number} x Avec lequel faire la soustraction
+     * @returns Un nouvel integer
+     */
     sub(x) {
         if (!(x instanceof Integer)) {
             x = new Integer(x, this.size, this.signed)
@@ -732,17 +777,8 @@ export default class Integer {
             return x.mult(this)
         }
 
-        const signed = this.signed && x.signed
-
-        // Comme on ne sait pas faire de multiplication sur les entiers
-        // relatifs, on doit mettre les entiers en valeur absolu, puis, si
-        // l'un des deux était négatif, on inverse la valeur
-        const negative = signed && this.isNegative() ^ x.isNegative()
-
-        x = x.abs()
-        let y = this.abs()
-
-        let result = new Integer(0, this.size, signed)
+        let result = new Integer(0, this.size, this.signed && x.signed)
+        let y = this
 
         for (let i = 0; i < x.size; ++i) {
             if (x.bits[i] === 1) {
@@ -750,11 +786,66 @@ export default class Integer {
             }
         }
 
-        if (negative) {
-            result = result.opposite()
+        return result
+    }
+
+    /**
+     * Permet de combiner le modulo et la division en une seule fonction
+     * Ne pas appeler cette méthode depuis l'extérieur, privilégier `div` et
+     * `mod`
+     */
+    division(x) {
+        /////////////////////////////
+        //// A IMPLEMENTER MIEUX ////
+        /////////////////////////////
+
+        if (!(x instanceof Integer)) {
+            x = new Integer(x, this.size, this.signed)
         }
 
-        return result
+        const size = Math.max(x.size, this.size)
+        const signed = x.signed && this.signed
+
+        let valX = x.toBigInt()
+        let valY = this.toBigInt()
+
+        if (!signed) {
+            valX = x.toUint().toBigInt()
+            valY = this.toUint().toBigInt()
+        }
+
+        let remainder = new Integer(valY % valX, size, signed)
+        let result = new Integer(
+            (valY - remainder.toBigInt()) / valX,
+            size,
+            signed
+        )
+
+        return [result, remainder]
+    }
+
+    /**
+     * Opération / sur des entiers
+     *
+     * La taille du retour sera celle du plus grand des deux
+     *
+     * @param {Integer|BigInt|Number} x Avec lequel faire la division
+     * @returns Un nouvel Integer
+     */
+    div(x) {
+        return this.division(x)[0]
+    }
+
+    /**
+     * Opération % sur des entiers
+     *
+     * La taille du retour sera celle du plus grand des deux
+     *
+     * @param {Integer|BigInt|Number} x Avec lequel faire le modulo
+     * @returns Un nouvel Integer
+     */
+    mod(x) {
+        return this.division(x)[1]
     }
 
     /**
@@ -776,11 +867,14 @@ export default class Integer {
 
         let y = this
 
-        if (x.isNegative() && !this.isNegative()) {
+        const xNeg = x.isNegative()
+        const yNeg = y.isNegative()
+
+        if (xNeg && !yNeg) {
             return GREATER
-        } else if (!x.isNegative() && this.isNegative()) {
+        } else if (!xNeg && yNeg) {
             return LOWER
-        } else if (x.isNegative() && y.isNegative()) {
+        } else if (xNeg && yNeg) {
             // On inverse les chiffres avec leur opposée, car sinon le
             // résultat de l'opposée serait l'inverse de celui recherché
             // x > y <=> -x < -y
@@ -843,6 +937,14 @@ Integer.prototype['-'] = function (x) {
 
 Integer.prototype['*'] = function (x) {
     return this.mult(x)
+}
+
+Integer.prototype['/'] = function (x) {
+    return this.div(x)
+}
+
+Integer.prototype['%'] = function (x) {
+    return this.mod(x)
 }
 
 Integer.prototype['<<'] = function (x) {
