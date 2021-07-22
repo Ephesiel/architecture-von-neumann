@@ -1,5 +1,6 @@
 import Clock from '@/models/clock'
 import Debug from '@/debug'
+import { uint } from '@/integer'
 
 /**
  * Implémentation d'un multiplexeur.
@@ -27,12 +28,17 @@ export default class Multiplexer {
     // Constructeur.
 
     constructor(inputs, output, selectorBus) {
-        if (inputs.length <= 2 ** selectorBus.getValue().getSize()) {
+        // Correspond à 2^(selectorBus.getValue().getSize())
+        const nbMaxInputs = uint(
+            1,
+            selectorBus.getValue().getSize() + 1
+        ).leftShift(selectorBus.getValue().getSize())
+        if (nbMaxInputs.gt(inputs.length)) {
             Debug.warn(
                 "Le nombre de bus d'entrée est inférieur au nombre de " +
                     'possibilités du bus sélecteur.'
             )
-        } else if (inputs.length >= 2 ** selectorBus.getValue().getSize()) {
+        } else if (nbMaxInputs.lt(inputs.length)) {
             Debug.crit(
                 "Le nombre de bus d'entrée est supérieur au nombre maximum " +
                     "de possibilités du bus sélecteur. Le multiplexeur n'a " +

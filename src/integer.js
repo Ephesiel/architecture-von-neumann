@@ -905,13 +905,9 @@ export function maxOf(bits, signed = UNSIGNED) {
     if (signed === UNSIGNED) {
         return uint(0, bits).not()
     } else {
-        return int(0, bits)
+        return int(1, bits)
+            .leftShift(bits - 1)
             .not()
-            .and(
-                int(1, bits)
-                    .leftShift(bits - 1)
-                    .not()
-            )
     }
 }
 

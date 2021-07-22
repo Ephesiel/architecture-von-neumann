@@ -1,12 +1,12 @@
 import { test, expect } from '@jest/globals'
 import Memory from '@/models/memory/memory-model'
 import Debug, { Level } from '@/debug'
-import { int, uint } from '@/integer'
+import { maxOf, int, uint } from '@/integer'
 
 const memory = new Memory(4, 10)
 
 test('Constructor', () => {
-    expect(memory.maxValue.toNumber()).toBe(1023)
+    expect(maxOf(memory.width).toNumber()).toBe(1023)
     expect(memory.memory.length).toBe(16)
 })
 

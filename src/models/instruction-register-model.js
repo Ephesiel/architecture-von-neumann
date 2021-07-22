@@ -1,6 +1,5 @@
 import Register from '@/models/registers/register-model'
 import { Signals, NB_BITS_RA } from '@/globals'
-import { uint } from '@/integer'
 
 /**
  * Implémentation du registre d'instructions.
@@ -42,6 +41,6 @@ export default class InstructionRegister extends Register {
     }
 
     getRA() {
-        return this.getCurrentValue().and(uint(0, NB_BITS_RA).not())
+        return this.getCurrentValue().slice(0, NB_BITS_RA)
     }
 }

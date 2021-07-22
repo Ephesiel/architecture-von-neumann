@@ -50,6 +50,10 @@ test('Too many input buses', () => {
 
 test('Not enough input buses', () => {
     const size = Debug.getMessages(Level.WARN).length
-    new Multiplexer([inputBus, inputBus2], outputBus, new Bus('test2', 2))
+    new Multiplexer(
+        [inputBus, inputBus2],
+        outputBus,
+        new Bus('test2', 4, UNSIGNED)
+    )
     expect(Debug.getMessages(Level.WARN).length).toBe(size + 1)
 })

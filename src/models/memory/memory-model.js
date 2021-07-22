@@ -1,6 +1,5 @@
 import Debug from '@/debug'
-import Integer, { uint, int } from '@/integer'
-//import { NB_BITS_ARCH } from '@/globals'
+import Integer, { SIGNED, maxOf, int } from '@/integer'
 
 /**
  * La mémoire est un tableau ayant 2^n entrées. Chacune est référencée par une
@@ -42,14 +41,14 @@ import Integer, { uint, int } from '@/integer'
 export default class Memory {
     // ------------------------------------------------------------------------
     // Attributs.
-    maxValue //: Integer
+    width //: Integer
     memory //: Array
 
     // ------------------------------------------------------------------------
     // Constructeur.
 
     constructor(logHeight, width) {
-        this.maxValue = uint(0, width).not()
+        this.width = width
         this.memory = new Array(2 ** logHeight).fill(null)
     }
 
@@ -98,8 +97,10 @@ export default class Memory {
      * @param {Integer} value La valeur à mettre dans la mémoirie
      */
     setValue(address, value) {
-        if (!(address in this.memory)) {
-            Debug.crit(`L'adresse ${address} n'existe pas dans la mémoire`)
+        if (!(address.toNumber() in this.memory)) {
+            Debug.crit(
+                `L'adresse ${address.toString()} n'existe pas dans la mémoire`
+            )
             return
         }
 
@@ -110,8 +111,14 @@ export default class Memory {
             return
         }
 
-        if (value.toBigInt() > this.maxValue.toBigInt()) {
-            Debug.crit('Nombre trop grand pour cette mémoire')
+        const parsedValue = int(value, this.width, SIGNED)
+        if (value.getSize() > this.width && parsedValue.neq(value)) {
+            Debug.crit(
+                `Nombre trop grand pour cette mémoire. Maximum : ${maxOf(
+                    this.width,
+                    SIGNED
+                )}`
+            )
             return
         }
 
