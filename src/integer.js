@@ -1,3 +1,7 @@
+const LOWER = 1
+const EQUAL = 2
+const GREATER = 3
+
 /**
  * ## Motivation :
  *
@@ -58,7 +62,7 @@
  * ```
  *
  * Il est possible d'appeler la méthode `int(...)` qui est un alias de `new
- * Integer(...)`
+ * Integer(..., true)` et `uint(..., false)` pour créer un entier non signé
  *
  * ## Opérations :
  *
@@ -78,11 +82,13 @@
  * Il est possible de les appeler avec les mêmes choses que pour créer un
  * Integer (Nombre, BigInt...) ou avec un autre Integer.
  *
+ * Attention à la taille des paramètres envoyés ! En effet la taille du nombre
+ * renvoyé sera la plus grande des deux nombres donnés et les signes peuvent
+ * être modifié en fonction de cette taille !
+ *
  * ### L'addition
  *
- * Ajoute un integer à un autre. Attention à la taille de ces derniers ! En
- * effet la taille du nombre renvoyée sera la plus grande des deux nombres
- * donnés et les signes peuvent être modifié en fonction de cette taille !
+ * Ajoute un integer à un autre.
  *
  * Mots clés : `.add()`, `['+']()`
  *
@@ -111,7 +117,23 @@
  * // -3
  * int(3, 16).opposite()
  * // 65533, le complément à 2 n'est pas fait pour les entiers non signés
- * int(3, 16, false)['-']()
+ * uint(3, 16)['-']()
+ * ```
+ *
+ * ### La soustraction
+ *
+ * la soustraction est équivalente à l'opposition mise à part qu'elle prend un
+ * paramètre.
+ *
+ * Mots clés : `.sub()`, `['-']()`
+ *
+ * Exemples :
+ *
+ * ```js
+ * // 0
+ * int(3, 16).sub(3)
+ * // 10, Marche aussi sur les entiers non signés
+ * uint(7, 4)['-'](int(-3, 4))
  * ```
  *
  * ### La multiplication
@@ -203,6 +225,47 @@
  * x.or(y).toBinary() // 11110111
  * x.and(y).toBinary() // 00000001
  * x.xor(y).toBinary() // 11110110
+ * ```
+ *
+ * ### Comparaisons
+ *
+ * Les opérateurs de comparaisons habituels ont également été ajoutés : ==, >,
+ * <, >=, <=.
+ * Ils renvoient des booléens
+ *
+ * Mots clés :
+ *  - `.eq()`, `['==']()`
+ *  - `.gt()`, `['>']()`
+ *  - `.lt()`, `['<']()`
+ *  - `.ge()`, `['>=']()`
+ *  - `.le()`, `['<=']()`
+ *
+ * Exemples :
+ *
+ * ```js
+ * let x = int(5, 8)
+ * let y = int(-13, 8)
+ * let z = -13
+ *
+ * x.eq(y)    // false
+ * x['=='](z) // false
+ * y.eq(z)    // true
+ *
+ * x.gt(y)    // true
+ * x['>'](z)  // true
+ * y.gt(z)    // false
+ *
+ * x.lt(y)    // false
+ * x['<'](z)  // false
+ * y.lt(z)    // false
+ *
+ * x.ge(y)    // true
+ * x['>='](z) // true
+ * y.ge(z)    // true
+ *
+ * x.le(y)    // false
+ * x['<='](z) // false
+ * y.le(z)    // true
  * ```
  */
 export default class Integer {
@@ -374,7 +437,7 @@ export default class Integer {
     }
 
     /**
-     * Tronque le nombre de n bits
+     * Tronque le nombre de n bits en partant du MSB
      *
      * Attention la valeur retournée a de forte chance d'être différente de la
      * valeur précédente
@@ -487,18 +550,21 @@ export default class Integer {
      *
      * La taille du retour sera celle du plus grand des deux
      *
-     * @param {Integer} int Avec lequel faire le ou logique
+     * @param {Integer|BigInt|Number} x Avec lequel faire le ou logique
      * @returns Un nouvel integer
      */
-    or(int) {
-        if (this.size < int.size) {
-            return int.or(this)
+    or(x) {
+        if (!(x instanceof Integer)) {
+            x = new Integer(x, this.size, this.signed)
+        }
+        if (this.size < x.size) {
+            return x.or(this)
         }
 
         let result = this.copy()
 
-        for (let i = 0; i < int.size; ++i) {
-            result.bits[i] |= int.bits[i]
+        for (let i = 0; i < x.size; ++i) {
+            result.bits[i] |= x.bits[i]
         }
 
         return result
@@ -509,20 +575,23 @@ export default class Integer {
      *
      * La taille du retour sera celle du plus grand des deux
      *
-     * @param {Integer} int Avec lequel faire le et logique
+     * @param {Integer|BigInt|Number} x Avec lequel faire le et logique
      * @returns Un nouvel integer
      */
-    and(int) {
-        if (this.size < int.size) {
-            return int.and(this)
+    and(x) {
+        if (!(x instanceof Integer)) {
+            x = new Integer(x, this.size, this.signed)
+        }
+        if (this.size < x.size) {
+            return x.and(this)
         }
 
         let result = this.copy()
 
-        for (let i = 0; i < int.size; ++i) {
-            result.bits[i] &= int.bits[i]
+        for (let i = 0; i < x.size; ++i) {
+            result.bits[i] &= x.bits[i]
         }
-        for (let i = int.size; i < this.size; ++i) {
+        for (let i = x.size; i < this.size; ++i) {
             result.bits[i] = 0
         }
 
@@ -534,18 +603,21 @@ export default class Integer {
      *
      * La taille du retour sera celle du plus grand des deux
      *
-     * @param {Integer} int Avec lequel faire le ou exclusif logique
+     * @param {Integer|BigInt|Number} x Avec lequel faire le xor logique
      * @returns Un nouvel integer
      */
-    xor(int) {
-        if (this.size < int.size) {
-            return int.xor(this)
+    xor(x) {
+        if (!(x instanceof Integer)) {
+            x = new Integer(x, this.size, this.signed)
+        }
+        if (this.size < x.size) {
+            return x.xor(this)
         }
 
         let result = this.copy()
 
-        for (let i = 0; i < int.size; ++i) {
-            result.bits[i] ^= int.bits[i]
+        for (let i = 0; i < x.size; ++i) {
+            result.bits[i] ^= x.bits[i]
         }
 
         return result
@@ -568,7 +640,7 @@ export default class Integer {
      */
     add(x) {
         if (!(x instanceof Integer)) {
-            x = new Integer(x, this.size)
+            x = new Integer(x, this.size, this.signed)
         }
         if (this.size < x.size) {
             return x.add(this)
@@ -603,6 +675,14 @@ export default class Integer {
         }
 
         return result
+    }
+
+    sub(x) {
+        if (!(x instanceof Integer)) {
+            x = new Integer(x, this.size, this.signed)
+        }
+
+        return this.add(x.opposite())
     }
 
     /**
@@ -642,7 +722,7 @@ export default class Integer {
      */
     mult(x) {
         if (!(x instanceof Integer)) {
-            x = new Integer(x, this.size)
+            x = new Integer(x, this.size, this.signed)
         }
         if (this.size < x.size) {
             return x.mult(this)
@@ -672,14 +752,85 @@ export default class Integer {
 
         return result
     }
+
+    /**
+     * Renvoie la comparaison entre this et x. Cette méthode ne devrait pas
+     * être appelée en dehors de la classe car elle possède des alias pour les
+     * comparaisons habituelles.
+     *
+     * Résultat :
+     *  - Si this > x : GREATER
+     *  - Si this = x : EQUAL
+     *  - Si this < x : LOWER
+     *
+     * @param {Integer|BigInt|Number} x Le nombre avec lequel se comparer
+     */
+    compare(x) {
+        if (!(x instanceof Integer)) {
+            x = new Integer(x, this.size, this.signed)
+        }
+
+        let y = this
+
+        if (x.isNegative() && !this.isNegative()) {
+            return GREATER
+        } else if (!x.isNegative() && this.isNegative()) {
+            return LOWER
+        } else if (x.isNegative() && y.isNegative()) {
+            // On inverse les chiffres avec leur opposée, car sinon le
+            // résultat de l'opposée serait l'inverse de celui recherché
+            // x > y <=> -x < -y
+            const z = y.opposite()
+            y = x.opposite()
+            x = z
+        }
+
+        // On ne gère que des nombres positifs, le premier bits à 1 alors que
+        // l'autre est à 0 est plus grand
+        for (let i = Math.max(y.size, x.size) - 1; i >= 0; --i) {
+            const bitX = x.bit(i)
+            const bitY = y.bit(i)
+
+            if (bitX && !bitY) {
+                return LOWER
+            } else if (bitY && !bitX) {
+                return GREATER
+            }
+        }
+
+        return EQUAL
+    }
+
+    eq(x) {
+        return this.compare(x) === EQUAL
+    }
+
+    gt(x) {
+        return this.compare(x) === GREATER
+    }
+
+    lt(x) {
+        return this.compare(x) === LOWER
+    }
+
+    ge(x) {
+        return !this.lt(x)
+    }
+
+    le(x) {
+        return !this.gt(x)
+    }
 }
 
 Integer.prototype['+'] = function (x) {
     return this.add(x)
 }
 
-Integer.prototype['-'] = function () {
-    return this.opposite()
+Integer.prototype['-'] = function (x) {
+    if (typeof x === 'undefined') {
+        return this.opposite()
+    }
+    return this.sub(x)
 }
 
 Integer.prototype['*'] = function (x) {
@@ -710,6 +861,26 @@ Integer.prototype['^'] = function (x) {
     return this.xor(x)
 }
 
+Integer.prototype['=='] = function (x) {
+    return this.eq(x)
+}
+
+Integer.prototype['<'] = function (x) {
+    return this.lt(x)
+}
+
+Integer.prototype['>'] = function (x) {
+    return this.gt(x)
+}
+
+Integer.prototype['<='] = function (x) {
+    return this.le(x)
+}
+
+Integer.prototype['>='] = function (x) {
+    return this.ge(x)
+}
+
 export function int(value, size = 32) {
     return new Integer(value, size, true)
 }
@@ -721,6 +892,7 @@ export function uint(value, size = 32) {
 export function int8(value) {
     return new Integer(value, 8, true)
 }
+
 export function uint8(value) {
     return new Integer(value, 8, false)
 }
