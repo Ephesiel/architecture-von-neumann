@@ -57,6 +57,36 @@ test('Unsigned', () => {
     expect(x.toBinary()).toEqual('1')
 })
 
+test('Conversion', () => {
+    let x = int(1, 1)
+    let y = x.toUint()
+    let z = y.toInt()
+
+    expect(x.toNumber()).toBe(-1)
+    expect(x.toBigInt()).toBe(-1n)
+    expect(x.toBinary()).toEqual('1')
+    expect(y.toNumber()).toBe(1)
+    expect(y.toBigInt()).toBe(1n)
+    expect(y.toBinary()).toEqual('1')
+    expect(z.toNumber()).toBe(-1)
+    expect(z.toBigInt()).toBe(-1n)
+    expect(z.toBinary()).toEqual('1')
+
+    x = int(3, 3)
+    y = x.toUint()
+    z = y.toInt()
+
+    expect(x.toNumber()).toBe(3)
+    expect(x.toBigInt()).toBe(3n)
+    expect(x.toBinary()).toEqual('011')
+    expect(y.toNumber()).toBe(3)
+    expect(y.toBigInt()).toBe(3n)
+    expect(y.toBinary()).toEqual('011')
+    expect(z.toNumber()).toBe(3)
+    expect(z.toBigInt()).toBe(3n)
+    expect(z.toBinary()).toEqual('011')
+})
+
 test('Big integer', () => {
     let x = int(0, 64)
 
@@ -152,7 +182,7 @@ test('Bits', () => {
     expect(x.bit(5)).toEqual(0)
 })
 
-test('Size', () => {
+test('Truncate', () => {
     let x = int(3, 4)
     expect(x.toNumber()).toBe(3)
     expect(x.toBigInt()).toBe(3n)
@@ -202,6 +232,36 @@ test('Size', () => {
     expect(x.toNumber()).toBe(1)
     expect(x.toBigInt()).toBe(1n)
     expect(x.toBinary()).toEqual('1')
+
+    x = uint(3, 4)
+    expect(x.toNumber()).toBe(3)
+    expect(x.toBigInt()).toBe(3n)
+    expect(x.toBinary()).toEqual('0011')
+
+    x = x.extend(1)
+    expect(x.toNumber()).toBe(3)
+    expect(x.toBigInt()).toBe(3n)
+    expect(x.toBinary()).toEqual('00011')
+
+    x = x.extend(3)
+    expect(x.toNumber()).toBe(3)
+    expect(x.toBigInt()).toBe(3n)
+    expect(x.toBinary()).toEqual('00000011')
+
+    x = uint(3, 4)
+    expect(x.toNumber()).toBe(3)
+    expect(x.toBigInt()).toBe(3n)
+    expect(x.toBinary()).toEqual('0011')
+
+    x = x.removeZeroes()
+    expect(x.toNumber()).toBe(3)
+    expect(x.toBigInt()).toBe(3n)
+    expect(x.toBinary()).toEqual('11')
+
+    x = x.removeZeroes()
+    expect(x.toNumber()).toBe(3)
+    expect(x.toBigInt()).toBe(3n)
+    expect(x.toBinary()).toEqual('11')
 })
 
 test('Copy', () => {
@@ -416,6 +476,111 @@ test('Opposite', () => {
     expect(x.toBinary()).toEqual('1111111111111101')
 })
 
+test('Division', () => {
+    let x = int(3, 4)
+    let y = int(1, 4)
+
+    expect(x.div(y).toNumber()).toBe(3)
+    expect(x.mod(y).toNumber()).toBe(0)
+
+    expect(x.div(2).toNumber()).toBe(1)
+    expect(x.mod(2).toNumber()).toBe(1)
+
+    x = int(6, 4)
+    y = int(-4, 4)
+
+    expect(x.div(y).toNumber()).toBe(-1)
+    expect(x.mod(y).toNumber()).toBe(2)
+
+    expect(y.div(3).toNumber()).toBe(-1)
+    expect(y.mod(3).toNumber()).toBe(-1)
+
+    expect(y['/'](-3).toNumber()).toBe(1)
+    expect(y['%'](-3).toNumber()).toBe(-1)
+
+    x = uint(6, 4)
+    y = int(-2, 4)
+
+    expect(x.div(-2).toNumber()).toBe(0)
+    expect(x.mod(-2).toNumber()).toBe(6)
+    expect(x.div(y).toNumber()).toBe(0)
+    expect(x.mod(y).toNumber()).toBe(6)
+})
+
+test('Parity', () => {
+    let x = int(1, 2)
+
+    expect(x.isOdd()).toBe(true)
+    expect(x.isEven()).toBe(false)
+
+    x = int(-1, 2)
+
+    expect(x.isOdd()).toBe(true)
+    expect(x.isEven()).toBe(false)
+
+    x = int(-2, 2)
+
+    expect(x.isOdd()).toBe(false)
+    expect(x.isEven()).toBe(true)
+
+    x = uint(4, 2)
+
+    expect(x.isOdd()).toBe(false)
+    expect(x.isEven()).toBe(true)
+
+    x = uint(0, 2)
+
+    expect(x.isOdd()).toBe(false)
+    expect(x.isEven()).toBe(true)
+
+    x = uint(1, 2)
+
+    expect(x.isOdd()).toBe(true)
+    expect(x.isEven()).toBe(false)
+})
+
+test('Power', () => {
+    let x = int(2, 4)
+    let y = int(3, 4)
+
+    expect(x['**'](y).toNumber()).toBe(-8)
+    expect(y['**'](x).toNumber()).toBe(-7)
+
+    x = x.toUint()
+    expect(x.pow(y).toNumber()).toBe(8)
+    expect(y.pow(x).toNumber()).toBe(-7)
+
+    y = y.toUint()
+    expect(x.pow(y).toNumber()).toBe(8)
+    expect(y.pow(x).toNumber()).toBe(9)
+
+    expect(y.pow(5).toBinary()).toBe('0011')
+    y = y.extend(4)
+    expect(y.pow(5).toBinary()).toBe('11110011')
+
+    x = x.extend(60)
+    expect(x.pow(31).toBinary()).toBe(
+        '0000000000000000000000000000000010000000000000000000000000000000'
+    )
+    expect(x.pow(63).toBinary()).toBe(
+        '1000000000000000000000000000000000000000000000000000000000000000'
+    )
+    expect(x.pow(64).sub(1).toBinary()).toBe(
+        '1111111111111111111111111111111111111111111111111111111111111111'
+    )
+
+    expect(x.pow(0).toNumber()).toBe(1)
+    expect(y.pow(0).toNumber()).toBe(1)
+
+    expect(() => {
+        x.pow(int(-1, 2))
+    }).toThrow()
+
+    y = int(-3, 8)
+
+    expect(y.pow(3).toNumber()).toBe(-27)
+})
+
 test('Shift', () => {
     let x = int(5, 8)
     let y = x.leftShift(3)
@@ -425,6 +590,10 @@ test('Shift', () => {
     expect(y.toBinary()).toEqual('00101000')
     expect(z.toBinary()).toEqual('01000000')
 
+    x = int(-5, 8).rightShift(72)
+
+    expect(x.toBinary()).toEqual('00000000')
+
     x = int(-5, 8)
     y = x.rightShift(3)
     z = y['>>'](3)
@@ -432,6 +601,10 @@ test('Shift', () => {
     expect(x.toBinary()).toEqual('11111011')
     expect(y.toBinary()).toEqual('00011111')
     expect(z.toBinary()).toEqual('00000011')
+
+    x = int(-5, 8).leftShift(72)
+
+    expect(x.toBinary()).toEqual('00000000')
 })
 
 test('Logic', () => {
@@ -487,6 +660,17 @@ test('Comparison', () => {
     expect(x.eq(3)).toBe(true)
     expect(x.eq(4)).toBe(false)
     expect(y['=='](b)).toBe(false)
+
+    expect(x.neq(y)).toBe(true)
+    expect(x.neq(z)).toBe(true)
+    expect(x.neq(a)).toBe(true)
+    expect(y.neq(z)).toBe(true)
+    expect(y.neq(a)).toBe(true)
+    expect(z.neq(a)).toBe(false)
+    expect(x.neq(2)).toBe(true)
+    expect(x.neq(3)).toBe(false)
+    expect(x.neq(4)).toBe(true)
+    expect(y['!='](b)).toBe(true)
 
     expect(x.gt(y)).toBe(true)
     expect(x.gt(z)).toBe(false)
