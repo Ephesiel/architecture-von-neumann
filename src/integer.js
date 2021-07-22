@@ -1,6 +1,10 @@
+import { NB_BITS_ARCH } from '@/constants'
+
 const LOWER = 1
 const EQUAL = 2
 const GREATER = 3
+const SIGNED = true
+const UNSIGNED = false
 
 /**
  * ## Motivation :
@@ -284,7 +288,7 @@ export default class Integer {
     // ------------------------------------------------------------------------
     // Constructeur.
 
-    constructor(value, size, signed = true) {
+    constructor(value, size, signed = SIGNED) {
         size = Number(size)
         if (size <= 0 || isNaN(size)) {
             size = 1
@@ -805,6 +809,10 @@ export default class Integer {
         return this.compare(x) === EQUAL
     }
 
+    neq(x) {
+        return !this.eq(x)
+    }
+
     gt(x) {
         return this.compare(x) === GREATER
     }
@@ -865,6 +873,10 @@ Integer.prototype['=='] = function (x) {
     return this.eq(x)
 }
 
+Integer.prototype['!='] = function (x) {
+    return this.neq(x)
+}
+
 Integer.prototype['<'] = function (x) {
     return this.lt(x)
 }
@@ -881,42 +893,22 @@ Integer.prototype['>='] = function (x) {
     return this.ge(x)
 }
 
-export function int(value, size = 32) {
-    return new Integer(value, size, true)
+export function int(value, size = NB_BITS_ARCH, signed = SIGNED) {
+    return new Integer(value, size, signed)
 }
 
-export function uint(value, size = 32) {
-    return new Integer(value, size, false)
+export function uint(value, size = NB_BITS_ARCH) {
+    return new Integer(value, size, UNSIGNED)
 }
 
-export function int8(value) {
-    return new Integer(value, 8, true)
+export function maxOf(bits, signed = UNSIGNED) {
+    if (signed === UNSIGNED) {
+        return uint(0, bits).not()
+    } else {
+        return int(1, bits)
+            .leftShift(bits - 1)
+            .not()
+    }
 }
 
-export function uint8(value) {
-    return new Integer(value, 8, false)
-}
-
-export function int16(value) {
-    return new Integer(value, 16, true)
-}
-
-export function uint16(value) {
-    return new Integer(value, 16, false)
-}
-
-export function int32(value) {
-    return new Integer(value, 32, true)
-}
-
-export function uint32(value) {
-    return new Integer(value, 32, false)
-}
-
-export function int64(value) {
-    return new Integer(value, 64, true)
-}
-
-export function uint64(value) {
-    return new Integer(value, 64, false)
-}
+export { SIGNED, UNSIGNED }

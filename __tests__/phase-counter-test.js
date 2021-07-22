@@ -4,8 +4,9 @@ import PhaseCounter from '@/models/phase-counter-model'
 import Clock from '@/models/clock'
 import SignalManager from '@/models/signal-manager'
 import { Signals } from '@/globals'
+import { UNSIGNED } from '@/integer'
 
-const busOutput = new Bus(1, false)
+const busOutput = new Bus('', 1, UNSIGNED)
 const phaseCounter = new PhaseCounter(busOutput)
 
 test('Updating output', () => {

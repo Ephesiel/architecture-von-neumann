@@ -5,8 +5,8 @@ import Clock from '@/models/clock'
 import Debug, { Level } from '@/debug'
 import { uint } from '@/integer'
 
-const iBus = new Bus(4, false)
-const oBus = new Bus(1, false)
+const iBus = new Bus('input bus', 4, false)
+const oBus = new Bus('output bus', 1, false)
 
 let a = 0
 let b = 5

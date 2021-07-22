@@ -3,11 +3,11 @@ import Bus from '@/models/bus-model'
 import Multiplexer from '@/models/multiplexer-model'
 import Clock from '@/models/clock'
 import Debug, { Level } from '@/debug'
-import { int } from '@/integer'
+import { UNSIGNED, int } from '@/integer'
 
 const inputBus = new Bus()
 const inputBus2 = new Bus()
-const valueBus = new Bus(1, false)
+const valueBus = new Bus('Bus valeur', 1, UNSIGNED)
 const outputBus = new Bus()
 const mult = new Multiplexer([inputBus, inputBus2], outputBus, valueBus)
 
@@ -40,7 +40,7 @@ test('Too many input buses', () => {
     const m = new Multiplexer(
         [inputBus, inputBus2, outputBus],
         outputBus,
-        new Bus(1, false)
+        new Bus('test', 1, UNSIGNED)
     )
     expect(Debug.getMessages(Level.CRIT).length).toBe(size + 1)
     const size2 = Debug.getMessages(Level.WARN).length
@@ -50,6 +50,10 @@ test('Too many input buses', () => {
 
 test('Not enough input buses', () => {
     const size = Debug.getMessages(Level.WARN).length
-    new Multiplexer([inputBus, inputBus2], outputBus, new Bus(2))
+    new Multiplexer(
+        [inputBus, inputBus2],
+        outputBus,
+        new Bus('test2', 4, UNSIGNED)
+    )
     expect(Debug.getMessages(Level.WARN).length).toBe(size + 1)
 })
