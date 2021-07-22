@@ -20,7 +20,7 @@ import {
 } from '@/globals'
 import Helper from '@/helper'
 import MMParser from '@/microprogrammed-memory-parser'
-import { uint } from '@/integer'
+import { UNSIGNED, uint } from '@/integer'
 /**
  * Implémentation du séquenceur d'instructions.
  *
@@ -71,17 +71,49 @@ export default class Sequencer {
 
     constructor(busInputCond, busOutputCond, busInputCOPMA) {
         // Instanciation des bus
-        this.busSelMS = new Bus(NB_BITS_SELMS, false)
-        this.busNextAddr = new Bus(MPM_BITS_ADDRESSES, false)
-        this.busInputMM = new Bus(MPM_BITS_ADDRESSES, false)
-        this.busOutputMM = new Bus(NB_BITS_MPM, false)
-        this.busOutputConditionMult = new Bus(MPM_BITS_ADDRESSES, false)
-        this.busOutputNextAddrMult = new Bus(MPM_BITS_ADDRESSES, false)
-        this.busOutputPhaseMult = new Bus(MPM_BITS_ADDRESSES, false)
-        this.busOutputCOPMA = new Bus(MPM_BITS_ADDRESSES, false)
-        this.busOutputFetch = new Bus(MPM_BITS_ADDRESSES, false)
-        this.busOutputPhase = new Bus(1, false)
-        this.busOutputPlus1 = new Bus(MPM_BITS_ADDRESSES, false)
+        this.busSelMS = new Bus('Bus REMM -> selMS', NB_BITS_SELMS, UNSIGNED)
+        this.busNextAddr = new Bus(
+            'Bus REMM -> adresse suivante',
+            MPM_BITS_ADDRESSES,
+            UNSIGNED
+        )
+        this.busInputMM = new Bus(
+            'Bus RAMM -> MM',
+            MPM_BITS_ADDRESSES,
+            UNSIGNED
+        )
+        this.busOutputMM = new Bus('Bus MM -> REMM', NB_BITS_MPM, UNSIGNED)
+        this.busOutputConditionMult = new Bus(
+            'Bus cond -> mult',
+            MPM_BITS_ADDRESSES,
+            UNSIGNED
+        )
+        this.busOutputNextAddrMult = new Bus(
+            'Bus mult -> phase mult',
+            MPM_BITS_ADDRESSES,
+            UNSIGNED
+        )
+        this.busOutputPhaseMult = new Bus(
+            'Bus phase -> RAMM',
+            MPM_BITS_ADDRESSES,
+            UNSIGNED
+        )
+        this.busOutputCOPMA = new Bus(
+            'Bus COPMA -> mult',
+            MPM_BITS_ADDRESSES,
+            UNSIGNED
+        )
+        this.busOutputFetch = new Bus(
+            'Bus fetch -> phase',
+            MPM_BITS_ADDRESSES,
+            UNSIGNED
+        )
+        this.busOutputPhase = new Bus('Bus phaseCounter -> phase', 1, UNSIGNED)
+        this.busOutputPlus1 = new Bus(
+            'Bus plus1 -> mult',
+            MPM_BITS_ADDRESSES,
+            UNSIGNED
+        )
 
         // Instanciation des registres
         this.RAMM = new Register(

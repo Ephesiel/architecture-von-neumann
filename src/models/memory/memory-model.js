@@ -1,6 +1,6 @@
 import Debug from '@/debug'
 import Integer, { uint, int } from '@/integer'
-import { NB_BITS_ARCH } from '@/globals'
+//import { NB_BITS_ARCH } from '@/globals'
 
 /**
  * La mémoire est un tableau ayant 2^n entrées. Chacune est référencée par une
@@ -85,7 +85,7 @@ export default class Memory {
         }
 
         // Renvoie 0 par défaut
-        return int(0, NB_BITS_ARCH)
+        return int(0)
     }
 
     /**

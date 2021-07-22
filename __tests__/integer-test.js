@@ -1,8 +1,8 @@
 import { test, expect } from '@jest/globals'
-import { int, uint, int32, int16, uint16, int64, int8 } from '@/integer'
+import { int, uint } from '@/integer'
 
 test('Basic', () => {
-    let x = int32(0)
+    let x = int(0, 32)
 
     expect(x.toNumber()).toBe(0)
     expect(x.toBigInt()).toBe(0n)
@@ -10,7 +10,7 @@ test('Basic', () => {
     expect(x.toString()).toEqual('0')
     expect(x.getSize()).toEqual(32)
 
-    x = int32(72)
+    x = int(72, 32)
 
     expect(x.toNumber()).toBe(72)
     expect(x.toBigInt()).toBe(72n)
@@ -20,25 +20,25 @@ test('Basic', () => {
 })
 
 test('Unsigned', () => {
-    let x = int32(0)
+    let x = int(0, 32)
 
     expect(x.toNumber()).toBe(0)
     expect(x.toBigInt()).toBe(0n)
     expect(x.toBinary()).toEqual('00000000000000000000000000000000')
 
-    x = uint16(2 ** 16 - 1)
+    x = uint(2 ** 16 - 1, 16)
 
     expect(x.toNumber()).toBe(65535)
     expect(x.toBigInt()).toBe(65535n)
     expect(x.toBinary()).toEqual('1111111111111111')
 
-    x = int16(2 ** 16)
+    x = int(2 ** 16, 16)
 
     expect(x.toNumber()).toBe(0)
     expect(x.toBigInt()).toBe(0n)
     expect(x.toBinary()).toEqual('0000000000000000')
 
-    x = int16(2 ** 16 - 1)
+    x = int(2 ** 16 - 1, 16)
 
     expect(x.toNumber()).toBe(-1)
     expect(x.toBigInt()).toBe(-1n)
@@ -58,28 +58,28 @@ test('Unsigned', () => {
 })
 
 test('Big integer', () => {
-    let x = int64(0)
+    let x = int(0, 64)
 
     expect(x.toBigInt()).toBe(0n)
     expect(x.toBinary()).toEqual(
         '0000000000000000000000000000000000000000000000000000000000000000'
     )
 
-    x = int64(-1)
+    x = int(-1, 64)
 
     expect(x.toBigInt()).toBe(-1n)
     expect(x.toBinary()).toEqual(
         '1111111111111111111111111111111111111111111111111111111111111111'
     )
 
-    x = int64(9223372036854775807n)
+    x = int(9223372036854775807n, 64)
 
     expect(x.toBigInt()).toBe(9223372036854775807n)
     expect(x.toBinary()).toEqual(
         '0111111111111111111111111111111111111111111111111111111111111111'
     )
 
-    x = int64(-9223372036854775808n)
+    x = int(-9223372036854775808n, 64)
 
     expect(x.toBigInt()).toBe(-9223372036854775808n)
     expect(x.toBinary()).toEqual(
@@ -88,7 +88,7 @@ test('Big integer', () => {
 })
 
 test('From iterable', () => {
-    let x = int16('0011')
+    let x = int('0011', 16)
 
     expect(x.toNumber()).toBe(3)
     expect(x.toBigInt()).toBe(3n)
@@ -100,7 +100,7 @@ test('From iterable', () => {
     expect(x.toBigInt()).toBe(-1n)
     expect(x.toBinary()).toEqual('11')
 
-    x = int16([0, 0, 1, 1])
+    x = int([0, 0, 1, 1], 16)
 
     expect(x.toNumber()).toBe(3)
     expect(x.toBigInt()).toBe(3n)
@@ -205,7 +205,7 @@ test('Size', () => {
 })
 
 test('Copy', () => {
-    let x = int32(-40)
+    let x = int(-40, 32)
     let y = x.copy()
 
     expect(x.getSize()).toBe(y.getSize())
@@ -221,7 +221,7 @@ test('Copy', () => {
 })
 
 test('Slice', () => {
-    let x = int8(-44)
+    let x = int(-44, 8)
     let y = x.slice(0, 5)
 
     expect(x.toBinary()).toEqual('11010100')
@@ -262,8 +262,8 @@ test('Absolute', () => {
 })
 
 test('Addition', () => {
-    let x = int16(3)
-    let y = int16(3)
+    let x = int(3, 16)
+    let y = int(3, 16)
     let z = x['+'](y)
 
     expect(z.toNumber()).toBe(y['+'](x).toNumber())
@@ -271,8 +271,8 @@ test('Addition', () => {
     expect(z.toBigInt()).toBe(6n)
     expect(z.toBinary()).toEqual('0000000000000110')
 
-    x = int16(2)
-    y = int16(-5)
+    x = int(2, 16)
+    y = int(-5, 16)
     z = x['+'](y)
 
     expect(z.toNumber()).toBe(y['+'](x).toNumber())
@@ -280,7 +280,7 @@ test('Addition', () => {
     expect(z.toBigInt()).toBe(-3n)
     expect(z.toBinary()).toEqual('1111111111111101')
 
-    x = int16(2)
+    x = int(2, 16)
     z = x['+'](-8)
 
     expect(z.toNumber()).toBe(-6)
@@ -401,14 +401,14 @@ test('Multiplication', () => {
 })
 
 test('Opposite', () => {
-    let x = int16(3)
+    let x = int(3, 16)
     x = x['-']()
 
     expect(x.toNumber()).toBe(-3)
     expect(x.toBigInt()).toBe(-3n)
     expect(x.toBinary()).toEqual('1111111111111101')
 
-    x = uint16(3)
+    x = uint(3, 16)
     x = x.opposite()
 
     expect(x.toNumber()).toBe(65533)
@@ -417,7 +417,7 @@ test('Opposite', () => {
 })
 
 test('Shift', () => {
-    let x = int8(5)
+    let x = int(5, 8)
     let y = x.leftShift(3)
     let z = y['<<'](3)
 
@@ -425,7 +425,7 @@ test('Shift', () => {
     expect(y.toBinary()).toEqual('00101000')
     expect(z.toBinary()).toEqual('01000000')
 
-    x = int8(-5)
+    x = int(-5, 8)
     y = x.rightShift(3)
     z = y['>>'](3)
 

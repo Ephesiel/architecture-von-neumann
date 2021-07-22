@@ -15,7 +15,7 @@ import {
     NB_BITS_COPMA,
     NB_BITS_ADDRESSES,
 } from '@/globals'
-import { uint } from '@/integer'
+import { UNSIGNED, uint } from '@/integer'
 
 /**
  * Représentation de l'architecture d'un ordinateur.
@@ -80,15 +80,19 @@ export default class VonNeumannArchitecture {
 
     constructor() {
         // Instanciation des bus
-        this.bus1 = new Bus(NB_BITS_ARCH)
-        this.bus2 = new Bus(NB_BITS_ARCH)
-        this.bus3 = new Bus(NB_BITS_ARCH)
-        this.busCondInput = new Bus(NB_BITS_CONDS, false)
-        this.busCondOutput = new Bus(1, false)
-        this.busCOPMA = new Bus(NB_BITS_COPMA, false)
-        this.busSM = new Bus(NB_BITS_ARCH)
-        this.busEM = new Bus(NB_BITS_ARCH)
-        this.busRAM = new Bus(NB_BITS_ADDRESSES, false)
+        this.bus1 = new Bus('Bus 1')
+        this.bus2 = new Bus('Bus 2')
+        this.bus3 = new Bus('Bus 3')
+        this.busCondInput = new Bus(
+            'Bus entrée condition',
+            NB_BITS_CONDS,
+            UNSIGNED
+        )
+        this.busCondOutput = new Bus('Bus sortie condition', 1, UNSIGNED)
+        this.busCOPMA = new Bus('Bus envoie COPMA', NB_BITS_COPMA, UNSIGNED)
+        this.busSM = new Bus('Bus sortie mémoire')
+        this.busEM = new Bus('Bus entrée mémoire')
+        this.busRAM = new Bus('Bus RAM -> Mémoire', NB_BITS_ADDRESSES, UNSIGNED)
 
         // Instanciation des registres
         this.CO = Helper.makeArchReg(
@@ -209,28 +213,22 @@ export default class VonNeumannArchitecture {
 
     setupFlagRegister() {
         const isANull = () => {
-            return uint(Number(this.RA.getCurrentValue().toNumber() === 0), 1)
+            return uint(Number(this.RA.getCurrentValue().eq(0)), 1)
         }
         const isBNull = () => {
-            return uint(Number(this.RB.getCurrentValue().toNumber() === 0), 1)
+            return uint(Number(this.RB.getCurrentValue().eq(0)), 1)
         }
         const aGreaterThan0 = () => {
-            return uint(Number(this.RA.getCurrentValue().toNumber() > 0), 1)
+            return uint(Number(this.RA.getCurrentValue().gt(0)), 1)
         }
         const bGreaterThan0 = () => {
-            return uint(Number(this.RB.getCurrentValue().toNumber() > 0), 1)
+            return uint(Number(this.RB.getCurrentValue().gt(0)), 1)
         }
         const aPair = () => {
-            return uint(
-                Number(this.RA.getCurrentValue().and(1).toNumber() === 0),
-                1
-            )
+            return uint(Number(this.RA.getCurrentValue().and(1).eq(0)), 1)
         }
         const bPair = () => {
-            return uint(
-                Number(this.RB.getCurrentValue().and(1).toNumber() === 0),
-                1
-            )
+            return uint(Number(this.RB.getCurrentValue().and(1).eq(0)), 1)
         }
         // Condition 0 => pas de condition
         this.flagRegister.setCondition(uint(1), isANull)

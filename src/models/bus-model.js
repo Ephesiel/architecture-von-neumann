@@ -1,10 +1,7 @@
-import {
-    MAXIMUM_ALLOWED_BUS_POWER_TIME,
-    MAX_NUMBER_OF_ARCH,
-} from '@/globals.js'
+import { MAXIMUM_ALLOWED_BUS_POWER_TIME, NB_BITS_ARCH } from '@/globals.js'
 import Clock from '@/models/clock'
 import Debug from '@/debug'
-import Integer, { uint, int } from '@/integer'
+import Integer, { UNSIGNED, SIGNED, int, maxOf } from '@/integer'
 
 /**
  * Représentation abstraite d'un bus de données.
@@ -15,9 +12,10 @@ import Integer, { uint, int } from '@/integer'
  *   * Le courant, qui informe si un composant a transféré des données dans le
  *     bus durant les derniers instants (en Unité de Temps d'Architecture).
  *
- * Le bus est composé de NB_BITS_ARCH câbles, soit NB_BITS_ARCH bits. Ainsi,
- * sa capacité ne peut pas dépasser 2^NB_BITS_ARCH - 1. Une erreur sera
- * déclenchée si la valeur entrée le fait.
+ * Le bus est composé de n bits. L'utilisateur peut définir le nombre de bits
+ * d'un bus lors de la construction de celui-ci. Par défaut, un bus est composé
+ * de NB_BITS_ARCH bits. Sa capacité ne peut pas dépasser 2^n - 1. Une erreur
+ * sera déclenchée si la valeur entrée est supérieure.
  *
  * Si un bus n'a plus de courant, sa valeur deviendra 0. C'est un choix que
  * nous avons prit pour essayer de garder une représentation (informatique)
@@ -42,66 +40,85 @@ import Integer, { uint, int } from '@/integer'
 export default class Bus {
     // ------------------------------------------------------------------------
     // Attributs.
+    name //: String
     value //: Integer
+    defaultValue //: Integer
     timeSinceLastModification //: Number
     power //: Boolean
-    maxValue //: Integer
-    bits //: Number
-    signed //: Boolean
 
     // ------------------------------------------------------------------------
     // Constructeur.
 
-    constructor(bits, signed = true) {
+    constructor(name = '', bits = NB_BITS_ARCH, signed = SIGNED) {
         Clock.register(this.update.bind(this))
 
-        if (signed) {
-            this.value = int(0, bits)
-        } else {
-            this.value = uint(0, bits)
-        }
-        this.signed = signed
+        this.name = name
+        this.value = int(0, bits, signed)
+        this.defaultValue = this.value.copy()
         this.timeSinceLastModification = 0
         this.power = false
-        this.bits = bits
-
-        if (typeof bits === 'undefined') {
-            this.maxValue = MAX_NUMBER_OF_ARCH
-        } else {
-            this.maxValue = uint(0, bits).not()
-        }
     }
 
     // ------------------------------------------------------------------------
     // Méthodes publiques.
 
+    /**
+     * Affecte la valeur `val` au bus. `val` doit être un `Integer`, et de même
+     * signe que la valeur stockée actuellement dans le bus. Sinon, une erreur
+     * critique va être envoyée, et la valeur ne sera pas affectée au bus.
+     *
+     * Pour être précis, une erreur sera envoyée si une des deux valeur est
+     * `unsigned`, et l'autre négative :
+     * ```js
+     * const bus = new Bus() // bits = NB_BITS_ARCH, signed = SIGNED
+     * const anotherBus = new Bus('', NB_BITS_ARCH, UNSIGNED)
+     *
+     * bus.setValue(int(-5)) // OK
+     * bus.setValue(uint(5)) // OK
+     *
+     * anotherBus.setValue(uint(5)) // OK
+     * anotherBus.setValue(int(5))  // OK
+     * anotherBus.setValue(int(-5)) // FAIL
+     * ```
+     *
+     * Pas besoin de se préoccuper de la taille en bits de `val`, si elle ne
+     * correspond pas à celle du bus, alors elle sera automatiquement adaptée,
+     * en réévaluant `val` avec le nombre de bits du bus (et son signe). Si
+     * `val` et la valeur réévaluée correspondent, alors il n'y aura pas de
+     * problème. Sinon, une erreur sera envoyée.
+     *
+     * @param {Integer} val
+     */
     setValue(val) {
-        if (!(val instanceof Integer)) {
-            Debug.crit('La valeur à affecter au bus doit être un nombre.')
+        if (
+            !(val instanceof Integer) ||
+            (val.isNegative() && this.value.signed === UNSIGNED)
+        ) {
+            Debug.crit(
+                `La valeur à affecter au bus ${this.name} (${val}) doit être un nombre, et doit` +
+                    ` être de même signe que la valeur actuelle.`
+            )
             return
         }
 
-        if (val.getSize() > this.bits) {
-            const trunc = this.signed
-                ? int(val, this.bits)
-                : uint(val, this.bits)
-            if (trunc.toBigInt() === val.toBigInt()) {
-                val = trunc
-            } else {
-                Debug.crit(
-                    `Nombre ${val.toBigInt()} trop grand pour ce bus (qui peut contenir au maximum ${
-                        this.bits
-                    } bits)`
-                )
-                return
-            }
+        // On est obligés de ``parser´´ la valeur envoyée pour garder le même
+        // signe.
+        const parsedVal = int(val, this.value.getSize(), this.value.signed)
+
+        if (val.getSize() > this.value.getSize() && parsedVal.neq(val)) {
+            console.log(this.value.getSize())
+            Debug.crit(
+                `Nombre ${val.toString()} trop grand pour le bus ${
+                    this.name
+                } (qui a pour valeur maximum ${maxOf(
+                    this.value.getSize(),
+                    this.value.signed
+                )})`
+            )
+            return
         }
 
-        if (this.signed) {
-            this.value = int(val, this.bits)
-        } else {
-            this.value = uint(val, this.bits)
-        }
+        this.value = parsedVal
         this.timeSinceLastModification = 0
         this.power = true
     }
@@ -118,7 +135,7 @@ export default class Bus {
         this.timeSinceLastModification += Number(ATU)
         if (this.timeSinceLastModification > MAXIMUM_ALLOWED_BUS_POWER_TIME) {
             this.power = false
-            this.value = int(0, this.bits)
+            this.value = this.defaultValue
         }
     }
 }

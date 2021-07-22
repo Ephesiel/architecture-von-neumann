@@ -7,7 +7,7 @@ import SignalManager from '@/models/signal-manager'
 import Helper from '@/helper'
 import MMParser from '@/microprogrammed-memory-parser'
 
-const inputBus = new Bus(64)
+const inputBus = new Bus('64 bits', 64)
 const nextAdr = new Bus()
 const selMS = new Bus()
 const cond = new Bus()

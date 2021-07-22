@@ -8,7 +8,6 @@ import {
     NB_BITS_SELMS,
     NB_BITS_ADR,
 } from '@/globals'
-import { uint } from '@/integer'
 
 /**
  * Implémentation du Registre d'Échange de la Mémoire Microprogrammée (ERMM en
@@ -121,19 +120,21 @@ export default class ERMM extends Register {
     }
 
     formatValueForAdr() {
-        return this.getCurrentValue().rightShift(NB_BITS_MPM - NB_BITS_ADR)
+        return this.getCurrentValue().slice(
+            NB_BITS_MPM - NB_BITS_ADR,
+            NB_BITS_ADR
+        )
     }
 
     formatValueForSelMS() {
-        return this.getCurrentValue()
-            .rightShift(NB_BITS_MPM - NB_BITS_ADR - NB_BITS_SELMS)
-            .and(uint(0, NB_BITS_SELMS).not())
+        return this.getCurrentValue().slice(
+            NB_BITS_MPM - NB_BITS_ADR - NB_BITS_SELMS,
+            NB_BITS_SELMS
+        )
     }
 
     formatValueForCond() {
-        return this.getCurrentValue()
-            .rightShift(NB_BITS_INSTR)
-            .and(uint(0, NB_BITS_CONDS).not())
+        return this.getCurrentValue().slice(NB_BITS_INSTR, NB_BITS_CONDS)
     }
 
     updateSignals() {

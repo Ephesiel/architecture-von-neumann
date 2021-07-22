@@ -145,7 +145,9 @@ export default {
             for (const k in this.arch.sequencer.phaseMult.inputs) {
                 obj[k] = {
                     key: k,
-                    val: this.arch.sequencer.phaseMult.inputs[k].getValue(),
+                    val: this.arch.sequencer.phaseMult.inputs[k]
+                        .getValue()
+                        .toNumber(),
                 }
             }
             obj['val'] = {
