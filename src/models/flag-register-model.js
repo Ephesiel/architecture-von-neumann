@@ -31,7 +31,7 @@ export default class FlagRegister {
     // Constructeur.
 
     constructor(n, inputBus, outputBus) {
-        Clock.register(this.update.bind(this))
+        Clock.register(this)
         this.conditions = Array(n).fill(() => {
             return int(0)
         })

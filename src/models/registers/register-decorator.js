@@ -49,4 +49,8 @@ export default class RegisterDecorator extends Register {
     getOutputs() {
         return this.register.getOutputs()
     }
+
+    getName() {
+        return this.register.getName()
+    }
 }

@@ -50,7 +50,7 @@ export default class Bus {
     // Constructeur.
 
     constructor(name = '', bits = NB_BITS_ARCH, signed = SIGNED) {
-        Clock.register(this.update.bind(this))
+        Clock.register(this)
 
         this.name = name
         this.value = int(0, bits, signed)

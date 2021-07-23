@@ -33,7 +33,7 @@ export default class PhaseCounter {
     // Constructeur.
 
     constructor(busOutput) {
-        Clock.register(this.update.bind(this))
+        Clock.register(this)
 
         this.endSignalSent = false
         this.currentPhase = uint(1)

@@ -29,7 +29,7 @@ export default class MemoryWriter {
         this.addressBus = addressBus
         this.valueBus = valueBus
 
-        Clock.register(this.update.bind(this))
+        Clock.register(this)
     }
 
     // ------------------------------------------------------------------------

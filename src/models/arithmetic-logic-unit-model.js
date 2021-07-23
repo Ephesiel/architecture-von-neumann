@@ -56,7 +56,7 @@ export default class ArithmeticLogicUnit {
         this.outputBuses = outputBuses
         this.operations = {}
 
-        Clock.register(this.update.bind(this))
+        Clock.register(this)
     }
 
     // ------------------------------------------------------------------------
