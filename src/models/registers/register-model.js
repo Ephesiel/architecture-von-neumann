@@ -61,7 +61,7 @@ export default class Register {
     // Constructeur.
 
     constructor(name, inputs, outputs, signalClockTick) {
-        Clock.register(this.update.bind(this))
+        Clock.register(this)
 
         this.inputs = inputs
         this.outputs = outputs
@@ -157,5 +157,9 @@ export default class Register {
 
     getOutputs() {
         return this.outputs
+    }
+
+    getName() {
+        return this.name
     }
 }

@@ -47,7 +47,7 @@ export default class Multiplexer {
             return
         }
 
-        Clock.register(this.update.bind(this))
+        Clock.register(this)
 
         this.inputs = inputs
         this.output = output

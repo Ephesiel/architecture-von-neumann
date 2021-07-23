@@ -35,7 +35,7 @@ export default class Insulator {
     // Constructeur.
 
     constructor(outputBus, powerOnSignal) {
-        Clock.register(this.update.bind(this))
+        Clock.register(this)
 
         this.value = int(0)
         this.outputBus = outputBus

@@ -17,7 +17,7 @@ export default class Plus1 {
     // Constructeur.
 
     constructor(input, output) {
-        Clock.register(this.update.bind(this))
+        Clock.register(this)
 
         this.input = input
         this.output = output
