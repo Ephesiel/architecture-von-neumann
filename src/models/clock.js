@@ -1,4 +1,5 @@
 import SignalManager from '@/models/signal-manager'
+import { reactive } from 'vue'
 import { ATU_BETWEEN_UPDATE } from '@/globals'
 
 /**
@@ -12,14 +13,14 @@ import { ATU_BETWEEN_UPDATE } from '@/globals'
  * faut l'enregistrer dans l'horloge :
  *
  * ```js
- * Clock.register(myUpdateFunction)
+ * Clock.register('myUpdateFunction')
  * ```
  *
- * Dans le cas d'une méthode, si vous voulez pouvoir utiliser le mot clé `this`
- * n'oubliez pas de bind l'objet dans la callback :
+ * Dans le cas d'une méthode, il faut donner l'objet, puis la méthode comme une
+ * string
  *
  * ```js
- * Clock.register(this.myUpdateFunction.bind(this))
+ * Clock.register(this, 'myUpdateMethod')
  * ```
  *
  * La méthode/fonction donnée peut prendre jusqu'à deux arguments :
@@ -74,10 +75,40 @@ class Clock {
      * Cette méthode doit être appelée pour ajouter une fonction/méthode à
      * appeler à chaque update.
      *
-     * @param {Callback} callback méthode qui sera appelée toutes les 1 UTA
+     * Elle peut prendre un ou deux paramètres.
+     *
+     * ```js
+     * // Enregistre la méthode `this.update`
+     * Clock.register(this)
+     *
+     * // Enregistre la méthode `this.maMethode`
+     * Clock.register(this, 'maMethode')
+     *
+     * // Enregistre la fonction 'maFonction'
+     * Clock.register('maFonction')
+     *
+     * // Enregistre la fonction anonyme associée
+     * Clock.register(() => { console.log('updated!') })
+     *
+     * // Si vous voulez modifier l'objet actuel dans une méthode anonyme, il
+     * // faut donner un paramètre à la méthode qui sera équivalent à this.
+     * // Pour modifier une valeur de l'objet, il faudra utiliser ce paramètre.
+     * Clock.register(this, (obj) => {
+     *     obj.prop += 3 // va bien augmenter la propriété prop de l'objet this
+     *     this.prop += 3 // Ne va rien augmenter du tout
+     * })
+     * ```
      */
-    register(callback) {
-        this.updateCallbacks.push(callback)
+    register(obj, fun = 'update') {
+        if (typeof obj === 'function') {
+            this.updateCallbacks.push(obj)
+        } else if (typeof obj[fun] === 'function') {
+            this.updateCallbacks.push(obj[fun].bind(reactive(obj)))
+        } else if (typeof fun === 'function') {
+            this.updateCallbacks.push(() => {
+                fun(reactive(obj))
+            })
+        }
     }
 
     /**
