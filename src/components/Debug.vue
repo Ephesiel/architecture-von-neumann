@@ -1,7 +1,5 @@
 <template>
-    <!--<svg :width="width" :height="height">
-        <Sequencer :sequencer-model="arch.sequencer"></Sequencer>
-    </svg>
+    <!--
     <button @click="arch.stepByStep()">Pas à pas</button><br />
     <button @click="arch.phaseByPhase()">Phase par phase</button>-->
     <svg
@@ -56,16 +54,13 @@
             :x="x(3)"
             :y="y(1)"
         />
-
-        <!--
-        <Register
+        <InstructionRegister
             :register-model="arch.RI"
             :width="componentWidth"
             :height="componentHeight"
-            :x="x(3)"
-            :y="50"
+            :x="x(4)"
+            :y="y(1)"
         />
-        <Sequencer :sequencer-model="arch.sequencer"></Sequencer>-->
 
         <!-- L3 RAM Mémoire RE -->
         <Register
@@ -88,14 +83,14 @@
 
 <script>
 import Architecture from '@/models/von-neumann-architecture-model'
-//import Sequencer from '@/components/Sequencer.vue'
 import Register from '@/components/Register.vue'
+import InstructionRegister from '@/components/InstructionRegister.vue'
 
 export default {
     name: 'Debug',
     components: {
-        //Sequencer,
         Register,
+        InstructionRegister,
     },
     data() {
         return {
