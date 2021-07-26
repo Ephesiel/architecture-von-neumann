@@ -79,6 +79,8 @@
         />
         Désolé, votre navigateur ne supporte pas le SVG.
     </svg>
+    <button @click="arch.stepByStep()">Pas à pas</button><br />
+    <button @click="arch.phaseByPhase()">Phase par phase</button>
 </template>
 
 <script>
@@ -102,7 +104,7 @@ export default {
             return this.$store.state.svgWidth
         },
         height() {
-            return this.$store.state.svgHeight
+            return this.$store.state.svgHeight - 400
         },
         componentWidth() {
             // 5 composants sur une ligne + marge d'un composant à gauche et à droite

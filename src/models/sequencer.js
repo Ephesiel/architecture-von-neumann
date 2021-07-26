@@ -201,9 +201,49 @@ export default class Sequencer {
         //   * Signals : 0b000010000010000000000000000100000000000000000000
         this.microprogammedMemory.setValue(FETCH_PHASE1_ADDR.add(2), FETCH_PHI3)
 
+        // LOAD A, Imm, 10
+        // Phi4 : RIB1 XS eRA Fin
+        //   * Adresse Suivante : 256, pas besoin
+        //   * selMS : 3, osef
+        //   * Cond : 0, pas besoin
         this.microprogammedMemory.setValue(
-            uint(0),
-            MMParser.parse(0, 0, 0, [Signals.FIN])
+            uint(1),
+            MMParser.parse(256, 3, 0, [Signals.RIB1, Signals.XS, Signals.eRA])
+        )
+
+        // LOAD B, Imm, 12
+        // Phi4 : RIB1 XS eRB Fin
+        //   * Adresse Suivante : 256, pas besoin
+        //   * selMS : 3, osef
+        //   * Cond : 0, pas besoin
+        this.microprogammedMemory.setValue(
+            uint(11),
+            MMParser.parse(256, 3, 0, [Signals.RIB1, Signals.XS, Signals.eRB])
+        )
+
+        // A+B -> C
+        // Phi4 : RAB1 RBB2 ADD eRC Fin
+        //   * Adresse Suivante : 256, pas besoin
+        //   * selMS : 3, osef
+        //   * Cond : 0, pas besoin
+        this.microprogammedMemory.setValue(
+            uint(103),
+            MMParser.parse(256, 3, 0, [
+                Signals.RAB1,
+                Signals.RBB2,
+                Signals.ADD,
+                Signals.eRC,
+            ])
+        )
+
+        this.microprogammedMemory.setValue(
+            uint(256),
+            MMParser.parse(0, 0, 0, [
+                Signals.COB1,
+                Signals.XP1,
+                Signals.eCO,
+                Signals.FIN,
+            ])
         )
     }
 }

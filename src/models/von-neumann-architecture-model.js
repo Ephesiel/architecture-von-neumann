@@ -14,6 +14,7 @@ import {
     NB_BITS_CONDS,
     NB_BITS_COPMA,
     NB_BITS_ADDRESSES,
+    NB_BITS_RA,
 } from '@/globals'
 import { UNSIGNED, uint } from '@/integer'
 
@@ -163,7 +164,7 @@ export default class VonNeumannArchitecture {
                 Helper.makeRObj(this.bus2, Signals.SPB2),
             ]
         )
-        this.RAM = Helper.makeArchReg(
+        this.RAM = Helper.makeReg(
             'RAM',
             [Helper.makeRObj(this.bus3, Signals.eRAM)],
             [this.busRAM]
@@ -209,6 +210,8 @@ export default class VonNeumannArchitecture {
         ]
 
         this.canUpdateRegisters = false
+
+        this.TEST()
     }
 
     setupFlagRegister() {
@@ -309,7 +312,7 @@ export default class VonNeumannArchitecture {
     sendSignals() {
         console.log('sendSignals')
         SignalManager.emit(Signals.SENDLEVELS, 1)
-        Clock.waitAndTick(170)
+        Clock.waitAndTick(5, 1)
         SignalManager.emit(Signals.SENDPULSES, 1)
         Clock.waitAndTick(15, 1)
         this.canUpdateRegisters = true
@@ -318,5 +321,17 @@ export default class VonNeumannArchitecture {
     updateRegisters() {
         SignalManager.emit(Signals.REGSIGCLOCK, 10)
         Clock.waitAndTick(15, 1)
+    }
+
+    TEST() {
+        // LOAD A, Imm, 10
+        //   -> 00000001 000000001010
+        this.memory.setValue(uint(0), uint(1).leftShift(NB_BITS_RA).add(10))
+        // LOAD B, Imm, 12
+        //   -> 00001011 000000001100
+        this.memory.setValue(uint(1), uint(11).leftShift(NB_BITS_RA).add(12))
+        // A+B -> C
+        //   -> 01100111 000000000000
+        this.memory.setValue(uint(2), uint(103).leftShift(NB_BITS_RA))
     }
 }
