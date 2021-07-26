@@ -30,6 +30,11 @@ instructions = {
         'ma': ma,
         'conds': False
     },
+    'A+B -> ': {
+        'regs': regs[:3],
+        'ma': [],
+        'conds': False
+    },
     'CALL': {
         'regs': [],
         'ma': ma[1:5] + ma[6:],
