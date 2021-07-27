@@ -33,11 +33,6 @@ export default {
         width: Number,
         height: Number,
     },
-    data() {
-        return {
-            police: 'arial',
-        }
-    },
     computed: {
         transform() {
             return Helper.transform(this.x, this.y)
@@ -53,10 +48,7 @@ export default {
             )
         },
         raSize() {
-            return Helper.calculateSize(
-                this.ra.toString(),
-                `${this.raFontSize}px ${this.police}`
-            )
+            return Helper.calculateSize(this.ra.toString(), this.raFontSize)
         },
         raPoint() {
             const size = this.raSize

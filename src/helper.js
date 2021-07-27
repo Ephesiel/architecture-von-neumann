@@ -9,6 +9,10 @@ import InstructionRegister from '@/models/instruction-register-model'
  * Toutes les méthodes de cette classe sont ainsi statiques.
  */
 class Helper {
+    constructor() {
+        this.police = this.getPolice()
+    }
+
     /**
      * Crée un objet bus/signal pour les registres.
      *
@@ -59,27 +63,36 @@ class Helper {
         let minSize = 1
         let maxSize = 128
         let size = 1
+        let last = [minSize, size, maxSize]
 
         do {
             size = Math.round((minSize + maxSize) / 2)
-            const m = this.calculateSize(text, `${size}px arial`)
+            const m = this.calculateSize(text, size)
 
             if (m.w > maxWidth || m.h > maxHeight) {
                 maxSize = size
             } else if (m.w <= maxWidth && m.h <= maxHeight) {
                 minSize = size
             }
+
+            if (
+                JSON.stringify([minSize, size, maxSize]) == JSON.stringify(last)
+            ) {
+                // todo: fix this
+                return size
+            }
+            last = [minSize, size, maxSize]
         } while (minSize + 1 !== maxSize)
 
         return minSize
     }
 
-    calculateSize(text, font) {
+    calculateSize(text, fontSize) {
         const canvas =
             this.calculateSize.canvas ||
             (this.calculateSize.canvas = document.createElement('canvas'))
         const context = canvas.getContext('2d')
-        context.font = font
+        context.font = `${fontSize}px ${this.police}`
         const metrics = context.measureText(text)
 
         return {
@@ -95,6 +108,22 @@ class Helper {
 
     transform(x, y) {
         return `translate(${x}, ${y})`
+    }
+
+    getPolice() {
+        const app = document.getElementById('nav')
+        if (app !== null) {
+            const style = window
+                .getComputedStyle(app, null)
+                .getPropertyValue('font-family')
+            for (const font of style.split(', ')) {
+                if (document.fonts.check(`12px ${font}`)) {
+                    console.log(font)
+                    return font
+                }
+            }
+        }
+        return 'monospace'
     }
 }
 

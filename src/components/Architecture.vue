@@ -18,8 +18,8 @@
             :sequencer-model="arch.sequencer"
             :width="componentWidth"
             :height="componentHeight"
-            :x="x(4)"
-            :y="y(1)"
+            :x="x(2)"
+            :y="y(4)"
         />
         <Register v-bind="CO" />
         <Register v-bind="RX" />
@@ -125,8 +125,9 @@ export default {
                 width: this.componentWidth,
                 height: this.componentHeight,
                 registerModel: this.arch.RAM,
-                x: this.x(0.5),
+                x: this.x(1),
                 y: this.y(2),
+                labelPos: 'R',
             }
         },
         RE() {
@@ -169,13 +170,13 @@ export default {
             return this.$store.state.svgHeight
         },
         componentWidth() {
-            // 5 composants sur une ligne + marge d'un composant à gauche et à droite
-            const tot = this.width / 6
+            // 3 composants sur une ligne + marge d'un composant à gauche et à droite
+            const tot = this.width / 4
             return tot - 0.1 * tot
         },
         componentHeight() {
-            // Au maximum, l'architecture doit faire 2/3 de la page ?, et 4 composants par colonne
-            const tot = this.height / 8
+            // Jusqu'à 16 composants l'un en dessous de l'autre par colonne
+            const tot = this.height / 17
             return tot - 0.1 * tot
         },
     },
@@ -185,7 +186,7 @@ export default {
             return (
                 this.componentWidth / 2 +
                 n * this.componentWidth +
-                n * 0.1 * (this.width / 6)
+                n * 0.1 * (this.width / 4)
             )
         },
         y(n) {
@@ -305,5 +306,3 @@ export default {
     },
 }
 </script>
-
-<style scoped lang="scss"></style>
