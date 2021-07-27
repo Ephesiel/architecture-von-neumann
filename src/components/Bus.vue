@@ -1,6 +1,7 @@
 <template>
     <path :d="path" :stroke="color" stroke-width="3" fill="none" />
     <path :d="powerPath" stroke="blue" stroke-width="3" fill="none" />
+    <!-- <text x="0" y="20">{{ fromSig }}</text> -->
 </template>
 
 <script>
@@ -22,6 +23,10 @@ export default {
         },
     },
     computed: {
+        fromSig() {
+            console.log(this.$store.state.signals)
+            return Object.values(this.$store.state.signals)
+        },
         path() {
             return (
                 `M ${this.points.x} ${this.points.y} ` +
@@ -42,7 +47,7 @@ export default {
                     str += `L ${point.x} ${point.y}`
                 }
             } else {
-                console.log(point.sig)
+                //console.log(point.sig)
             }
 
             return str

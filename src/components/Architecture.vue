@@ -13,7 +13,6 @@
         <Register v-bind="RA" />
         <Register v-bind="RB" />
         <Register v-bind="RC" />
-
         <Register v-bind="CO" />
         <Register v-bind="RX" />
         <Register v-bind="SP" />
@@ -27,8 +26,8 @@
         <Bus v-bind="B2" />
         Désolé, votre navigateur ne supporte pas le SVG.
     </svg>
-    <button @click="arch.stepByStep()">Pas à pas</button><br />
-    <button @click="arch.phaseByPhase()">Phase par phase</button>
+    <button @click="stepByStep()">Pas à pas</button><br />
+    <button @click="phaseByPhase()">Phase par phase</button>
 </template>
 
 <script>
@@ -37,6 +36,7 @@ import Register from '@/components/Register.vue'
 import InstructionRegister from '@/components/InstructionRegister.vue'
 import Bus from '@/components/Bus.vue'
 import Signals from '@/signals'
+import Clock from '@/models/clock'
 
 export default {
     name: 'Architecture',
@@ -49,6 +49,16 @@ export default {
         return {
             arch: new Architecture(),
         }
+    },
+    created() {
+        Clock.register((UTA, signals) => {
+            for (const signal of Object.keys(signals)) {
+                if (signals[signal] > 0) {
+                    console.log(signal)
+                    this.$store.commit('addSignal', signal)
+                }
+            }
+        })
     },
     computed: {
         RA() {
@@ -133,6 +143,12 @@ export default {
                 y: this.y(2),
             }
         },
+        OC() {
+            return {
+                x: this.x(0),
+                y: this.y(1),
+            }
+        },
         B1() {
             return {
                 model: this.arch.bus1,
@@ -140,7 +156,17 @@ export default {
                     this.x(-0.2),
                     this.y(-0.55),
                     this.x(5),
-                    this.x(0)
+                    this.x(0),
+                    {
+                        RE: Signals.REB1,
+                        CO: Signals.COB1,
+                        RX: Signals.RXB1,
+                        SP: Signals.SPB1,
+                        RI: Signals.RIB1,
+                        RA: Signals.RAB1,
+                        RB: Signals.RBB1,
+                        RC: Signals.RCB1,
+                    }
                 ),
                 color: 'green',
             }
@@ -152,7 +178,17 @@ export default {
                     -this.x(-0.2),
                     this.y(-0.45),
                     this.x(5) + this.x(-0.38),
-                    this.x(0) + this.x(-0.38)
+                    this.x(0) + this.x(-0.38),
+                    {
+                        RE: Signals.REB2,
+                        CO: Signals.COB2,
+                        RX: Signals.RXB2,
+                        SP: Signals.SPB2,
+                        RI: Signals.RIB2,
+                        RA: Signals.RAB2,
+                        RB: Signals.RBB2,
+                        RC: Signals.RCB2,
+                    }
                 ),
                 color: 'red',
             }
@@ -191,28 +227,32 @@ export default {
                 n * 0.1 * (this.height / 2)
             )
         },
-        calculBusPath(distX, distY, rightCornerX, leftCornerX) {
-            console.log(distX, distY)
+        calculBusPath(distX, distY, rightCornerX, signals) {
             // Les points de sortie des registres L2 et L3
             const RE = {
                 x: this.RE.x + this.RE.width / 2 + distX,
                 y: this.RE.y,
-                sig: Signals.REB1,
+                sig: signals.RE,
             }
             const CO = {
                 x: this.CO.x + this.CO.width / 2 + distX,
                 y: this.CO.y,
-                sig: Signals.COB1,
+                sig: signals.CO,
             }
             const RX = {
                 x: this.RX.x + this.RX.width / 2 + distX,
                 y: this.RX.y,
-                sig: Signals.RXB1,
+                sig: signals.RX,
             }
             const SP = {
                 x: this.SP.x + this.SP.width / 2 + distX,
                 y: this.SP.y,
-                sig: Signals.SPB1,
+                sig: signals.SP,
+            }
+            const RI = {
+                x: this.RI.x + this.RI.width / 2 + distX,
+                y: this.RI.y,
+                sig: signals.RI,
             }
 
             // Les points un peu au dessus des registres L2 et L3
@@ -236,6 +276,11 @@ export default {
                 y: SP.y + distY,
                 connections: [SP, RX1],
             }
+            const RI1 = {
+                x: RI.x,
+                y: RI.y + distY,
+                connections: [RI, SP1],
+            }
 
             // Les points "angles" à droite
             const rightBottomCorner = {
@@ -246,7 +291,7 @@ export default {
             const rightMiddleCorner = {
                 x: rightCornerX,
                 y: SP1.y,
-                connections: [rightBottomCorner, SP1],
+                connections: [rightBottomCorner, RI1],
             }
             const rightTopCorner = {
                 x: rightCornerX,
@@ -258,17 +303,17 @@ export default {
             const RA = {
                 x: this.RA.x + this.RA.width / 2 + distX,
                 y: this.RA.y,
-                sig: Signals.RAB1,
+                sig: signals.RA,
             }
             const RB = {
                 x: this.RB.x + this.RB.width / 2 + distX,
                 y: this.RB.y,
-                sig: Signals.RBB1,
+                sig: signals.RB,
             }
             const RC = {
                 x: this.RC.x + this.RC.width / 2 + distX,
                 y: this.RC.y,
-                sig: Signals.RCB1,
+                sig: signals.RC,
             }
 
             // Les points un peu au dessus des registres L1
@@ -290,12 +335,25 @@ export default {
 
             // Les points "angles" à gauche
             const leftTopCorner = {
-                x: leftCornerX,
+                x: this.OC.x + distX / 2,
                 y: RA1.y,
                 connections: [RA1],
             }
+            const OC = {
+                x: this.OC.x + distX / 2,
+                y: this.OC.y,
+                connections: [leftTopCorner],
+            }
 
-            return leftTopCorner
+            return OC
+        },
+        stepByStep() {
+            this.$store.commit('resetSignals')
+            this.arch.stepByStep()
+        },
+        phaseByPhase() {
+            this.$store.commit('resetSignals')
+            this.arch.phaseByPhase()
         },
     },
 }
