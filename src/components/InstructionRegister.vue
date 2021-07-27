@@ -14,18 +14,23 @@
             :x="0"
             :y="registerTopMargin"
         />
+        <Sequencer :sequencer-model="sequencerModel" />
     </g>
 </template>
 
 <script>
 import Register from '@/components/Register.vue'
 import Formatter from '@/components/Formatter.vue'
+import Sequencer from '@/components/Sequencer.vue'
 import RegisterDecorator from '@/models/registers/register-decorator'
+import SequencerModel from '@/models/sequencer'
+import Helper from '@/helper'
 
 export default {
     name: 'InstructionRegister',
     props: {
         registerModel: RegisterDecorator,
+        sequencerModel: SequencerModel,
         x: Number,
         y: Number,
         width: Number,
@@ -39,10 +44,11 @@ export default {
     components: {
         Register,
         Formatter,
+        Sequencer,
     },
     computed: {
         transform() {
-            return `translate(${this.x}, ${this.y})`
+            return Helper.transform(this.x, this.y)
         },
         registerHeight() {
             return this.height - this.registerTopMargin

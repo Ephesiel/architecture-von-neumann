@@ -106,7 +106,6 @@ export default class Bus {
         const parsedVal = int(val, this.value.getSize(), this.value.signed)
 
         if (val.getSize() > this.value.getSize() && parsedVal.neq(val)) {
-            console.log(this.value.getSize())
             Debug.crit(
                 `Nombre ${val.toString()} trop grand pour le bus ${
                     this.name

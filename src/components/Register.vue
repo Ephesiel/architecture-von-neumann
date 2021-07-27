@@ -69,7 +69,7 @@ export default {
     },
     computed: {
         transform() {
-            return `translate(${this.x}, ${this.y})`
+            return Helper.transform(this.x, this.y)
         },
         formatCurrentValueBinary() {
             return this.registerModel.getCurrentValue().toBinary()
@@ -119,6 +119,12 @@ export default {
                 `${this.valueFontSize}px ${this.police}`
             )
         },
+        nextValueSize() {
+            return Helper.calculateSize(
+                this.formatNextValue,
+                `${this.valueFontSize}px ${this.police}`
+            )
+        },
         binaryValueSize() {
             return Helper.calculateSize(
                 this.formatCurrentValueBinary,
@@ -157,7 +163,7 @@ export default {
             }
         },
         nextValuePoint() {
-            const size = this.valueSize
+            const size = this.nextValueSize
             return {
                 x: this.width / 2 - size.w / 2,
                 y:

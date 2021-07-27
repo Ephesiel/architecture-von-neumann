@@ -65,7 +65,7 @@ class Debug {
 
     warn(message) {
         this.addMessage(message, Level.WARN)
-        //console.warn(message)
+        console.warn(message)
     }
 
     error(message) {
