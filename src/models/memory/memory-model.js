@@ -79,7 +79,7 @@ export default class Memory {
         else {
             Debug.warn(
                 `Le contenu de l'adresse ${address} n'a jamais été donné, le` +
-                    `résultat renvoyé est non défini`
+                    ` résultat renvoyé est non défini`
             )
         }
 

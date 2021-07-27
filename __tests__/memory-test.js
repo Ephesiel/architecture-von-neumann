@@ -29,10 +29,3 @@ test('Set bad value', () => {
     memory.setValue(uint(0), 0)
     expect(critMessages.length).toBe(size + 5)
 })
-
-test('Get non instantiated value', () => {
-    const warnMessages = Debug.getMessages(Level.WARN)
-    const size = warnMessages.length
-    memory.getValue(uint(5))
-    expect(warnMessages.length).toBe(size + 1)
-})

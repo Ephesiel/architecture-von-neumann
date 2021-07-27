@@ -146,7 +146,7 @@ export default class Sequencer {
         this.microprogammedMemory = new Memory(MPM_BITS_ADDRESSES, NB_BITS_MPM)
         this.microprogammedMemoryReader = new MemoryReader(
             this.microprogammedMemory,
-            Signals.eRAMM,
+            Signals.eREMM,
             this.busInputMM,
             this.busOutputMM
         )

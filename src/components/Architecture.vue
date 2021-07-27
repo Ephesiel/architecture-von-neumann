@@ -54,7 +54,6 @@ export default {
         Clock.register((UTA, signals) => {
             for (const signal of Object.keys(signals)) {
                 if (signals[signal] > 0) {
-                    console.log(signal)
                     this.$store.commit('addSignal', signal)
                 }
             }
