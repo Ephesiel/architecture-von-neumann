@@ -8,6 +8,7 @@ import {
     NB_BITS_SELMS,
     NB_BITS_ADR,
 } from '@/globals'
+import Debug from '@/debug'
 
 /**
  * Implémentation du Registre d'Échange de la Mémoire Microprogrammée (ERMM en
@@ -82,6 +83,13 @@ export default class ERMM extends Register {
         if (signals[this.signalClockTick]) {
             this.levels = []
             this.pulses = []
+        }
+
+        if (this.getCurrentValue().toNumber() === 0) {
+            Debug.warn(
+                "La mémoire microprogrammée est vide à l'adresse envoyée."
+            )
+            return
         }
 
         this.updateSignals()

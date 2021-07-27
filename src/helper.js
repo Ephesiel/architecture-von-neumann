@@ -92,6 +92,10 @@ class Helper {
                       metrics.fontBoundingBoxDescent,
         }
     }
+
+    transform(x, y) {
+        return `translate(${x}, ${y})`
+    }
 }
 
 export default new Helper()

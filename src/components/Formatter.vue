@@ -40,7 +40,7 @@ export default {
     },
     computed: {
         transform() {
-            return `translate(${this.x}, ${this.y})`
+            return Helper.transform(this.x, this.y)
         },
         margin() {
             return this.height * 0.1
