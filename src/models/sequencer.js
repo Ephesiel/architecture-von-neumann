@@ -52,7 +52,6 @@ export default class Sequencer {
     busOutputConditionMult //: Bus
     busOutputNextAddrMult //: Bus
     busOutputPhaseMult //: Bus
-    busOutputCOPMA //: Bus
     busOutputFetch //: Bus
     busOutputPhase //: Bus
     busOutputPlus1 //: Bus
@@ -98,11 +97,6 @@ export default class Sequencer {
             MPM_BITS_ADDRESSES,
             UNSIGNED
         )
-        this.busOutputCOPMA = new Bus(
-            'Bus COPMA -> mult',
-            MPM_BITS_ADDRESSES,
-            UNSIGNED
-        )
         this.busOutputFetch = new Bus(
             'Bus fetch -> phase',
             MPM_BITS_ADDRESSES,
@@ -134,11 +128,6 @@ export default class Sequencer {
             TIME_ATU_FOR_PULSES
         )
         this.plus1 = new Plus1(this.busInputMM, this.busOutputPlus1)
-        this.COPMA = Helper.makeReg(
-            'COPMA',
-            [Helper.makeRObj(busInputCOPMA)],
-            [this.busOutputCOPMA]
-        )
         this.phaseCounter = new PhaseCounter(this.busOutputPhase)
         this.fetch = new Register('Fetch', [], [this.busOutputFetch])
 
@@ -161,7 +150,7 @@ export default class Sequencer {
             [
                 this.busOutputPlus1,
                 this.busOutputConditionMult,
-                this.busOutputCOPMA,
+                busInputCOPMA,
                 this.busNextAddr,
             ],
             this.busOutputNextAddrMult,
