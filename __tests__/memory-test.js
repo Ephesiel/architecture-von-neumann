@@ -24,6 +24,10 @@ test('Set bad value', () => {
     expect(critMessages.length).toBe(size + 2)
     memory.getValue(uint(20))
     expect(critMessages.length).toBe(size + 3)
+    memory.setValue(null, uint(0))
+    expect(critMessages.length).toBe(size + 4)
+    memory.setValue(uint(0), 0)
+    expect(critMessages.length).toBe(size + 5)
 })
 
 test('Get non instantiated value', () => {
