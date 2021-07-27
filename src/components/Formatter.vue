@@ -22,6 +22,7 @@
 <script>
 import Integer, { maxOf, SIGNED } from '@/integer'
 import { NB_BITS_ARCH } from '@/globals'
+import Helper from '@/helper'
 
 export default {
     name: 'Formatter',
@@ -45,14 +46,14 @@ export default {
             return this.height * 0.1
         },
         raFontSize() {
-            return this.$store.state.calculateFontSize(
+            return Helper.calculateFontSize(
                 maxOf(NB_BITS_ARCH, SIGNED),
                 this.width,
                 this.height - this.margin
             )
         },
         raSize() {
-            return this.$store.state.calculateSize(
+            return Helper.calculateSize(
                 this.ra.toString(),
                 `${this.raFontSize}px ${this.police}`
             )

@@ -49,6 +49,7 @@
 <script>
 import { maxOf } from '@/integer'
 import RegisterModel from '@/models/registers/register-model'
+import Helper from '@/helper'
 
 export default {
     name: 'Register',
@@ -86,7 +87,7 @@ export default {
             return this.registerModel.getName()
         },
         binaryValueFontSize() {
-            return this.$store.state.calculateFontSize(
+            return Helper.calculateFontSize(
                 this.formatCurrentValueBinary,
                 this.width,
                 this.height / this.nElements -
@@ -94,7 +95,7 @@ export default {
             )
         },
         valueFontSize() {
-            return this.$store.state.calculateFontSize(
+            return Helper.calculateFontSize(
                 maxOf(
                     this.registerModel.getCurrentValue().size,
                     this.registerModel.getCurrentValue().signed
@@ -105,7 +106,7 @@ export default {
             )
         },
         nameFontSize() {
-            return this.$store.state.calculateFontSize(
+            return Helper.calculateFontSize(
                 this.name,
                 this.width,
                 this.height / this.nElements -
@@ -113,19 +114,19 @@ export default {
             )
         },
         valueSize() {
-            return this.$store.state.calculateSize(
+            return Helper.calculateSize(
                 this.formatCurrentValue,
                 `${this.valueFontSize}px ${this.police}`
             )
         },
         binaryValueSize() {
-            return this.$store.state.calculateSize(
+            return Helper.calculateSize(
                 this.formatCurrentValueBinary,
                 `${this.binaryValueFontSize}px ${this.police}`
             )
         },
         nameSize() {
-            return this.$store.state.calculateSize(
+            return Helper.calculateSize(
                 this.name,
                 `${this.nameFontSize}px ${this.police}`
             )
