@@ -15,7 +15,6 @@
             fill="black"
             >{{ ra.toString() }}</text
         >
-        <!-- Sequencer -->
     </g>
 </template>
 
@@ -33,11 +32,6 @@ export default {
         width: Number,
         height: Number,
     },
-    data() {
-        return {
-            police: 'arial',
-        }
-    },
     computed: {
         transform() {
             return Helper.transform(this.x, this.y)
@@ -52,17 +46,10 @@ export default {
                 this.height - this.margin
             )
         },
-        raSize() {
-            return Helper.calculateSize(
-                this.ra.toString(),
-                `${this.raFontSize}px ${this.police}`
-            )
-        },
         raPoint() {
-            const size = this.raSize
             return {
-                x: this.width / 2 - size.w / 2,
-                y: this.raSize.h,
+                x: this.width / 2,
+                y: this.height / 2,
             }
         },
     },

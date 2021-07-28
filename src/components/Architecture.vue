@@ -13,17 +13,11 @@
         <Register v-bind="RA" />
         <Register v-bind="RB" />
         <Register v-bind="RC" />
-        <InstructionRegister
-            :register-model="arch.RI"
-            :sequencer-model="arch.sequencer"
-            :width="componentWidth"
-            :height="componentHeight"
-            :x="x(4)"
-            :y="y(1)"
-        />
+
         <Register v-bind="CO" />
         <Register v-bind="RX" />
         <Register v-bind="SP" />
+        <InstructionRegister v-bind="RI" />
 
         <!-- L3 RAM Mémoire RE -->
         <Register v-bind="RAM" />
@@ -89,7 +83,7 @@ export default {
                 width: this.componentWidth,
                 height: this.componentHeight,
                 registerModel: this.arch.CO,
-                x: this.x(1),
+                x: this.x(0),
                 y: this.y(1),
             }
         },
@@ -98,7 +92,7 @@ export default {
                 width: this.componentWidth,
                 height: this.componentHeight,
                 registerModel: this.arch.RX,
-                x: this.x(2),
+                x: this.x(1),
                 y: this.y(1),
             }
         },
@@ -107,7 +101,7 @@ export default {
                 width: this.componentWidth,
                 height: this.componentHeight,
                 registerModel: this.arch.SP,
-                x: this.x(3),
+                x: this.x(2),
                 y: this.y(1),
             }
         },
@@ -116,7 +110,8 @@ export default {
                 width: this.componentWidth,
                 height: this.componentHeight,
                 registerModel: this.arch.RI,
-                x: this.x(4),
+                sequencerModel: this.arch.sequencer,
+                x: this.x(3),
                 y: this.y(1),
             }
         },
@@ -169,13 +164,13 @@ export default {
             return this.$store.state.svgHeight
         },
         componentWidth() {
-            // 5 composants sur une ligne + marge d'un composant à gauche et à droite
-            const tot = this.width / 6
+            // 3 composants sur une ligne + marge d'un composant à gauche et à droite
+            const tot = this.width / 4
             return tot - 0.1 * tot
         },
         componentHeight() {
-            // Au maximum, l'architecture doit faire 2/3 de la page ?, et 4 composants par colonne
-            const tot = this.height / 8
+            // Jusqu'à 16 composants l'un en dessous de l'autre par colonne
+            const tot = this.height / 17
             return tot - 0.1 * tot
         },
     },
@@ -185,7 +180,7 @@ export default {
             return (
                 this.componentWidth / 2 +
                 n * this.componentWidth +
-                n * 0.1 * (this.width / 6)
+                n * 0.1 * (this.width / 4)
             )
         },
         y(n) {
@@ -305,5 +300,3 @@ export default {
     },
 }
 </script>
-
-<style scoped lang="scss"></style>

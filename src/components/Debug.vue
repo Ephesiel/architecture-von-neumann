@@ -39,19 +39,19 @@ export default {
     },
     computed: {
         width() {
-            return this.$store.state.svgWidth / 2
+            return this.$store.state.svgWidth
         },
         height() {
-            return this.$store.state.svgHeight - 400
+            return this.$store.state.svgHeight
         },
         componentWidth() {
-            // 5 composants sur une ligne + marge d'un composant à gauche et à droite
-            const tot = this.width / 6
+            // 3 composants sur une ligne + marge d'un composant à gauche et à droite
+            const tot = this.width / 4
             return tot - 0.1 * tot
         },
         componentHeight() {
-            // Au maximum, l'architecture doit faire 2/3 de la page ?, et 4 composants par colonne
-            const tot = this.height / 8
+            // Jusqu'à 16 composants l'un en dessous de l'autre par colonne
+            const tot = this.height / 17
             return tot - 0.1 * tot
         },
     },

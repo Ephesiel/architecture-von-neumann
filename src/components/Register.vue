@@ -1,45 +1,55 @@
 <template>
     <g :transform="transform" class="register">
         <rect
-            x="0"
+            :x="rectX"
             y="0"
-            :width="width"
+            :width="width - componentsWidth.label"
+            :height="height"
+            fill="transparent"
+            stroke="black"
+        ></rect>
+        <rect
+            :x="labelRectX"
+            y="0"
+            :width="componentsWidth.label"
             :height="height"
             fill="transparent"
             stroke="black"
         ></rect>
         <text
-            :x="namePoint.x"
-            :y="namePoint.y"
-            :font-size="nameFontSize"
+            :transform="labelTransform"
+            :x="labelPoint.x"
+            :y="labelPoint.y"
+            :font-size="fontSize"
             fill="black"
-            >{{ name }}</text
+            class="label"
+            >{{ label }}</text
         >
         <text
             :x="currentValuePoint.x"
             :y="currentValuePoint.y"
-            :font-size="valueFontSize"
+            :font-size="fontSize"
             fill="black"
             >{{ formatCurrentValue }}</text
         >
         <text
             :x="nextValuePoint.x"
             :y="nextValuePoint.y"
-            :font-size="valueFontSize"
+            :font-size="fontSize"
             fill="black"
             >{{ formatNextValue }}</text
         >
         <text
             :x="currentValueBinaryPoint.x"
             :y="currentValueBinaryPoint.y"
-            :font-size="binaryValueFontSize"
+            :font-size="fontSize"
             fill="black"
             >{{ formatCurrentValueBinary }}</text
         >
         <text
             :x="nextValueBinaryPoint.x"
             :y="nextValueBinaryPoint.y"
-            :font-size="binaryValueFontSize"
+            :font-size="fontSize"
             fill="black"
             >{{ formatNextValueBinary }}</text
         >
@@ -52,24 +62,47 @@ import RegisterModel from '@/models/registers/register-model'
 import Helper from '@/helper'
 
 export default {
-    name: 'Register',
+    label: 'Register',
     props: {
         registerModel: RegisterModel,
         x: Number,
         y: Number,
         width: Number,
         height: Number,
+        labelPos: {
+            type: String,
+            default: 'L',
+        },
     },
     data: function () {
         return {
-            nElements: 5,
-            margin: 0.1,
-            police: 'arial',
+            rows: 2,
+            componentsWidth: {
+                label: 0.1 * this.width,
+                decimal: 0.25 * this.width,
+                binary: 0.65 * this.width,
+            },
         }
     },
     computed: {
+        margins() {
+            // Doit être computed car utilise les données
+            return {
+                ud: 0,
+                lr: 0,
+            }
+        },
         transform() {
             return Helper.transform(this.x, this.y)
+        },
+        labelTransform() {
+            return `rotate(${this.labelPos === 'L' ? -90 : 90} ${
+                this.componentsWidth.label / 2
+            } ${this.height / 2}) translate(${
+                this.labelPos === 'L'
+                    ? '0 0'
+                    : `0 ${-(this.width - this.componentsWidth.label)}`
+            })`
         },
         formatCurrentValueBinary() {
             return this.registerModel.getCurrentValue().toBinary()
@@ -83,121 +116,115 @@ export default {
         formatNextValue() {
             return this.registerModel.getNextValue().toString()
         },
-        name() {
+        label() {
             return this.registerModel.getName()
         },
-        binaryValueFontSize() {
-            return Helper.calculateFontSize(
-                this.formatCurrentValueBinary,
-                this.width,
-                this.height / this.nElements -
-                    (this.height / this.nElements) * this.margin
-            )
+        labelRectX() {
+            return this.labelPos === 'L'
+                ? 0
+                : this.width - this.componentsWidth.label
         },
-        valueFontSize() {
-            return Helper.calculateFontSize(
-                maxOf(
-                    this.registerModel.getCurrentValue().size,
-                    this.registerModel.getCurrentValue().signed
+        rectX() {
+            return this.labelPos === 'L' ? this.componentsWidth.label : 0
+        },
+        fontSize() {
+            // On veut que tous les éléments aient la même taille de police.
+            // Ainsi, on prend le minimum des tailles maximum possible pour
+            // chaque composant.
+            return Math.min(
+                Helper.calculateFontSize(
+                    this.formatCurrentValueBinary,
+                    this.componentsWidth.binary - this.margins.lr,
+                    this.height / this.rows - this.margins.ud
                 ),
-                this.width,
-                this.height / this.nElements -
-                    (this.height / this.nElements) * this.margin
-            )
-        },
-        nameFontSize() {
-            return Helper.calculateFontSize(
-                this.name,
-                this.width,
-                this.height / this.nElements -
-                    (this.height / this.nElements) * this.margin
+                Helper.calculateFontSize(
+                    maxOf(
+                        this.registerModel.getCurrentValue().size,
+                        this.registerModel.getCurrentValue().signed
+                    ),
+                    this.componentsWidth.decimal - this.margins.lr,
+                    this.height / this.rows - this.margins.ud
+                ),
+                Helper.calculateFontSize(
+                    this.label,
+                    this.height - this.margins.ud,
+                    this.componentsWidth.label - this.margins.lr
+                )
             )
         },
         valueSize() {
-            return Helper.calculateSize(
-                this.formatCurrentValue,
-                `${this.valueFontSize}px ${this.police}`
-            )
+            return Helper.calculateSize(this.formatCurrentValue, this.fontSize)
         },
         nextValueSize() {
-            return Helper.calculateSize(
-                this.formatNextValue,
-                `${this.valueFontSize}px ${this.police}`
-            )
+            return Helper.calculateSize(this.formatNextValue, this.fontSize)
         },
         binaryValueSize() {
             return Helper.calculateSize(
                 this.formatCurrentValueBinary,
-                `${this.binaryValueFontSize}px ${this.police}`
+                this.fontSize
             )
         },
-        nameSize() {
-            return Helper.calculateSize(
-                this.name,
-                `${this.nameFontSize}px ${this.police}`
-            )
+        labelSize() {
+            return Helper.calculateSize(this.label, this.fontSize)
         },
-        currentValueBinaryPoint() {
-            const size = this.binaryValueSize
-            return {
-                x: this.width / 2 - size.w / 2,
-                y: this.overhead + size.h,
-            }
+        overhead() {
+            return (this.height - 2 * this.binaryValueSize.h) / 2
         },
         currentValuePoint() {
             const size = this.valueSize
             return {
-                x: this.width / 2 - size.w / 2,
-                y: this.overhead + size.h + this.binaryValueSize.h,
-            }
-        },
-        namePoint() {
-            const size = this.nameSize
-            return {
-                x: this.width / 2 - size.w / 2,
-                y:
-                    this.overhead +
-                    this.valueSize.h +
-                    this.binaryValueSize.h +
-                    size.h,
+                x: this.decimalX,
+                y: this.calcY(0, size),
             }
         },
         nextValuePoint() {
             const size = this.nextValueSize
             return {
-                x: this.width / 2 - size.w / 2,
-                y:
-                    this.overhead +
-                    this.nameSize.h +
-                    this.binaryValueSize.h +
-                    size.h +
-                    this.valueSize.h,
+                x: this.decimalX,
+                y: this.calcY(1, size),
+            }
+        },
+        labelPoint() {
+            return {
+                x: this.componentsWidth.label / 2,
+                y: this.height / 2,
+            }
+        },
+        currentValueBinaryPoint() {
+            const size = this.binaryValueSize
+            return {
+                x: this.binaryX,
+                y: this.calcY(0, size),
             }
         },
         nextValueBinaryPoint() {
             const size = this.binaryValueSize
             return {
-                x: this.width / 2 - size.w / 2,
-                y:
-                    this.overhead +
-                    this.nameSize.h +
-                    this.binaryValueSize.h +
-                    size.h +
-                    2 * this.valueSize.h,
+                x: this.binaryX,
+                y: this.calcY(1, size),
             }
         },
-        overhead() {
-            return (
-                (this.height -
-                    (this.nameSize.h +
-                        2 * this.valueSize.h +
-                        2 * this.binaryValueSize.h)) /
-                2
+        decimalX() {
+            return this.calcX(
+                this.componentsWidth.label + this.componentsWidth.decimal / 2
             )
         },
+        binaryX() {
+            return this.calcX(this.width - this.componentsWidth.binary / 2)
+        },
     },
-    methods: {},
+    methods: {
+        calcY(n, size) {
+            return this.overhead + n * this.binaryValueSize.h + size.h / 2
+        },
+        calcX(val) {
+            if (this.labelPos === 'R') {
+                return this.width - val
+            }
+            return val
+        },
+    },
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss" scoped></style>
