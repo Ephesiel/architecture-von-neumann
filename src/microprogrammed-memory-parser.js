@@ -3,6 +3,7 @@ import {
     NB_BITS_CONDS,
     NB_BITS_SELMS,
     NB_BITS_MPM,
+    NB_BITS_INSTR,
 } from '@/globals'
 import { PulseSignals, LevelSignals } from '@/signals'
 import { uint } from '@/integer'
@@ -38,6 +39,24 @@ class MicroprogrammedMemoryParser {
         value = value.leftShift(NB_BITS_MPM - totalBits)
 
         return value
+    }
+
+    /**
+     *
+     */
+    translate(integer) {
+        const signalsSpotted = []
+        const watchedSignals = {
+            ...PulseSignals,
+            ...LevelSignals,
+        }
+        for (const [sig, bit] of Object.entries(watchedSignals)) {
+            if (integer.bit(NB_BITS_INSTR - bit - 1) === 1) {
+                signalsSpotted.push(sig)
+            }
+        }
+
+        return signalsSpotted.join(', ')
     }
 }
 

@@ -300,15 +300,17 @@ class Helper {
     }
 
     getPolice() {
-        const app = document.getElementById('nav')
-        if (app !== null) {
-            const style = window
-                .getComputedStyle(app, null)
-                .getPropertyValue('font-family')
-            for (const font of style.split(', ')) {
-                if (document.fonts.check(`12px ${font}`)) {
-                    console.log(font)
-                    return font
+        if (typeof document !== 'undefined') {
+            const app = document.getElementById('nav')
+            if (app !== null) {
+                const style = window
+                    .getComputedStyle(app, null)
+                    .getPropertyValue('font-family')
+                for (const font of style.split(', ')) {
+                    if (document.fonts.check(`12px ${font}`)) {
+                        console.log(font)
+                        return font
+                    }
                 }
             }
         }
