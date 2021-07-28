@@ -10,7 +10,7 @@ import InstructionRegister from '@/models/instruction-register-model'
  */
 class Helper {
     constructor() {
-        this.police = this.getPolice()
+        //this.police = this.getPolice()
     }
 
     /**
@@ -151,8 +151,8 @@ class Helper {
      * ]
      * ```
      *
-     * Il est également possible d'ajouter des macros aux globals pour dire
-     * qu'un objet contient d'autres objets. Il faut mettre un "$" suivi du
+     * Il est également possible d'ajouter des macros aux globals. Pour dire
+     * qu'un objet contient d'autres objets, il faut mettre un "$" suivi du
      * type de l'objet.
      *
      * Si la clé n'existe pas, l'objet par défaut sera `null`. Sinon, l'objet
@@ -160,8 +160,10 @@ class Helper {
      * Ceci est récursif et peut être fait avec n'importe quel type d'objet
      * contenu dans le json.
      *
-     * Exemple de json contenant des macros :
+     * Pour dire qu'un objet contient un **tableau** d'objets il faut faire la
+     * même chose maiis avec un "&"
      *
+     * Exemple de json contenant des macros :
      *
      * ```json
      * {
@@ -176,12 +178,12 @@ class Helper {
      *         "bus": {
      *             "x": 0,
      *             "y": 0,
-     *             "nextBus": "$bus"
+     *             "nextBus": "&bus"
      *         }
      *     },
      *     "registers": [
      *         { "x": 10, "y": 20 },
-     *         { "x": 10, "y": 20, "outputBus": {} }
+     *         { "x": 10, "y": 20, "outputBus": {"nextBus": [{}]} }
      *     ]
      * }
      * ```
@@ -191,7 +193,9 @@ class Helper {
      * [
      *     { x: 10, y: 20, w: 0, h: 0, outputBus: null },
      *     { x: 10, y: 20, w: 10, h: 0, outputBus: {
-     *         x: 0, y: 0, nextBus: null
+     *         x: 0, y: 0, nextBus: [{
+     *             x: 0, y: 0, nextBus: []
+     *         }]
      *     }}
      * ]
      * ```
@@ -215,6 +219,7 @@ class Helper {
 
         const globals = {}
         const objects = {}
+        const arrays = {}
 
         // On met les valeur par défaut du type donné.
         // Il peut y avoir plusieurs type. Si dans les valeurs par défaut se
@@ -231,12 +236,19 @@ class Helper {
 
             globals[type] = { ...json.globals[type] }
             objects[type] = {}
+            arrays[type] = {}
 
             for (const [k, v] of Object.entries(globals[type])) {
                 if (typeof v === 'string' && v.startsWith('$')) {
                     const t = v.slice(1)
                     globals[type][k] = null
                     objects[type][k] = t
+                    createDefaultValues(t)
+                }
+                if (typeof v === 'string' && v.startsWith('&')) {
+                    const t = v.slice(1)
+                    globals[type][k] = []
+                    arrays[type][k] = t
                     createDefaultValues(t)
                 }
             }
@@ -258,6 +270,16 @@ class Helper {
                         obj[k] = null
                     } else if (obj[k] !== null) {
                         obj[k] = verifyValue(obj[k], objects[type][k])
+                    }
+                } else if (k in arrays[type]) {
+                    // Si la clé n'est pas un tableau, on remplace par un
+                    // tableau vide
+                    if (!Array.isArray(obj[k])) {
+                        obj[k] = []
+                    } else {
+                        obj[k] = obj[k].map((o) => {
+                            return verifyValue(o, arrays[type][k])
+                        })
                     }
                 } else if (
                     typeof obj[k] !== typeof v ||
