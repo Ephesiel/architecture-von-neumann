@@ -5,25 +5,21 @@
     <svg
         version="1.1"
         baseProfile="full"
-        :width="width"
-        :height="height"
+        :width="realWidth"
+        :height="realHeight"
         xmlns="http://www.w3.org/2000/svg"
     >
-        <!-- L1 RA, RB, RC -->
-        <Register v-bind="RA" />
-        <Register v-bind="RB" />
-        <Register v-bind="RC" />
-        <Register v-bind="CO" />
-        <Register v-bind="RX" />
-        <Register v-bind="SP" />
-        <InstructionRegister v-bind="RI" />
+        <!--<InstructionRegister v-bind="RI" />-->
 
-        <!-- L3 RAM Mémoire RE -->
-        <Register v-bind="RAM" />
-        <Register v-bind="RE" />
+        <component
+            v-for="(register, index) of registers"
+            :key="index"
+            :is="register.type"
+            v-bind="register"
+        ></component>
 
-        <Bus v-bind="B1" />
-        <Bus v-bind="B2" />
+        <!-- <Bus v-bind="B1" /> -->
+        <!-- <Bus v-bind="B2" /> -->
         Désolé, votre navigateur ne supporte pas le SVG.
     </svg>
     <button @click="stepByStep()">Pas à pas</button><br />
@@ -34,20 +30,24 @@
 import Architecture from '@/models/von-neumann-architecture-model'
 import Register from '@/components/Register.vue'
 import InstructionRegister from '@/components/InstructionRegister.vue'
-import Bus from '@/components/Bus.vue'
-import Signals from '@/signals'
+//import Bus from '@/components/Bus.vue'
+//import Signals from '@/signals'
 import Clock from '@/models/clock'
+import architectureData from '@/view-datas/architecture.json'
+import Helper from '@/helper'
 
 export default {
     name: 'Architecture',
     components: {
         Register,
         InstructionRegister,
-        Bus,
+        //Bus,
     },
     data() {
         return {
             arch: new Architecture(),
+            width: architectureData.size.width,
+            height: architectureData.size.height,
         }
     },
     created() {
@@ -60,89 +60,34 @@ export default {
         })
     },
     computed: {
-        RA() {
-            return {
-                width: this.componentWidth,
-                height: this.componentHeight,
-                registerModel: this.arch.RA,
-                x: this.x(0.5),
-                y: this.y(0),
+        registers() {
+            const registers = Helper.getJsonValues(
+                architectureData,
+                'registers'
+            )
+
+            let datas = []
+
+            for (let register of registers) {
+                let reg = {
+                    registerModel: this.arch[register.model],
+                    x: this.pix(register.x),
+                    y: this.pix(register.y),
+                    width: this.pix(register.w),
+                    height: this.pix(register.h),
+                    type: register.type,
+                }
+
+                if (reg.type === 'InstructionRegister') {
+                    reg.sequencerModel = this.arch.sequencer
+                }
+
+                datas.push(reg)
             }
+
+            return datas
         },
-        RB() {
-            return {
-                width: this.componentWidth,
-                height: this.componentHeight,
-                registerModel: this.arch.RB,
-                x: this.x(1.5),
-                y: this.y(0),
-            }
-        },
-        RC() {
-            return {
-                width: this.componentWidth,
-                height: this.componentHeight,
-                registerModel: this.arch.RC,
-                x: this.x(2.5),
-                y: this.y(0),
-            }
-        },
-        CO() {
-            return {
-                width: this.componentWidth,
-                height: this.componentHeight,
-                registerModel: this.arch.CO,
-                x: this.x(0),
-                y: this.y(1),
-            }
-        },
-        RX() {
-            return {
-                width: this.componentWidth,
-                height: this.componentHeight,
-                registerModel: this.arch.RX,
-                x: this.x(1),
-                y: this.y(1),
-            }
-        },
-        SP() {
-            return {
-                width: this.componentWidth,
-                height: this.componentHeight,
-                registerModel: this.arch.SP,
-                x: this.x(2),
-                y: this.y(1),
-            }
-        },
-        RI() {
-            return {
-                width: this.componentWidth,
-                height: this.componentHeight,
-                registerModel: this.arch.RI,
-                sequencerModel: this.arch.sequencer,
-                x: this.x(3),
-                y: this.y(1),
-            }
-        },
-        RAM() {
-            return {
-                width: this.componentWidth,
-                height: this.componentHeight,
-                registerModel: this.arch.RAM,
-                x: this.x(0.5),
-                y: this.y(2),
-            }
-        },
-        RE() {
-            return {
-                width: this.componentWidth,
-                height: this.componentHeight,
-                registerModel: this.arch.RE,
-                x: this.x(2.5),
-                y: this.y(2),
-            }
-        },
-        OC() {
+        /*OC() {
             return {
                 x: this.x(0),
                 y: this.y(1),
@@ -191,42 +136,25 @@ export default {
                 ),
                 color: 'red',
             }
+        },*/
+        realWidth() {
+            return this.pix(this.width)
         },
-        width() {
-            return this.$store.state.svgWidth
+        realHeight() {
+            return this.pix(this.height)
         },
-        height() {
-            return this.$store.state.svgHeight
-        },
-        componentWidth() {
-            // 3 composants sur une ligne + marge d'un composant à gauche et à droite
-            const tot = this.width / 4
-            return tot - 0.1 * tot
-        },
-        componentHeight() {
-            // Jusqu'à 16 composants l'un en dessous de l'autre par colonne
-            const tot = this.height / 17
-            return tot - 0.1 * tot
+        ratioCoordToPix() {
+            return Math.min(
+                this.$store.state.svgWidth / this.width,
+                this.$store.state.svgHeight / this.height
+            )
         },
     },
     methods: {
-        x(n) {
-            // Marges horizontales
-            return (
-                this.componentWidth / 2 +
-                n * this.componentWidth +
-                n * 0.1 * (this.width / 4)
-            )
+        pix(n) {
+            return n * this.ratioCoordToPix
         },
-        y(n) {
-            // Marges verticales
-            return (
-                this.componentHeight / 2 +
-                n * this.componentHeight +
-                n * 0.1 * (this.height / 2)
-            )
-        },
-        calculBusPath(distX, distY, rightCornerX, signals) {
+        /*calculBusPath(distX, distY, rightCornerX, signals) {
             // Les points de sortie des registres L2 et L3
             const RE = {
                 x: this.RE.x + this.RE.width / 2 + distX,
@@ -272,14 +200,7 @@ export default {
             }
             const SP1 = {
                 x: SP.x,
-                y: SP.y + distY,
-                connections: [SP, RX1],
-            }
-            const RI1 = {
-                x: RI.x,
-                y: RI.y + distY,
-                connections: [RI, SP1],
-            }
+            console.log(size)
 
             // Les points "angles" à droite
             const rightBottomCorner = {
@@ -345,7 +266,7 @@ export default {
             }
 
             return OC
-        },
+        },*/
         stepByStep() {
             this.$store.commit('resetSignals')
             this.arch.stepByStep()

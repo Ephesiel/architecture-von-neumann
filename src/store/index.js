@@ -3,8 +3,8 @@ import SignalManager from '@/models/signal-manager'
 
 export default createStore({
     state: {
-        svgWidth: window.screen.availWidth / 2,
-        svgHeight: window.screen.availHeight / 2,
+        svgWidth: window.screen.availWidth,
+        svgHeight: window.screen.availHeight,
         signals: Object.fromEntries(
             Object.entries(SignalManager.getSignals()).map((o) => {
                 return [o[0], o[1] !== 0]

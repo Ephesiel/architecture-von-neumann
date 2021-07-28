@@ -107,7 +107,7 @@ class Helper {
     }
 
     /**
-     * permet de récupérer un tableau contenant tous les objets du type donné
+     * Permet de récupérer un tableau contenant tous les objets du type donné
      * qui se trouve dans le json.
      *
      * Un objet "globals" peut exister dans le json, cet objet peut avoir des

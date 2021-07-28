@@ -1,16 +1,17 @@
 
 {
     "size": {
-        "w": 150,
-        "h": 50
+        "width": 200,
+        "height": 50
     },
     "globals": {
         "registers": {
-            "x": "15",
+            "model": "RA",
+            "x": 0,
             "y": 0,
-            "w": 15,
-            "h": 3,
-            "test": "$bus"
+            "w": 30,
+            "h": 4,
+            "type": "Register"
         },
         "bus": {
             "x": 0,
@@ -20,15 +21,15 @@
         }
     },
     "registers": [
-        {
-            "x": {"x": 10},
-            "y": 15,
-            "test": "ss"
-        },
-        {
-            "x": "105",
-            "y": 20
-        }
+        { "model": "RA", "x": 30, "y": 5 },
+        { "model": "RB", "x": 70, "y": 5 },
+        { "model": "RC", "x": 110, "y": 5 },
+        { "model": "CO", "x": 20, "y": 18 },
+        { "model": "RX", "x": 55, "y": 18 },
+        { "model": "SP", "x": 90, "y": 18 },
+        { "model": "RI", "x": 125, "y": 18, "type": "InstructionRegister" },
+        { "model": "RAM", "x": 50, "y": 31 },
+        { "model": "RE", "x": 100, "y": 31 }
     ],
     "bus": [
         {
