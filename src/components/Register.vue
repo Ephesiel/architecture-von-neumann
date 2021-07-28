@@ -17,8 +17,6 @@
             stroke="black"
         ></rect>
         <text
-            text-anchor="middle"
-            dominant-baseline="central"
             :transform="labelTransform"
             :x="labelPoint.x"
             :y="labelPoint.y"
@@ -175,14 +173,14 @@ export default {
         currentValuePoint() {
             const size = this.valueSize
             return {
-                x: this.decimalX(size),
+                x: this.decimalX,
                 y: this.calcY(0, size),
             }
         },
         nextValuePoint() {
             const size = this.nextValueSize
             return {
-                x: this.decimalX(size),
+                x: this.decimalX,
                 y: this.calcY(1, size),
             }
         },
@@ -195,42 +193,29 @@ export default {
         currentValueBinaryPoint() {
             const size = this.binaryValueSize
             return {
-                x: this.binaryX(size),
+                x: this.binaryX,
                 y: this.calcY(0, size),
             }
         },
         nextValueBinaryPoint() {
             const size = this.binaryValueSize
             return {
-                x: this.binaryX(size),
+                x: this.binaryX,
                 y: this.calcY(1, size),
             }
         },
+        decimalX() {
+            return this.calcX(
+                this.componentsWidth.label + this.componentsWidth.decimal / 2
+            )
+        },
+        binaryX() {
+            return this.calcX(this.width - this.componentsWidth.binary / 2)
+        },
     },
     methods: {
-        decimalX(size) {
-            return (
-                this.calcX(
-                    this.componentsWidth.label +
-                        this.componentsWidth.decimal / 2
-                ) -
-                size.w / 2
-            )
-        },
-        binaryX(size) {
-            if (this.labelPos === 'R') {
-                // 2.5 ??? Aucune idée de pourquoi mais ça marche comme ça
-                return this.componentsWidth.binary / 2 - size.w / 2.5
-            }
-            return (
-                this.componentsWidth.label +
-                this.componentsWidth.decimal +
-                this.componentsWidth.binary / 2 -
-                size.w / 2
-            )
-        },
         calcY(n, size) {
-            return this.overhead + n * this.binaryValueSize.h + size.h
+            return this.overhead + n * this.binaryValueSize.h + size.h / 2
         },
         calcX(val) {
             if (this.labelPos === 'R') {

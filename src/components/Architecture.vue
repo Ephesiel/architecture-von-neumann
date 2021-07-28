@@ -13,17 +13,11 @@
         <Register v-bind="RA" />
         <Register v-bind="RB" />
         <Register v-bind="RC" />
-        <InstructionRegister
-            :register-model="arch.RI"
-            :sequencer-model="arch.sequencer"
-            :width="componentWidth"
-            :height="componentHeight"
-            :x="x(2)"
-            :y="y(4)"
-        />
+
         <Register v-bind="CO" />
         <Register v-bind="RX" />
         <Register v-bind="SP" />
+        <InstructionRegister v-bind="RI" />
 
         <!-- L3 RAM Mémoire RE -->
         <Register v-bind="RAM" />
@@ -89,7 +83,7 @@ export default {
                 width: this.componentWidth,
                 height: this.componentHeight,
                 registerModel: this.arch.CO,
-                x: this.x(1),
+                x: this.x(0),
                 y: this.y(1),
             }
         },
@@ -98,7 +92,7 @@ export default {
                 width: this.componentWidth,
                 height: this.componentHeight,
                 registerModel: this.arch.RX,
-                x: this.x(2),
+                x: this.x(1),
                 y: this.y(1),
             }
         },
@@ -107,7 +101,7 @@ export default {
                 width: this.componentWidth,
                 height: this.componentHeight,
                 registerModel: this.arch.SP,
-                x: this.x(3),
+                x: this.x(2),
                 y: this.y(1),
             }
         },
@@ -116,7 +110,8 @@ export default {
                 width: this.componentWidth,
                 height: this.componentHeight,
                 registerModel: this.arch.RI,
-                x: this.x(4),
+                sequencerModel: this.arch.sequencer,
+                x: this.x(3),
                 y: this.y(1),
             }
         },
@@ -125,9 +120,8 @@ export default {
                 width: this.componentWidth,
                 height: this.componentHeight,
                 registerModel: this.arch.RAM,
-                x: this.x(1),
+                x: this.x(0.5),
                 y: this.y(2),
-                labelPos: 'R',
             }
         },
         RE() {

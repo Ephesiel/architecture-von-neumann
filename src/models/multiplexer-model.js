@@ -28,11 +28,8 @@ export default class Multiplexer {
     // Constructeur.
 
     constructor(inputs, output, selectorBus) {
-        // Correspond à 2^(selectorBus.getValue().getSize())
-        const nbMaxInputs = uint(
-            1,
-            selectorBus.getValue().getSize() + 1
-        ).leftShift(selectorBus.getValue().getSize())
+        this.selectorBus = selectorBus
+        const nbMaxInputs = this.getNumberOfValueBuses()
         if (nbMaxInputs.gt(inputs.length)) {
             Debug.warn(
                 "Le nombre de bus d'entrée est inférieur au nombre de " +
@@ -51,11 +48,10 @@ export default class Multiplexer {
 
         this.inputs = inputs
         this.output = output
-        this.selectorBus = selectorBus
     }
 
     // ------------------------------------------------------------------------
-    // Méthode publique.
+    // Méthodes publiques.
 
     update() {
         if (
@@ -69,6 +65,13 @@ export default class Multiplexer {
 
         this.output.setValue(
             this.inputs[this.selectorBus.getValue().toNumber()].getValue()
+        )
+    }
+
+    getNumberOfValueBuses() {
+        // Correspond à 2^(selectorBus.getValue().getSize())
+        return uint(1, this.selectorBus.getValue().getSize() + 1).leftShift(
+            this.selectorBus.getValue().getSize()
         )
     }
 }

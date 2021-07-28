@@ -2,17 +2,17 @@
     <g :transform="transform" class="instruction-register">
         <Formatter
             :ra="ra"
-            :x="width * 0.1"
-            :y="0"
-            :width="width * 0.8"
-            :height="registerTopMargin"
+            :x="0"
+            :y="-formatterHeight"
+            :width="width"
+            :height="formatterHeight"
         />
         <Register
             :register-model="registerModel"
             :width="width"
-            :height="registerHeight"
+            :height="height"
             :x="0"
-            :y="registerTopMargin"
+            :y="0"
         />
         <Sequencer :sequencer-model="sequencerModel" />
     </g>
@@ -50,11 +50,8 @@ export default {
         transform() {
             return Helper.transform(this.x, this.y)
         },
-        registerHeight() {
-            return this.height - this.registerTopMargin
-        },
-        registerTopMargin() {
-            return 0.2 * this.height
+        formatterHeight() {
+            return 0.4 * this.height
         },
         ra() {
             return this.instructionRegister.getRA()

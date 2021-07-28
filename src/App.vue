@@ -1,7 +1,7 @@
 <template>
     <div id="nav">
         <router-link to="/">Home</router-link> |
-        <router-link to="/about">About</router-link>
+        <router-link to="/about">Debug</router-link>
     </div>
     <router-view />
 </template>
@@ -26,5 +26,10 @@
             color: #42b983;
         }
     }
+}
+
+text {
+    text-anchor: middle;
+    dominant-baseline: central;
 }
 </style>
