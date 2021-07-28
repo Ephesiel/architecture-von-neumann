@@ -1,59 +1,66 @@
 <template>
-    <path :d="path" :stroke="color" stroke-width="3" fill="none" />
-    <path :d="powerPath" stroke="blue" stroke-width="3" fill="none" />
-    <!-- <text x="0" y="20">{{ fromSig }}</text> -->
+    <template v-for="(n, index) of next" :key="index">
+        <line
+            :x1="x"
+            :y1="y"
+            :x2="n.x"
+            :y2="n.y"
+            :stroke="getColor(index)"
+            stroke-width="3"
+            ref="test"
+        />
+        <Bus v-bind="n" @power="onPower(index, $event)" />
+    </template>
 </template>
 
 <script>
 import Bus from '@/models/bus-model'
 
 export default {
+    emits: ['power'],
     props: {
         model: {
             type: Bus,
             required: true,
         },
-        points: {
-            type: Object,
-            required: true,
+        x: {
+            type: Number,
+            default: 0,
         },
-        color: {
-            type: String,
-            default: 'black',
+        y: {
+            type: Number,
+            default: 0,
+        },
+        next: {
+            default: [],
+        },
+        power: {
+            type: Boolean,
+            default: false,
         },
     },
-    computed: {
-        fromSig() {
-            console.log(this.$store.state.signals)
-            return Object.values(this.$store.state.signals)
-        },
-        path() {
-            return (
-                `M ${this.points.x} ${this.points.y} ` +
-                this.getPathFrom(this.points)
-            )
-        },
-        powerPath() {
-            return ''
+    data() {
+        return {
+            color: 'black',
+            powers: [],
+        }
+    },
+    watch: {
+        power: function () {
+            this.$emit('power', this.power)
         },
     },
     methods: {
-        getPathFrom(point) {
-            let str = `L ${point.x} ${point.y} `
-
-            if (typeof point.connections !== 'undefined') {
-                for (const connection of point.connections) {
-                    str += this.getPathFrom(connection)
-                    str += `L ${point.x} ${point.y}`
-                }
-            } else {
-                //console.log(point.sig)
-            }
-
-            return str
+        onPower(index, value) {
+            this.powers[index] = value
+            this.$emit('power', value)
+        },
+        getColor(index) {
+            return typeof this.powers[index] !== 'undefined' &&
+                this.powers[index]
+                ? 'red'
+                : 'black'
         },
     },
 }
 </script>
-
-<style lang="scss"></style>

@@ -16,8 +16,9 @@
         "bus": {
             "x": 0,
             "y": 0,
-            "power": false,
-            "next": "$bus"
+            "sig": "",
+            "next": "&bus",
+            "type": "Bus"
         }
     },
     "registers": [
@@ -32,8 +33,17 @@
         { "model": "RE", "x": 100, "y": 31 }
     ],
     "bus": [
-        {
-            "next": {}
-        }
+        { "model": "bus1", "x": 20, "y": 2, "next": [
+            {"x": 40, "y": 2, "next": [
+                {"x": 40, "y": 5, "sig": "RAB1"},
+                {"x": 80, "y": 2, "next": [
+                    {"x": 80, "y": 5, "sig": "RBB1"},
+                    {"x": 120, "y": 2, "next": [
+                        {"x": 120, "y": 5, "sig": "RCB1"}
+                    ]}
+                ]}
+            ]}
+            
+        ]}
     ]
 }
