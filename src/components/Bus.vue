@@ -1,23 +1,20 @@
 <template>
     <template v-for="(n, index) of next" :key="index">
-        <line
-            :x1="x"
-            :y1="y"
-            :x2="n.x"
-            :y2="n.y"
+        <path
+            :d="path(n)"
             :stroke="color"
             :class="powers[index] ? 'path' : ''"
-            stroke-width="3"
+            :stroke-dasharray="powers[index] ? '8 4' : 0"
+            fill="none"
         >
             <animate
                 v-if="powers[index]"
                 dur="20000s"
                 repeatCount="indefinite"
                 attributeName="stroke-dashoffset"
-                fill="freeze"
                 :by="20 * powerSpeed * 100 * (powerFromSignal ? 1 : -1) + '%'"
             />
-        </line>
+        </path>
         <Bus ref="test" v-bind="n" @power="onPower(index, $event)" />
     </template>
 </template>
@@ -41,7 +38,8 @@ export default {
             default: 0,
         },
         next: {
-            default: [],
+            type: Array,
+            default: () => [],
         },
         power: {
             type: Boolean,
@@ -78,12 +76,13 @@ export default {
             const power = this.powers.filter((p) => p === true).length > 0
             this.$emit('power', power)
         },
+        path(n) {
+            let str = `M ${this.x} ${this.y}`
+            str += `L ${n.x} ${n.y}`
+            return str
+        },
     },
 }
 </script>
 
-<style scoped>
-.path {
-    stroke-dasharray: 8;
-}
-</style>
+<style scoped></style>
