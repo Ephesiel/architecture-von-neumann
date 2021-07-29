@@ -5,7 +5,7 @@
             y="0"
             :width="width - componentsWidth.label"
             :height="height"
-            fill="transparent"
+            :fill="color"
             stroke="black"
         ></rect>
         <rect
@@ -13,7 +13,7 @@
             y="0"
             :width="componentsWidth.label"
             :height="height"
-            fill="transparent"
+            :fill="color"
             stroke="black"
         ></rect>
         <text
@@ -77,6 +77,7 @@ export default {
     data: function () {
         return {
             rows: 2,
+            color: 'rgb(249, 240, 157)',
         }
     },
     computed: {

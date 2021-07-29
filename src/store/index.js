@@ -5,8 +5,7 @@ const page = document.getElementsByTagName('html')[0]
 
 const store = createStore({
     state: {
-        svgWidth: page.getBoundingClientRect().width,
-        svgHeight: page.getBoundingClientRect().height,
+        pageWidth: 1000,
         signals: Object.fromEntries(
             Object.entries(SignalManager.getSignals()).map((o) => {
                 return [o[0], o[1] !== 0]
@@ -23,8 +22,7 @@ const store = createStore({
             state.signals[signal] = true
         },
         changeSize: (state, page) => {
-            state.svgWidth = page.getBoundingClientRect().width
-            state.svgHeight = page.getBoundingClientRect().height
+            state.pageWidth = page.getBoundingClientRect().width
         },
     },
     actions: {},

@@ -5,10 +5,14 @@
     <svg
         version="1.1"
         baseProfile="full"
+        :viewBox="`0 0 ${width} ${height}`"
         :width="realWidth"
         :height="realHeight"
+        :stroke-width="strokeWidth"
         xmlns="http://www.w3.org/2000/svg"
     >
+        <Bus v-for="(bus, index) of buses" :key="index" v-bind="bus" />
+
         <component
             v-for="(register, index) of registers"
             :key="index"
@@ -16,7 +20,6 @@
             v-bind="register"
         ></component>
 
-        <Bus v-for="(bus, index) of buses" :key="index" v-bind="bus" />
         Désolé, votre navigateur ne supporte pas le SVG.
     </svg>
     <button @click="stepByStep()">Pas à pas</button><br />
@@ -72,22 +75,16 @@ export default {
             })
         },
         realWidth() {
-            return this.pix(this.width)
+            return this.$store.state.pageWidth
         },
         realHeight() {
-            return this.pix(this.height)
+            return this.realWidth * (this.height / this.width)
         },
-        ratioCoordToPix() {
-            return Math.min(
-                this.$store.state.svgWidth / this.width,
-                this.$store.state.svgHeight / this.height
-            )
+        strokeWidth() {
+            return this.width / 1000
         },
     },
     methods: {
-        pix(n) {
-            return n * this.ratioCoordToPix
-        },
         stepByStep() {
             this.$store.commit('resetSignals')
             this.arch.stepByStep()
@@ -99,10 +96,10 @@ export default {
         sanitizeRegister(register) {
             let reg = {
                 registerModel: this.arch[register.model],
-                x: this.pix(register.x),
-                y: this.pix(register.y),
-                width: this.pix(register.w),
-                height: this.pix(register.h),
+                x: register.x,
+                y: register.y,
+                width: register.w,
+                height: register.h,
                 type: register.type,
             }
 
@@ -115,8 +112,8 @@ export default {
         sanitizeBus(bus, x = 0, y = 0) {
             let b = {
                 model: this.arch[bus.model],
-                x: this.pix(bus.x + x),
-                y: this.pix(bus.y + y),
+                x: bus.x + x,
+                y: bus.y + y,
                 next: [],
                 color: bus.color,
                 powerFromSignal: bus.powerFromSig,
