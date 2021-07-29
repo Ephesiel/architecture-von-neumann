@@ -119,6 +119,7 @@ export default {
                 y: this.pix(bus.y + y),
                 next: [],
                 color: bus.color,
+                powerFromSignal: bus.powerFromSig,
                 power:
                     bus.sig === ''
                         ? false
@@ -128,6 +129,7 @@ export default {
             for (const subBus of bus.next) {
                 subBus.model = bus.model
                 subBus.color = bus.color
+                subBus.powerFromSig = bus.powerFromSig
                 b.next.push(this.sanitizeBus(subBus, bus.x + x, bus.y + y))
             }
 

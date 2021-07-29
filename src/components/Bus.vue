@@ -5,9 +5,19 @@
             :y1="y"
             :x2="n.x"
             :y2="n.y"
-            :stroke="getColor(index)"
+            :stroke="color"
+            :class="powers[index] ? 'path' : ''"
             stroke-width="3"
-        />
+        >
+            <animate
+                v-if="powers[index]"
+                dur="20000s"
+                repeatCount="indefinite"
+                attributeName="stroke-dashoffset"
+                fill="freeze"
+                :by="20 * powerSpeed * 100 * (powerFromSignal ? 1 : -1) + '%'"
+            />
+        </line>
         <Bus ref="test" v-bind="n" @power="onPower(index, $event)" />
     </template>
 </template>
@@ -37,6 +47,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        powerFromSignal: {
+            type: Boolean,
+            default: true,
+        },
         color: {
             type: String,
             default: 'black',
@@ -45,6 +59,7 @@ export default {
     data() {
         return {
             powers: [],
+            powerSpeed: 40,
         }
     },
     watch: {
@@ -61,14 +76,14 @@ export default {
             // autre en a toujours, il faut continuer de dire que le courant
             // passe
             const power = this.powers.filter((p) => p === true).length > 0
-            this.$emit('power', power && this.model.hasPower())
-        },
-        getColor(index) {
-            return typeof this.powers[index] !== 'undefined' &&
-                this.powers[index]
-                ? 'red'
-                : this.color
+            this.$emit('power', power)
         },
     },
 }
 </script>
+
+<style scoped>
+.path {
+    stroke-dasharray: 8;
+}
+</style>
