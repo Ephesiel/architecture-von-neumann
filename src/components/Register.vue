@@ -77,14 +77,16 @@ export default {
     data: function () {
         return {
             rows: 2,
-            componentsWidth: {
-                label: 0.1 * this.width,
-                decimal: 0.25 * this.width,
-                binary: 0.65 * this.width,
-            },
         }
     },
     computed: {
+        componentsWidth() {
+            return {
+                label: 0.1 * this.width,
+                decimal: 0.25 * this.width,
+                binary: 0.65 * this.width,
+            }
+        },
         margins() {
             // Doit être computed car utilise les données
             return {

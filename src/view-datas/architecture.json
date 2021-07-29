@@ -33,7 +33,7 @@
         { "model": "RE", "x": 100, "y": 31 }
     ],
     "bus": [
-        { "model": "bus1", "color": "blue", "x": 5, "y": 12, "next": [
+        { "model": "bus1", "color": "blue", "powerFromSig": true, "x": 5, "y": 12, "next": [
             {"y": -10, "next": [
                 {"x": 35, "next": [
                     {"y": 3, "sig": "RAB1"},
@@ -67,7 +67,7 @@
                 ]}
             ]}
         ]},
-        { "model": "bus2", "color": "green", "x": 15, "y": 12, "next": [
+        { "model": "bus2", "color": "green", "powerFromSig": true, "x": 15, "y": 12, "next": [
             {"y": -9, "next": [
                 {"x": 35, "next": [
                     {"y": 2, "sig": "RAB2"},
@@ -101,7 +101,7 @@
                 ]}
             ]}
         ]},
-        { "model": "bus3", "color": "orange", "x": 10, "y": 22, "next": [
+        { "model": "bus3", "color": "orange", "powerFromSig": false, "x": 10, "y": 22, "next": [
             {"y": 3, "next": [
                 {"x": 8, "next": [
                     {"y": -13, "next": [
