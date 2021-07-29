@@ -79,7 +79,7 @@ export default class Memory {
         else {
             Debug.warn(
                 `Le contenu de l'adresse ${address} n'a jamais été donné, le` +
-                    `résultat renvoyé est non défini`
+                    ` résultat renvoyé est non défini`
             )
         }
 
@@ -97,6 +97,11 @@ export default class Memory {
      * @param {Integer} value La valeur à mettre dans la mémoirie
      */
     setValue(address, value) {
+        if (!(address instanceof Integer)) {
+            Debug.crit("L'addresse d'une mémoire doit être un nombre.")
+            return
+        }
+
         if (!(address.toNumber() in this.memory)) {
             Debug.crit(
                 `L'adresse ${address.toString()} n'existe pas dans la mémoire`

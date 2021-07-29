@@ -98,15 +98,26 @@ class Clock {
      *     this.prop += 3 // Ne va rien augmenter du tout
      * })
      * ```
+     *
+     * les méthodes enregistrées seront appelées à chaque update et peuvent
+     * prendre jusqu'à deux paramètres :
+     *  1. Le nombre de UTA passées depuis la dernière update
+     *  2. Les signaux actifs
+     *
+     * Pour le cas spécifique ou l'objet doit être également paramètre de la
+     * fonction, cette dernière peut prendre jusqu'à 3 paramètres :
+     *  1. L'objet à modifier.
+     *  2. UTA
+     *  3. Signaux
      */
     register(obj, fun = 'update') {
         if (typeof obj === 'function') {
             this.updateCallbacks.push(obj)
-        } else if (typeof obj[fun] === 'function') {
+        } else if (typeof obj === 'object' && typeof obj[fun] === 'function') {
             this.updateCallbacks.push(obj[fun].bind(reactive(obj)))
         } else if (typeof fun === 'function') {
-            this.updateCallbacks.push(() => {
-                fun(reactive(obj))
+            this.updateCallbacks.push((ATU, signals) => {
+                fun(reactive(obj), ATU, signals)
             })
         }
     }

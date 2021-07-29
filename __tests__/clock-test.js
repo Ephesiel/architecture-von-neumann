@@ -1,6 +1,7 @@
 import { test, expect } from '@jest/globals'
 import Clock from '@/models/clock'
 import { ATU_BETWEEN_UPDATE } from '@/globals'
+import SignalManager from '@/models/signal-manager'
 
 test('Constructor', () => {
     expect(Clock.timePassedSinceStart()).toBe(0)
@@ -52,4 +53,37 @@ test('Register', () => {
     }
 
     Clock.waitAndTick(13, 5)
+
+    Clock.updateCallbacks = []
+
+    let obj = { a: 0, b: 1 }
+    const signal = Object.keys(SignalManager.signals)[0]
+
+    Clock.register(obj, (o, ATU, signals) => {
+        expect(o.a).toBe(1)
+        expect(o.b).toBe(1)
+        expect(o.a).toBe(obj.a)
+        expect(o.b).toBe(obj.b)
+
+        o.a = 2
+        o.b = 2
+
+        expect(o.a).toBe(obj.a)
+        expect(o.b).toBe(obj.b)
+
+        expect(ATU).toBe(1)
+        expect(signals).toBeInstanceOf(Object)
+        expect(signals[signal]).toBe(1)
+    })
+
+    obj.a = 1
+    obj.b = 1
+
+    SignalManager.emit(signal, 1)
+    Clock.waitAndTick(1, 1)
+
+    Clock.updateCallbacks = []
+    Clock.register()
+
+    expect(Clock.updateCallbacks.length).toBe(0)
 })

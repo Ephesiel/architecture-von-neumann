@@ -1,54 +1,74 @@
 <template>
-    <path :d="path" :stroke="color" stroke-width="3" fill="none" />
-    <path :d="powerPath" stroke="blue" stroke-width="3" fill="none" />
+    <template v-for="(n, index) of next" :key="index">
+        <line
+            :x1="x"
+            :y1="y"
+            :x2="n.x"
+            :y2="n.y"
+            :stroke="getColor(index)"
+            stroke-width="3"
+        />
+        <Bus ref="test" v-bind="n" @power="onPower(index, $event)" />
+    </template>
 </template>
 
 <script>
 import Bus from '@/models/bus-model'
 
 export default {
+    emits: ['power'],
     props: {
         model: {
             type: Bus,
             required: true,
         },
-        points: {
-            type: Object,
-            required: true,
+        x: {
+            type: Number,
+            default: 0,
+        },
+        y: {
+            type: Number,
+            default: 0,
+        },
+        next: {
+            default: [],
+        },
+        power: {
+            type: Boolean,
+            default: false,
         },
         color: {
             type: String,
             default: 'black',
         },
     },
-    computed: {
-        path() {
-            return (
-                `M ${this.points.x} ${this.points.y} ` +
-                this.getPathFrom(this.points)
-            )
-        },
-        powerPath() {
-            return ''
+    data() {
+        return {
+            powers: [],
+        }
+    },
+    watch: {
+        power: function () {
+            this.$emit('power', this.power)
         },
     },
     methods: {
-        getPathFrom(point) {
-            let str = `L ${point.x} ${point.y} `
+        onPower(index, value) {
+            this.powers[index] = value
 
-            if (typeof point.connections !== 'undefined') {
-                for (const connection of point.connections) {
-                    str += this.getPathFrom(connection)
-                    str += `L ${point.x} ${point.y}`
-                }
-            } else {
-                console.log(point.sig)
-            }
-
-            return str
+            // On vérifie si un des sous bus a encore du courant
+            // En effet, si un bus envoi qu'il n'a plus de courant mais qu'un
+            // autre en a toujours, il faut continuer de dire que le courant
+            // passe
+            const power = this.powers.filter((p) => p === true).length > 0
+            this.$emit('power', power && this.model.hasPower())
+        },
+        getColor(index) {
+            return typeof this.powers[index] !== 'undefined' &&
+                this.powers[index]
+                ? 'red'
+                : this.color
         },
     },
 }
 </script>
-
-<style lang="scss"></style>
