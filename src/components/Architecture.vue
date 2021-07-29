@@ -67,7 +67,9 @@ export default {
         },
         buses() {
             const buses = Helper.getJsonValues(architectureData, 'bus')
-            return buses.map(this.sanitizeBus)
+            return buses.map((bus) => {
+                return this.sanitizeBus(bus)
+            })
         },
         realWidth() {
             return this.pix(this.width)
@@ -110,12 +112,13 @@ export default {
 
             return reg
         },
-        sanitizeBus(bus) {
+        sanitizeBus(bus, x = 0, y = 0) {
             let b = {
                 model: this.arch[bus.model],
-                x: this.pix(bus.x),
-                y: this.pix(bus.y),
+                x: this.pix(bus.x + x),
+                y: this.pix(bus.y + y),
                 next: [],
+                color: bus.color,
                 power:
                     bus.sig === ''
                         ? false
@@ -124,7 +127,8 @@ export default {
 
             for (const subBus of bus.next) {
                 subBus.model = bus.model
-                b.next.push(this.sanitizeBus(subBus))
+                subBus.color = bus.color
+                b.next.push(this.sanitizeBus(subBus, bus.x + x, bus.y + y))
             }
 
             return b

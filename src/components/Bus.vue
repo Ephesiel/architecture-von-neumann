@@ -7,9 +7,8 @@
             :y2="n.y"
             :stroke="getColor(index)"
             stroke-width="3"
-            ref="test"
         />
-        <Bus v-bind="n" @power="onPower(index, $event)" />
+        <Bus ref="test" v-bind="n" @power="onPower(index, $event)" />
     </template>
 </template>
 
@@ -38,10 +37,13 @@ export default {
             type: Boolean,
             default: false,
         },
+        color: {
+            type: String,
+            default: 'black',
+        },
     },
     data() {
         return {
-            color: 'black',
             powers: [],
         }
     },
@@ -53,13 +55,19 @@ export default {
     methods: {
         onPower(index, value) {
             this.powers[index] = value
-            this.$emit('power', value)
+
+            // On vérifie si un des sous bus a encore du courant
+            // En effet, si un bus envoi qu'il n'a plus de courant mais qu'un
+            // autre en a toujours, il faut continuer de dire que le courant
+            // passe
+            const power = this.powers.filter((p) => p === true).length > 0
+            this.$emit('power', power && this.model.hasPower())
         },
         getColor(index) {
             return typeof this.powers[index] !== 'undefined' &&
                 this.powers[index]
                 ? 'red'
-                : 'black'
+                : this.color
         },
     },
 }
