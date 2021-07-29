@@ -10,7 +10,10 @@ import InstructionRegister from '@/models/instruction-register-model'
  */
 class Helper {
     constructor() {
-        //this.police = this.getPolice()
+        this.police = this.getPolice()
+        this.lineHeight = this.getLineHeight(
+            document.getElementsByTagName('body')[0]
+        )
     }
 
     /**
@@ -63,7 +66,7 @@ class Helper {
         let minSize = 1
         let maxSize = 128
         let size = 1
-        let last = [minSize, size, maxSize]
+        //let last = [minSize, size, maxSize]
 
         do {
             size = Math.round((minSize + maxSize) / 2)
@@ -71,10 +74,11 @@ class Helper {
 
             if (m.w > maxWidth || m.h > maxHeight) {
                 maxSize = size
-            } else if (m.w <= maxWidth && m.h <= maxHeight) {
+            } else {
                 minSize = size
             }
 
+            /*
             if (
                 JSON.stringify([minSize, size, maxSize]) == JSON.stringify(last)
             ) {
@@ -82,6 +86,7 @@ class Helper {
                 return size
             }
             last = [minSize, size, maxSize]
+            */
         } while (minSize + 1 !== maxSize)
 
         return minSize
@@ -97,12 +102,7 @@ class Helper {
 
         return {
             w: Math.ceil(metrics.width),
-            h:
-                typeof metrics.fontBoundingBoxAscent === 'undefined'
-                    ? metrics.actualBoundingBoxAscent +
-                      metrics.actualBoundingBoxDescent
-                    : metrics.fontBoundingBoxAscent +
-                      metrics.fontBoundingBoxDescent,
+            h: fontSize * this.lineHeight,
         }
     }
 
@@ -315,6 +315,32 @@ class Helper {
             }
         }
         return 'monospace'
+    }
+
+    getLineHeight(el) {
+        let temp = document.createElement('div'),
+            ret
+        temp.setAttribute(
+            'style',
+            'margin:0; padding:0; ' +
+                'font-family:' +
+                (el.style.fontFamily || 'inherit') +
+                '; ' +
+                'font-size:' +
+                (el.style.fontSize || 'inherit')
+        )
+        temp.innerHTML = 'A'
+
+        el.parentNode.appendChild(temp)
+        ret = temp.clientHeight
+        temp.parentNode.removeChild(temp)
+
+        const fontSize = parseInt(
+            window.getComputedStyle(el).getPropertyValue('font-size'),
+            10
+        )
+
+        return ret / fontSize
     }
 }
 
