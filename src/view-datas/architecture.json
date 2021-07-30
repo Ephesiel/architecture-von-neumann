@@ -16,48 +16,53 @@
         "bus": {
             "x": 0,
             "y": 0,
+            "bridges": "&bridges",
             "sig": "",
             "next": "&bus",
             "type": "Bus"
+        },
+        "bridges": {
+            "dist": 0,
+            "size": 2
         }
     },
     "registers": [
         { "model": "RA", "x": 30, "y": 5 },
         { "model": "RB", "x": 70, "y": 5 },
         { "model": "RC", "x": 110, "y": 5 },
-        { "model": "CO", "x": 20, "y": 18 },
-        { "model": "RX", "x": 55, "y": 18 },
-        { "model": "SP", "x": 90, "y": 18 },
-        { "model": "RI", "x": 125, "y": 18, "type": "InstructionRegister" },
-        { "model": "RAM", "x": 50, "y": 31 },
-        { "model": "RE", "x": 100, "y": 31 }
+        { "model": "CO", "x": 20, "y": 20 },
+        { "model": "RX", "x": 55, "y": 20 },
+        { "model": "SP", "x": 90, "y": 20 },
+        { "model": "RI", "x": 125, "y": 20.6, "type": "InstructionRegister" },
+        { "model": "RAM", "x": 50, "y": 34 },
+        { "model": "RE", "x": 100, "y": 34 }
     ],
     "bus": [
         { "model": "bus1", "color": "blue", "powerFromSig": true, "x": 5, "y": 12, "next": [
-            {"y": -10, "next": [
+            {"y": -11, "next": [
                 {"x": 35, "next": [
-                    {"y": 3, "sig": "RAB1"},
+                    {"y": 4, "sig": "RAB1"},
                     {"x": 40, "next": [
-                        {"y": 3, "sig": "RBB1"},
+                        {"y": 4, "sig": "RBB1"},
                         {"x": 40, "next": [
-                            {"y": 3, "sig": "RCB1"},
+                            {"y": 4, "sig": "RCB1"},
                             {"x": 40, "next": [
-                                {"y": 13, "next": [
+                                {"y": 14, "next": [
                                     {"x": -25, "next": [
-                                        {"y": 3, "sig": "RIB1"},
+                                        {"y": 4, "sig": "RIB1"},
                                         {"x": -35, "next": [
-                                            {"y": 3, "sig": "SPB1"},
+                                            {"y": 5, "sig": "SPB1"},
                                             {"x": -35, "next": [
-                                                {"y": 3, "sig": "RXB1"},
+                                                {"y": 5, "sig": "RXB1"},
                                                 {"x": -35, "next": [
-                                                    {"y": 3, "sig": "COB1"}
+                                                    {"y": 5, "sig": "COB1"}
                                                 ]}
                                             ]}
                                         ]}
                                     ]},
-                                    {"y": 13, "next": [
+                                    {"y": 15, "next": [
                                         {"x": -50, "next": [
-                                            {"y": 3, "sig": "REB1"}
+                                            {"y": 4, "sig": "REB1"}
                                         ]}
                                     ]}
                                 ]}
@@ -69,28 +74,28 @@
         ]},
         { "model": "bus2", "color": "green", "powerFromSig": true, "x": 15, "y": 12, "next": [
             {"y": -9, "next": [
-                {"x": 35, "next": [
+                {"x": 35, "bridges": [{"dist": 24}], "next": [
                     {"y": 2, "sig": "RAB2"},
-                    {"x": 40, "next": [
+                    {"x": 40, "bridges": [{"dist": 29}], "next": [
                         {"y": 2, "sig": "RBB2"},
-                        {"x": 40, "next": [
+                        {"x": 40, "bridges": [{"dist": 29}], "next": [
                             {"y": 2, "sig": "RCB2"},
-                            {"x": 31, "next": [
-                                {"y": 13, "next": [
-                                    {"x": -16, "next": [
+                            {"x": 32, "bridges": [{"dist": 29}], "next": [
+                                {"y": 14, "next": [
+                                    {"x": -17, "bridges": [{"dist": 1}], "next": [
                                         {"y": 2, "sig": "RIB2"},
-                                        {"x": -35, "next": [
-                                            {"y": 2, "sig": "SPB2"},
-                                            {"x": -35, "next": [
-                                                {"y": 2, "sig": "RXB2"},
-                                                {"x": -35, "next": [
-                                                    {"y": 2, "sig": "COB2"}
+                                        {"x": -35, "bridges": [{"dist": 9}], "next": [
+                                            {"y": 3, "sig": "SPB2"},
+                                            {"x": -35, "bridges": [{"dist": 9}], "next": [
+                                                {"y": 3, "sig": "RXB2"},
+                                                {"x": -35, "bridges": [{"dist": 9}], "next": [
+                                                    {"y": 3, "sig": "COB2"}
                                                 ]}
                                             ]}
                                         ]}
                                     ]},
-                                    {"y": 13, "next": [
-                                        {"x": -41, "next": [
+                                    {"y": 15, "next": [
+                                        {"x": -42, "next": [
                                             {"y": 2, "sig": "REB2"}
                                         ]}
                                     ]}
@@ -102,37 +107,37 @@
             ]}
         ]},
         { "model": "bus3", "color": "orange", "powerFromSig": false, "x": 10, "y": 22, "next": [
-            {"y": 3, "next": [
+            {"y": 19, "next": [
                 {"x": 8, "next": [
-                    {"y": -13, "next": [
-                        {"x": 27, "next": [
-                            {"y": -3, "sig": "eRA"},
-                            {"x": 40, "next": [
-                                {"y": -3, "sig": "eRB"},
+                    {"y": -14, "next": [
+                        {"y": -15, "next": [
+                            {"x": 27, "next": [
+                                {"y": -3, "sig": "eRA"},
                                 {"x": 40, "next": [
-                                    {"y": -3, "sig": "eRC"}
+                                    {"y": -3, "sig": "eRB"},
+                                    {"x": 40, "next": [
+                                        {"y": -3, "sig": "eRC"}
+                                    ]}
                                 ]}
                             ]}
-                        ]}
-                    ]},
-                    {"x": 17, "next": [
-                        {"y": -3, "sig": "eCO"},
-                        {"x": 35, "next": [
-                            {"y": -3, "sig": "eRX"},
+                        ]},
+                        {"x": 17, "next": [
+                            {"y": -3, "sig": "eCO"},
                             {"x": 35, "next": [
-                                {"y": -3, "sig": "eSP"},
+                                {"y": -3, "sig": "eRX"},
                                 {"x": 35, "next": [
-                                    {"y": -3, "sig": "eRI"}
+                                    {"y": -3, "sig": "eSP"},
+                                    {"x": 35, "next": [
+                                        {"y": -3, "sig": "eRI"}
+                                    ]}
                                 ]}
                             ]}
                         ]}
                     ]},
-                    {"y": 13, "next": [
-                        {"x": 47, "next": [
-                            {"y": -3, "sig": "eRAM"},
-                            {"x": 50, "next": [
-                                {"y": -3, "sig": "eRE"}
-                            ]}
+                    {"x": 47, "next": [
+                        {"y": -3, "sig": "eRAM"},
+                        {"x": 50, "next": [
+                            {"y": -3, "sig": "eRE"}
                         ]}
                     ]}
                 ]}

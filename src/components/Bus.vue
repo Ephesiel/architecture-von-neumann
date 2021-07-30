@@ -4,7 +4,7 @@
             :d="path(n)"
             :stroke="color"
             :class="powers[index] ? 'path' : ''"
-            :stroke-dasharray="powers[index] ? '8 4' : 0"
+            :stroke-dasharray="powers[index] ? '1 0.5' : 0"
             fill="none"
         >
             <animate
@@ -17,10 +17,18 @@
         </path>
         <Bus ref="test" v-bind="n" @power="onPower(index, $event)" />
     </template>
+    <text
+        :x="x + 2"
+        :y="y + 1 * (powerFromSignal ? -1 : 1)"
+        v-if="signal !== ''"
+        font-size="1"
+        >{{ signal }}</text
+    >
 </template>
 
 <script>
 import Bus from '@/models/bus-model'
+import Signals from '@/signals'
 
 export default {
     emits: ['power'],
@@ -41,9 +49,13 @@ export default {
             type: Array,
             default: () => [],
         },
-        power: {
-            type: Boolean,
-            default: false,
+        bridges: {
+            type: Array,
+            default: () => [],
+        },
+        signal: {
+            type: String,
+            default: '',
         },
         powerFromSignal: {
             type: Boolean,
@@ -57,8 +69,15 @@ export default {
     data() {
         return {
             powers: [],
-            powerSpeed: 40,
+            powerSpeed: 60,
         }
+    },
+    computed: {
+        power() {
+            return this.sig === ''
+                ? false
+                : this.$store.state.signals[Signals[this.signal]]
+        },
     },
     watch: {
         power: function () {
@@ -78,6 +97,35 @@ export default {
         },
         path(n) {
             let str = `M ${this.x} ${this.y}`
+
+            // Vecteur de la droite
+            let vx = n.x - this.x
+            let vy = n.y - this.y
+
+            // Distance totale de la droite
+            let dv = Math.sqrt(Math.pow(vx, 2) + Math.pow(vy, 2))
+
+            // Vecteur unitaire
+            let ux = vx / dv
+            let uy = vy / dv
+
+            for (const bridge of n.bridges) {
+                // Début du pont
+                let xb = bridge.dist * ux + this.x
+                let yb = bridge.dist * uy + this.y
+
+                // Fin du pont
+                let xe = xb + bridge.size * ux
+                let ye = yb + bridge.size * uy
+
+                let r = bridge.size / 2
+                let swip = ux > 0 ? 1 : 0
+
+                str += `L ${xb} ${yb} A ${r} ${r} 0 0 ${swip} ${xe} ${ye}`
+
+                console.log(xb, yb, xe, ye)
+            }
+
             str += `L ${n.x} ${n.y}`
             return str
         },

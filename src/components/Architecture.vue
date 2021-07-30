@@ -31,7 +31,6 @@ import Architecture from '@/models/von-neumann-architecture-model'
 import Register from '@/components/Register.vue'
 import InstructionRegister from '@/components/InstructionRegister.vue'
 import Bus from '@/components/Bus.vue'
-import Signals from '@/signals'
 import Clock from '@/models/clock'
 import architectureData from '@/view-datas/architecture.json'
 import Helper from '@/helper'
@@ -115,13 +114,19 @@ export default {
                 x: bus.x + x,
                 y: bus.y + y,
                 next: [],
+                bridges: [],
                 color: bus.color,
                 powerFromSignal: bus.powerFromSig,
-                power:
-                    bus.sig === ''
-                        ? false
-                        : this.$store.state.signals[Signals[bus.sig]],
+                signal: bus.sig,
             }
+
+            for (const bridge of bus.bridges) {
+                b.bridges.push({ dist: bridge.dist, size: bridge.size })
+            }
+
+            b.bridges.sort((b1, b2) => {
+                return b1.dist > b2.dist ? 1 : b1.dist < b2.dist ? -1 : 0
+            })
 
             for (const subBus of bus.next) {
                 subBus.model = bus.model
