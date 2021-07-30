@@ -9,6 +9,7 @@
         :width="realWidth"
         :height="realHeight"
         :stroke-width="strokeWidth"
+        :font-size="fontSize"
         xmlns="http://www.w3.org/2000/svg"
     >
         <Bus v-for="(bus, index) of buses" :key="index" v-bind="bus" />
@@ -45,8 +46,9 @@ export default {
     data() {
         return {
             arch: new Architecture(),
-            width: architectureData.size.width,
-            height: architectureData.size.height,
+            width: architectureData.datas.width,
+            height: architectureData.datas.height,
+            fontSize: architectureData.datas.fontSize,
         }
     },
     created() {

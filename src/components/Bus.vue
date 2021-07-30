@@ -21,7 +21,6 @@
         :x="x + 2"
         :y="y + 1 * (powerFromSignal ? -1 : 1)"
         v-if="signal !== ''"
-        font-size="1"
         >{{ signal }}</text
     >
 </template>

@@ -20,36 +20,25 @@
             :transform="labelTransform"
             :x="labelPoint.x"
             :y="labelPoint.y"
-            :font-size="fontSize"
             fill="black"
             class="label"
             >{{ label }}</text
         >
-        <text
-            :x="currentValuePoint.x"
-            :y="currentValuePoint.y"
-            :font-size="fontSize"
-            fill="black"
-            >{{ formatCurrentValue }}</text
-        >
-        <text
-            :x="nextValuePoint.x"
-            :y="nextValuePoint.y"
-            :font-size="fontSize"
-            fill="black"
-            >{{ formatNextValue }}</text
-        >
+        <text :x="currentValuePoint.x" :y="currentValuePoint.y" fill="black">{{
+            formatCurrentValue
+        }}</text>
+        <text :x="nextValuePoint.x" :y="nextValuePoint.y" fill="black">{{
+            formatNextValue
+        }}</text>
         <text
             :x="currentValueBinaryPoint.x"
             :y="currentValueBinaryPoint.y"
-            :font-size="fontSize"
             fill="black"
             >{{ formatCurrentValueBinary }}</text
         >
         <text
             :x="nextValueBinaryPoint.x"
             :y="nextValueBinaryPoint.y"
-            :font-size="fontSize"
             fill="black"
             >{{ formatNextValueBinary }}</text
         >

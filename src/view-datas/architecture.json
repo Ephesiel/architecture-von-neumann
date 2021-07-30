@@ -1,8 +1,9 @@
 
 {
-    "size": {
+    "datas": {
         "width": 170,
-        "height": 50
+        "height": 50,
+        "fontSize": 1
     },
     "globals": {
         "registers": {
