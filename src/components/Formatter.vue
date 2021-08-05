@@ -11,7 +11,7 @@
         <text
             :x="raPoint.x"
             :y="raPoint.y"
-            :font-size="raFontSize"
+            :font-size="fontSize"
             fill="black"
             >{{ ra.toString() }}</text
         >
@@ -19,8 +19,7 @@
 </template>
 
 <script>
-import Integer, { maxOf, SIGNED } from '@/integer'
-import { NB_BITS_ARCH } from '@/globals'
+import Integer from '@/integer'
 import Helper from '@/helper'
 
 export default {
@@ -31,6 +30,7 @@ export default {
         y: Number,
         width: Number,
         height: Number,
+        fontSize: Number,
     },
     computed: {
         transform() {
@@ -38,13 +38,6 @@ export default {
         },
         margin() {
             return this.height * 0.1
-        },
-        raFontSize() {
-            return Helper.calculateFontSize(
-                maxOf(NB_BITS_ARCH, SIGNED),
-                this.width,
-                this.height - this.margin
-            )
         },
         raPoint() {
             return {

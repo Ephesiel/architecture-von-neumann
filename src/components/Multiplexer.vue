@@ -25,7 +25,7 @@ export default {
         x: Number,
         y: Number,
         width: Number,
-        height: Number,
+        fontSize: Number,
     },
     data() {
         return {
@@ -37,19 +37,11 @@ export default {
         transform() {
             return Helper.transform(this.x, this.y)
         },
-        fontSize() {
-            return Helper.calculateFontSize(
-                '0',
-                this.width,
-                this.height /
-                    (2 *
-                        this.multiplexerModel
-                            .getNumberOfValueBuses()
-                            .toNumber())
-            )
-        },
         numberSize() {
-            return Helper.calculateSize('0', this.fontSize)
+            return Helper.calculateSize(
+                this.multiplexerModel.getNumberOfValueBuses().toString(),
+                this.fontSize
+            )
         },
         calcX() {
             return 2 + this.numberSize.w / 2
@@ -72,11 +64,12 @@ export default {
                 totY += 2 * y
             }
             this.places.push(totY + y / 2)
+            const height = this.places[this.places.length - 1] + 2 * y
             str += ` v ${y} h ${this.numberSize.w} l ${
                 this.width - this.numberSize.w
-            } -${this.height / 2 - y / 1.5} v -${y / 2} l -${
+            } -${height / 2 - y} v -${y / 2} l -${
                 this.width - this.numberSize.w
-            } -${this.height / 2 - y / 1.2} Z`
+            } -${height / 2 - y} Z`
             return str
         },
     },

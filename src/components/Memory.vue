@@ -1,22 +1,24 @@
 <template>
     <g :transform="transform">
-        <rect
-            @click="updateToggledData"
-            x="0"
-            y="0"
-            :width="width"
-            :height="0.1 * height"
-            stroke="black"
-            :fill="displayAll ? yesColor : noColor"
-        />
-        <text
-            @click="updateToggledData"
-            :font-size="fontSize"
-            :x="labelPoint.x"
-            :y="labelPoint.y"
-            class="unselectable"
-            >{{ displayAll ? yesText : noText }}</text
-        >
+        <g class="button">
+            <rect
+                @click="updateToggledData"
+                x="0"
+                y="0"
+                :width="width"
+                :height="0.1 * height"
+                stroke="black"
+                :fill="displayAll ? yesColor : noColor"
+            />
+            <text
+                @click="updateToggledData"
+                :font-size="fontSize"
+                :x="labelPoint.x"
+                :y="labelPoint.y"
+                class="unselectable"
+                >{{ displayAll ? yesText : noText }}</text
+            >
+        </g>
 
         <foreignObject
             :width="width"
@@ -29,6 +31,7 @@
                     :style="{
                         height: tableHeight,
                         width: `calc(${width}px - .75rem)`,
+                        fontSize: `${fontSize}px`,
                     }"
                     :class="{ scrollable: displayAll }"
                 >
@@ -66,6 +69,7 @@ export default {
         width: Number,
         height: Number,
         dataProcessor: Function,
+        fontSize: Number,
     },
     data() {
         return {
@@ -79,20 +83,6 @@ export default {
     computed: {
         transform() {
             return Helper.transform(this.x, this.y)
-        },
-        fontSize() {
-            return Math.min(
-                Helper.calculateFontSize(
-                    this.yesText,
-                    this.width,
-                    this.height / 10
-                ),
-                Helper.calculateFontSize(
-                    this.noText,
-                    this.width,
-                    this.height / 10
-                )
-            )
         },
         labelPoint() {
             return {
@@ -200,7 +190,7 @@ table {
     }
 }
 
-text {
+.button {
     cursor: pointer;
 }
 

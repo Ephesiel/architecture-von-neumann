@@ -1,4 +1,3 @@
-
 {
     "datas": {
         "width": 170,
@@ -39,110 +38,312 @@
         { "model": "RE", "x": 100, "y": 34 }
     ],
     "bus": [
-        { "model": "bus1", "color": "blue", "powerFromSig": true, "x": 5, "y": 12, "next": [
-            {"y": -11, "next": [
-                {"x": 35, "next": [
-                    {"y": 4, "sig": "RAB1"},
-                    {"x": 40, "next": [
-                        {"y": 4, "sig": "RBB1"},
-                        {"x": 40, "next": [
-                            {"y": 4, "sig": "RCB1"},
-                            {"x": 40, "next": [
-                                {"y": 14, "next": [
-                                    {"x": -25, "next": [
-                                        {"y": 4, "sig": "RIB1"},
-                                        {"x": -35, "next": [
-                                            {"y": 5, "sig": "SPB1"},
-                                            {"x": -35, "next": [
-                                                {"y": 5, "sig": "RXB1"},
-                                                {"x": -35, "next": [
-                                                    {"y": 5, "sig": "COB1"}
-                                                ]}
-                                            ]}
-                                        ]}
-                                    ]},
-                                    {"y": 15, "next": [
-                                        {"x": -50, "next": [
-                                            {"y": 4, "sig": "REB1"}
-                                        ]}
-                                    ]}
-                                ]}
-                            ]}
-                        ]}
-                    ]}
-                ]}
-            ]}
-        ]},
-        { "model": "bus2", "color": "green", "powerFromSig": true, "x": 15, "y": 12, "next": [
-            {"y": -9, "next": [
-                {"x": 35, "bridges": [{"dist": 24}], "next": [
-                    {"y": 2, "sig": "RAB2"},
-                    {"x": 40, "bridges": [{"dist": 29}], "next": [
-                        {"y": 2, "sig": "RBB2"},
-                        {"x": 40, "bridges": [{"dist": 29}], "next": [
-                            {"y": 2, "sig": "RCB2"},
-                            {"x": 32, "bridges": [{"dist": 29}], "next": [
-                                {"y": 14, "next": [
-                                    {"x": -17, "bridges": [{"dist": 1}], "next": [
-                                        {"y": 2, "sig": "RIB2"},
-                                        {"x": -35, "bridges": [{"dist": 9}], "next": [
-                                            {"y": 3, "sig": "SPB2"},
-                                            {"x": -35, "bridges": [{"dist": 9}], "next": [
-                                                {"y": 3, "sig": "RXB2"},
-                                                {"x": -35, "bridges": [{"dist": 9}], "next": [
-                                                    {"y": 3, "sig": "COB2"}
-                                                ]}
-                                            ]}
-                                        ]}
-                                    ]},
-                                    {"y": 15, "next": [
-                                        {"x": -42, "next": [
-                                            {"y": 2, "sig": "REB2"}
-                                        ]}
-                                    ]}
-                                ]}
-                            ]}
-                        ]}
-                    ]}
-                ]}
-            ]}
-        ]},
-        { "model": "bus3", "color": "orange", "powerFromSig": false, "x": 10, "y": 22, "next": [
-            {"y": 19, "next": [
-                {"x": 8, "next": [
-                    {"y": -14, "next": [
-                        {"y": -15, "next": [
-                            {"x": 27, "next": [
-                                {"y": -3, "sig": "eRA"},
-                                {"x": 40, "next": [
-                                    {"y": -3, "sig": "eRB"},
-                                    {"x": 40, "next": [
-                                        {"y": -3, "sig": "eRC"}
-                                    ]}
-                                ]}
-                            ]}
-                        ]},
-                        {"x": 17, "next": [
-                            {"y": -3, "sig": "eCO"},
-                            {"x": 35, "next": [
-                                {"y": -3, "sig": "eRX"},
-                                {"x": 35, "next": [
-                                    {"y": -3, "sig": "eSP"},
-                                    {"x": 35, "next": [
-                                        {"y": -3, "sig": "eRI"}
-                                    ]}
-                                ]}
-                            ]}
-                        ]}
-                    ]},
-                    {"x": 47, "next": [
-                        {"y": -3, "sig": "eRAM"},
-                        {"x": 50, "next": [
-                            {"y": -3, "sig": "eRE"}
-                        ]}
-                    ]}
-                ]}
-            ]}
-        ]}
+        {
+            "model": "bus1",
+            "color": "blue",
+            "powerFromSig": true,
+            "x": 5,
+            "y": 12,
+            "next": [
+                {
+                    "y": -11,
+                    "next": [
+                        {
+                            "x": 35,
+                            "next": [
+                                { "y": 4, "sig": "RAB1" },
+                                {
+                                    "x": 40,
+                                    "next": [
+                                        { "y": 4, "sig": "RBB1" },
+                                        {
+                                            "x": 40,
+                                            "next": [
+                                                { "y": 4, "sig": "RCB1" },
+                                                {
+                                                    "x": 40,
+                                                    "next": [
+                                                        {
+                                                            "y": 14,
+                                                            "next": [
+                                                                {
+                                                                    "x": -25,
+                                                                    "next": [
+                                                                        {
+                                                                            "y": 4,
+                                                                            "sig": "RIB1"
+                                                                        },
+                                                                        {
+                                                                            "x": -35,
+                                                                            "next": [
+                                                                                {
+                                                                                    "y": 5,
+                                                                                    "sig": "SPB1"
+                                                                                },
+                                                                                {
+                                                                                    "x": -35,
+                                                                                    "next": [
+                                                                                        {
+                                                                                            "y": 5,
+                                                                                            "sig": "RXB1"
+                                                                                        },
+                                                                                        {
+                                                                                            "x": -35,
+                                                                                            "next": [
+                                                                                                {
+                                                                                                    "y": 5,
+                                                                                                    "sig": "COB1"
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "y": 15,
+                                                                    "next": [
+                                                                        {
+                                                                            "x": -50,
+                                                                            "next": [
+                                                                                {
+                                                                                    "y": 4,
+                                                                                    "sig": "REB1"
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "model": "bus2",
+            "color": "green",
+            "powerFromSig": true,
+            "x": 15,
+            "y": 12,
+            "next": [
+                {
+                    "y": -9,
+                    "next": [
+                        {
+                            "x": 35,
+                            "bridges": [{ "dist": 24 }],
+                            "next": [
+                                { "y": 2, "sig": "RAB2" },
+                                {
+                                    "x": 40,
+                                    "bridges": [{ "dist": 29 }],
+                                    "next": [
+                                        { "y": 2, "sig": "RBB2" },
+                                        {
+                                            "x": 40,
+                                            "bridges": [{ "dist": 29 }],
+                                            "next": [
+                                                { "y": 2, "sig": "RCB2" },
+                                                {
+                                                    "x": 32,
+                                                    "bridges": [{ "dist": 29 }],
+                                                    "next": [
+                                                        {
+                                                            "y": 14,
+                                                            "next": [
+                                                                {
+                                                                    "x": -17,
+                                                                    "bridges": [
+                                                                        {
+                                                                            "dist": 1
+                                                                        }
+                                                                    ],
+                                                                    "next": [
+                                                                        {
+                                                                            "y": 2,
+                                                                            "sig": "RIB2"
+                                                                        },
+                                                                        {
+                                                                            "x": -35,
+                                                                            "bridges": [
+                                                                                {
+                                                                                    "dist": 9
+                                                                                }
+                                                                            ],
+                                                                            "next": [
+                                                                                {
+                                                                                    "y": 3,
+                                                                                    "sig": "SPB2"
+                                                                                },
+                                                                                {
+                                                                                    "x": -35,
+                                                                                    "bridges": [
+                                                                                        {
+                                                                                            "dist": 9
+                                                                                        }
+                                                                                    ],
+                                                                                    "next": [
+                                                                                        {
+                                                                                            "y": 3,
+                                                                                            "sig": "RXB2"
+                                                                                        },
+                                                                                        {
+                                                                                            "x": -35,
+                                                                                            "bridges": [
+                                                                                                {
+                                                                                                    "dist": 9
+                                                                                                }
+                                                                                            ],
+                                                                                            "next": [
+                                                                                                {
+                                                                                                    "y": 3,
+                                                                                                    "sig": "COB2"
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "y": 15,
+                                                                    "next": [
+                                                                        {
+                                                                            "x": -42,
+                                                                            "next": [
+                                                                                {
+                                                                                    "y": 2,
+                                                                                    "sig": "REB2"
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "model": "bus3",
+            "color": "orange",
+            "powerFromSig": false,
+            "x": 10,
+            "y": 22,
+            "next": [
+                {
+                    "y": 19,
+                    "next": [
+                        {
+                            "x": 8,
+                            "next": [
+                                {
+                                    "y": -14,
+                                    "next": [
+                                        {
+                                            "y": -15,
+                                            "next": [
+                                                {
+                                                    "x": 27,
+                                                    "next": [
+                                                        {
+                                                            "y": -3,
+                                                            "sig": "eRA"
+                                                        },
+                                                        {
+                                                            "x": 40,
+                                                            "next": [
+                                                                {
+                                                                    "y": -3,
+                                                                    "sig": "eRB"
+                                                                },
+                                                                {
+                                                                    "x": 40,
+                                                                    "next": [
+                                                                        {
+                                                                            "y": -3,
+                                                                            "sig": "eRC"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "x": 17,
+                                            "next": [
+                                                { "y": -3, "sig": "eCO" },
+                                                {
+                                                    "x": 35,
+                                                    "next": [
+                                                        {
+                                                            "y": -3,
+                                                            "sig": "eRX"
+                                                        },
+                                                        {
+                                                            "x": 35,
+                                                            "next": [
+                                                                {
+                                                                    "y": -3,
+                                                                    "sig": "eSP"
+                                                                },
+                                                                {
+                                                                    "x": 35,
+                                                                    "next": [
+                                                                        {
+                                                                            "y": -3,
+                                                                            "sig": "eRI"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "x": 47,
+                                    "next": [
+                                        { "y": -3, "sig": "eRAM" },
+                                        {
+                                            "x": 50,
+                                            "next": [{ "y": -3, "sig": "eRE" }]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
     ]
 }

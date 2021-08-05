@@ -62,36 +62,6 @@ class Helper {
         )
     }
 
-    calculateFontSize(text, maxWidth, maxHeight) {
-        let minSize = 1
-        let maxSize = 128
-        let size = 1
-        //let last = [minSize, size, maxSize]
-
-        do {
-            size = Math.round((minSize + maxSize) / 2)
-            const m = this.calculateSize(text, size)
-
-            if (m.w > maxWidth || m.h > maxHeight) {
-                maxSize = size
-            } else {
-                minSize = size
-            }
-
-            /*
-            if (
-                JSON.stringify([minSize, size, maxSize]) == JSON.stringify(last)
-            ) {
-                // todo: fix this
-                return size
-            }
-            last = [minSize, size, maxSize]
-            */
-        } while (minSize + 1 !== maxSize)
-
-        return minSize
-    }
-
     calculateSize(text, fontSize) {
         const canvas =
             this.calculateSize.canvas ||

@@ -22,31 +22,41 @@
             :y="labelPoint.y"
             fill="black"
             class="label"
+            :font-size="fontSize"
             >{{ label }}</text
         >
-        <text :x="currentValuePoint.x" :y="currentValuePoint.y" fill="black">{{
-            formatCurrentValue
-        }}</text>
-        <text :x="nextValuePoint.x" :y="nextValuePoint.y" fill="black">{{
-            formatNextValue
-        }}</text>
+        <text
+            :x="currentValuePoint.x"
+            :y="currentValuePoint.y"
+            fill="black"
+            :font-size="fontSize"
+            >{{ formatCurrentValue }}</text
+        >
+        <text
+            :x="nextValuePoint.x"
+            :y="nextValuePoint.y"
+            fill="black"
+            :font-size="fontSize"
+            >{{ formatNextValue }}</text
+        >
         <text
             :x="currentValueBinaryPoint.x"
             :y="currentValueBinaryPoint.y"
             fill="black"
+            :font-size="fontSize"
             >{{ formatCurrentValueBinary }}</text
         >
         <text
             :x="nextValueBinaryPoint.x"
             :y="nextValueBinaryPoint.y"
             fill="black"
+            :font-size="fontSize"
             >{{ formatNextValueBinary }}</text
         >
     </g>
 </template>
 
 <script>
-import { maxOf } from '@/integer'
 import RegisterModel from '@/models/registers/register-model'
 import Helper from '@/helper'
 
@@ -62,6 +72,7 @@ export default {
             type: String,
             default: 'L',
         },
+        fontSize: Number,
     },
     data: function () {
         return {
@@ -118,31 +129,6 @@ export default {
         },
         rectX() {
             return this.labelPos === 'L' ? this.componentsWidth.label : 0
-        },
-        fontSize() {
-            // On veut que tous les éléments aient la même taille de police.
-            // Ainsi, on prend le minimum des tailles maximum possible pour
-            // chaque composant.
-            return Math.min(
-                Helper.calculateFontSize(
-                    this.formatCurrentValueBinary,
-                    this.componentsWidth.binary - this.margins.lr,
-                    this.height / this.rows - this.margins.ud
-                ),
-                Helper.calculateFontSize(
-                    maxOf(
-                        this.registerModel.getCurrentValue().size,
-                        this.registerModel.getCurrentValue().signed
-                    ),
-                    this.componentsWidth.decimal - this.margins.lr,
-                    this.height / this.rows - this.margins.ud
-                ),
-                Helper.calculateFontSize(
-                    this.label,
-                    this.height - this.margins.ud,
-                    this.componentsWidth.label - this.margins.lr
-                )
-            )
         },
         valueSize() {
             return Helper.calculateSize(this.formatCurrentValue, this.fontSize)

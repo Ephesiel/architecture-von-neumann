@@ -5,8 +5,8 @@
     <svg
         version="1.1"
         baseProfile="full"
-        :width="width"
-        :height="height"
+        :width="realWidth"
+        :height="realHeight"
         xmlns="http://www.w3.org/2000/svg"
     >
         <InstructionRegister
@@ -14,8 +14,9 @@
             :width="componentWidth"
             :height="componentHeight"
             :sequencer-model="arch.sequencer"
-            :x="x(1)"
-            :y="y(1)"
+            :x="750"
+            :y="50"
+            :font-size="14"
         />
         Désolé, votre navigateur ne supporte pas le SVG.
     </svg>
@@ -35,24 +36,22 @@ export default {
     data() {
         return {
             arch: new Architecture(),
+            width: 200,
+            height: 150,
         }
     },
     computed: {
-        width() {
-            return this.$store.state.svgWidth
-        },
-        height() {
-            return this.$store.state.svgHeight
-        },
         componentWidth() {
-            // 3 composants sur une ligne + marge d'un composant à gauche et à droite
-            const tot = this.width / 4
-            return tot - 0.1 * tot
+            return 400
         },
         componentHeight() {
-            // Jusqu'à 16 composants l'un en dessous de l'autre par colonne
-            const tot = this.height / 17
-            return tot - 0.1 * tot
+            return 50
+        },
+        realWidth() {
+            return this.$store.state.pageWidth
+        },
+        realHeight() {
+            return this.realWidth * (this.height / this.width)
         },
     },
     methods: {
