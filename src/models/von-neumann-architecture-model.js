@@ -245,30 +245,39 @@ export default class VonNeumannArchitecture {
     }
 
     setupALU() {
-        this.ALU.addOperation(Signals.XS, (x) => {
+        const xs = (x) => {
             return x
-        })
-        this.ALU.addOperation(Signals.XP1, (x) => {
+        }
+        const xp1 = (x) => {
             return x.add(1)
-        })
-        this.ALU.addOperation(Signals.ADD, (x, y) => {
+        }
+        const add = (x, y) => {
             return x.add(y)
-        })
-        this.ALU.addOperation(Signals.SUB, (x, y) => {
-            return x.add(-y)
-        })
-        this.ALU.addOperation(Signals.MUL, (x, y) => {
+        }
+        const sub = (x, y) => {
+            return x.sub(y)
+        }
+        const mul = (x, y) => {
             return x.mult(y)
-        })
-        this.ALU.addOperation(Signals.AND, (x, y) => {
+        }
+        const and = (x, y) => {
             return x.and(y)
-        })
-        this.ALU.addOperation(Signals.OR, (x, y) => {
+        }
+        const or = (x, y) => {
             return x.or(y)
-        })
-        this.ALU.addOperation(Signals.XOR, (x, y) => {
+        }
+        const xor = (x, y) => {
             return x.xor(y)
-        })
+        }
+
+        this.ALU.addOperation(Signals.XS, xs, 'X')
+        this.ALU.addOperation(Signals.XP1, xp1, 'X + 1')
+        this.ALU.addOperation(Signals.ADD, add, 'X + Y')
+        this.ALU.addOperation(Signals.SUB, sub, 'X - Y')
+        this.ALU.addOperation(Signals.MUL, mul, 'X * Y')
+        this.ALU.addOperation(Signals.AND, and, 'X & Y')
+        this.ALU.addOperation(Signals.OR, or, 'X | Y')
+        this.ALU.addOperation(Signals.XOR, xor, 'X ^ Y')
     }
 
     // ------------------------------------------------------------------------

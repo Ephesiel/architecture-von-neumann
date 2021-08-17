@@ -27,7 +27,7 @@
 
 <script>
 import Bus from '@/models/bus-model'
-import Signals from '@/signals'
+import { Signals } from '@/globals'
 
 export default {
     emits: ['power'],
