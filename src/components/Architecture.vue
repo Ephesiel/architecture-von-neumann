@@ -101,6 +101,7 @@ export default {
                 y: register.y,
                 width: register.w,
                 height: register.h,
+                fontSize: this.fontSize,
                 type: register.type,
             }
 

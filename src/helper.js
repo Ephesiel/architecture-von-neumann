@@ -10,7 +10,10 @@ import InstructionRegister from '@/models/instruction-register-model'
  */
 class Helper {
     constructor() {
-        //this.police = this.getPolice()
+        this.police = this.getPolice()
+        this.lineHeight = this.getLineHeight(
+            document.getElementsByTagName('body')[0]
+        )
     }
 
     /**
@@ -59,34 +62,6 @@ class Helper {
         )
     }
 
-    calculateFontSize(text, maxWidth, maxHeight) {
-        let minSize = 1
-        let maxSize = 128
-        let size = 1
-        let last = [minSize, size, maxSize]
-
-        do {
-            size = Math.round((minSize + maxSize) / 2)
-            const m = this.calculateSize(text, size)
-
-            if (m.w > maxWidth || m.h > maxHeight) {
-                maxSize = size
-            } else if (m.w <= maxWidth && m.h <= maxHeight) {
-                minSize = size
-            }
-
-            if (
-                JSON.stringify([minSize, size, maxSize]) == JSON.stringify(last)
-            ) {
-                // todo: fix this
-                return size
-            }
-            last = [minSize, size, maxSize]
-        } while (minSize + 1 !== maxSize)
-
-        return minSize
-    }
-
     calculateSize(text, fontSize) {
         const canvas =
             this.calculateSize.canvas ||
@@ -97,12 +72,7 @@ class Helper {
 
         return {
             w: Math.ceil(metrics.width),
-            h:
-                typeof metrics.fontBoundingBoxAscent === 'undefined'
-                    ? metrics.actualBoundingBoxAscent +
-                      metrics.actualBoundingBoxDescent
-                    : metrics.fontBoundingBoxAscent +
-                      metrics.fontBoundingBoxDescent,
+            h: fontSize * this.lineHeight,
         }
     }
 
@@ -300,19 +270,47 @@ class Helper {
     }
 
     getPolice() {
-        const app = document.getElementById('nav')
-        if (app !== null) {
-            const style = window
-                .getComputedStyle(app, null)
-                .getPropertyValue('font-family')
-            for (const font of style.split(', ')) {
-                if (document.fonts.check(`12px ${font}`)) {
-                    console.log(font)
-                    return font
+        if (typeof document !== 'undefined') {
+            const app = document.getElementById('nav')
+            if (app !== null) {
+                const style = window
+                    .getComputedStyle(app, null)
+                    .getPropertyValue('font-family')
+                for (const font of style.split(', ')) {
+                    if (document.fonts.check(`12px ${font}`)) {
+                        console.log(font)
+                        return font
+                    }
                 }
             }
         }
         return 'monospace'
+    }
+
+    getLineHeight(el) {
+        let temp = document.createElement('div'),
+            ret
+        temp.setAttribute(
+            'style',
+            'margin:0; padding:0; ' +
+                'font-family:' +
+                (el.style.fontFamily || 'inherit') +
+                '; ' +
+                'font-size:' +
+                (el.style.fontSize || 'inherit')
+        )
+        temp.innerHTML = 'A'
+
+        el.parentNode.appendChild(temp)
+        ret = temp.clientHeight
+        temp.parentNode.removeChild(temp)
+
+        const fontSize = parseInt(
+            window.getComputedStyle(el).getPropertyValue('font-size'),
+            10
+        )
+
+        return ret / fontSize
     }
 }
 

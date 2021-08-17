@@ -77,14 +77,14 @@ export default class Memory {
         }
         // La valeur n'a jamais été instanciée
         else {
-            Debug.warn(
+            /*Debug.warn(
                 `Le contenu de l'adresse ${address} n'a jamais été donné, le` +
-                    ` résultat renvoyé est non défini`
-            )
+                    `résultat renvoyé est non défini`
+            )*/
         }
 
         // Renvoie 0 par défaut
-        return int(0)
+        return int(0, this.width)
     }
 
     /**
