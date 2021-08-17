@@ -1,7 +1,4 @@
 <template>
-    <!--
-    <button @click="arch.stepByStep()">Pas à pas</button><br />
-    <button @click="arch.phaseByPhase()">Phase par phase</button>-->
     <svg
         version="1.1"
         baseProfile="full"
@@ -13,6 +10,7 @@
         xmlns="http://www.w3.org/2000/svg"
     >
         <Bus v-for="(bus, index) of buses" :key="index" v-bind="bus" />
+        <ALU v-bind="alu" />
 
         <component
             v-for="(register, index) of registers"
@@ -32,6 +30,7 @@ import Architecture from '@/models/von-neumann-architecture-model'
 import Register from '@/components/Register.vue'
 import InstructionRegister from '@/components/InstructionRegister.vue'
 import Bus from '@/components/Bus.vue'
+import ALU from '@/components/ArithmeticLogicUnit.vue'
 import Clock from '@/models/clock'
 import architectureData from '@/view-datas/architecture.json'
 import Helper from '@/helper'
@@ -42,6 +41,7 @@ export default {
         Register,
         InstructionRegister,
         Bus,
+        ALU,
     },
     data() {
         return {
@@ -72,8 +72,16 @@ export default {
         buses() {
             const buses = Helper.getJsonValues(architectureData, 'bus')
             return buses.map((bus) => {
+                // Map renvoie jusqu'à 3 paramètres qui ne nous intéressent pas
+                // C'est pourquoi on n'appelle pas directement la fonction en
+                // tant que callback
                 return this.sanitizeBus(bus)
             })
+        },
+        alu() {
+            const alu = Helper.getJsonValues(architectureData, 'alu')[0]
+
+            return this.sanitizeAlu(alu)
         },
         realWidth() {
             return this.$store.state.pageWidth
@@ -139,6 +147,19 @@ export default {
             }
 
             return b
+        },
+        sanitizeAlu(alu) {
+            let a = {
+                aluModel: this.arch.ALU,
+                x: alu.x,
+                y: alu.y,
+                width: alu.w,
+                height: alu.h,
+                fontSize: this.fontSize,
+                letters: alu.letters,
+            }
+
+            return a
         },
     },
 }

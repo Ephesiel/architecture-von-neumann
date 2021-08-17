@@ -20,6 +20,7 @@
     <text
         :x="x + 2"
         :y="y + 1 * (powerFromSignal ? -1 : 1)"
+        :fill="power ? 'red' : 'black'"
         v-if="signal !== ''"
         >{{ signal }}</text
     >
@@ -27,7 +28,7 @@
 
 <script>
 import Bus from '@/models/bus-model'
-import Signals from '@/signals'
+import { Signals } from '@/globals'
 
 export default {
     emits: ['power'],
@@ -73,7 +74,7 @@ export default {
     },
     computed: {
         power() {
-            return this.sig === ''
+            return this.signal === ''
                 ? false
                 : this.$store.state.signals[Signals[this.signal]]
         },
@@ -89,7 +90,7 @@ export default {
 
             // On vérifie si un des sous bus a encore du courant
             // En effet, si un bus envoi qu'il n'a plus de courant mais qu'un
-            // autre en a toujours, il faut continuer de dire que le courant
+            // autre en a toujours, il faut continuer de montrer que le courant
             // passe
             const power = this.powers.filter((p) => p === true).length > 0
             this.$emit('power', power)

@@ -1,6 +1,7 @@
 import SignalManager from '@/models/signal-manager'
 import Clock from '@/models/clock'
 import Debug from '@/debug'
+import { int } from '@/integer'
 
 /**
  * Représente l'unité arithmétique et logique de l'architecture (UAL).
@@ -47,6 +48,7 @@ export default class ArithmeticLogicUnit {
     operations //: Object
     inputBuses //: Array
     outputBuses //: Array
+    outputValue //: Integer
 
     // ------------------------------------------------------------------------
     // Constructeur.
@@ -54,6 +56,7 @@ export default class ArithmeticLogicUnit {
     constructor(inputBuses, outputBuses) {
         this.inputBuses = inputBuses
         this.outputBuses = outputBuses
+        this.outputValue = int(0)
         this.operations = {}
 
         Clock.register(this)
@@ -77,15 +80,23 @@ export default class ArithmeticLogicUnit {
                     )
                 }
 
-                const toSet = operation(
+                this.outputValue = operation.callback(
                     ...this.inputBuses.map((bus) => bus.getValue())
                 )
 
                 for (const bus of this.outputBuses) {
-                    bus.setValue(toSet)
+                    bus.setValue(this.outputValue)
                 }
             }
         }
+    }
+
+    getLastOutputedValue() {
+        return this.outputValue
+    }
+
+    getAllOperations() {
+        return this.operations
     }
 
     /**
@@ -98,21 +109,28 @@ export default class ArithmeticLogicUnit {
      * Le deuxième paramètre, c'est une callback représentant l'opération à
      * effectuer. Elle peut prendre jusque n entiers en paramètres et doit
      * renvoyer un entier. n étant le nombre de bus d'entrée.
-     * Attention, tous les entiers sont des `BigInt`. Ainsi, il ne faut pas
-     * oublier de les traiter comme tel (x + 1n par exemple pour ajouter 1 à
+     * Attention, tous les entiers sont des `Integer`. Ainsi, il ne faut pas
+     * oublier de les traiter comme tel (x.add(1) par exemple pour ajouter 1 à
      * x).
+     *
+     * Il est également possible d'ajouter une description à l'opération pour
+     * ajouter de l'information.
      *
      * @param {Signal} signal Le signal décrivant l'opération
      * @param {Callback} callback L'opération à effectuer
+     * @param {String} description La description de l'opération
      */
-    addOperation(signal, callback) {
+    addOperation(signal, callback, description = '') {
         if (SignalManager.signalExists(signal)) {
             if (typeof this.operations[signal] !== 'undefined') {
                 Debug.warn(
                     `L'opération ${signal} existait déjà et a été surchargée`
                 )
             }
-            this.operations[signal] = callback
+            this.operations[signal] = {
+                callback: callback,
+                description: description,
+            }
         }
     }
 }

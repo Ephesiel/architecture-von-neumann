@@ -24,6 +24,18 @@
         "bridges": {
             "dist": 0,
             "size": 2
+        },
+        "alu": {
+            "x": 0,
+            "y": 0,
+            "w": 10,
+            "h": 10,
+            "letters": "&letters"
+        },
+        "letters": {
+            "x": 0,
+            "y": 0,
+            "letter": "X"
         }
     },
     "registers": [
@@ -38,9 +50,9 @@
         { "model": "RE", "x": 100, "y": 34 }
     ],
     "bus": [
-        { "model": "bus1", "color": "blue", "powerFromSig": true, "x": 5, "y": 12, "next": [
+        { "model": "bus1", "color": "blue", "powerFromSig": true, "x": 8, "y": 12, "next": [
             {"y": -11, "next": [
-                {"x": 35, "next": [
+                {"x": 32, "next": [
                     {"y": 4, "sig": "RAB1"},
                     {"x": 40, "next": [
                         {"y": 4, "sig": "RBB1"},
@@ -72,9 +84,9 @@
                 ]}
             ]}
         ]},
-        { "model": "bus2", "color": "green", "powerFromSig": true, "x": 15, "y": 12, "next": [
+        { "model": "bus2", "color": "green", "powerFromSig": true, "x": 14, "y": 12, "next": [
             {"y": -9, "next": [
-                {"x": 35, "bridges": [{"dist": 24}], "next": [
+                {"x": 36, "bridges": [{"dist": 25}], "next": [
                     {"y": 2, "sig": "RAB2"},
                     {"x": 40, "bridges": [{"dist": 29}], "next": [
                         {"y": 2, "sig": "RBB2"},
@@ -106,9 +118,9 @@
                 ]}
             ]}
         ]},
-        { "model": "bus3", "color": "orange", "powerFromSig": false, "x": 10, "y": 22, "next": [
+        { "model": "bus3", "color": "orange", "powerFromSig": false, "x": 11, "y": 22, "next": [
             {"y": 19, "next": [
-                {"x": 8, "next": [
+                {"x": 7, "next": [
                     {"y": -14, "next": [
                         {"y": -15, "next": [
                             {"x": 27, "next": [
@@ -142,6 +154,12 @@
                     ]}
                 ]}
             ]}
+        ]}
+    ],
+    "alu": [
+        { "x": 6, "y": 12, "w": 10, "h": 10, "letters": [
+            { "x": 2, "y": 1.2, "letter": "X" },
+            { "x": 8, "y": 1.2, "letter": "Y" }
         ]}
     ]
 }

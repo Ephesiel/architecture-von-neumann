@@ -1,7 +1,7 @@
 import { test, expect } from '@jest/globals'
 import Bus from '@/models/bus-model'
 import ALU from '@/models/arithmetic-logic-unit-model'
-import { Signals } from '@/globals'
+import { Signals, MAXIMUM_ALLOWED_BUS_POWER_TIME } from '@/globals'
 import Clock from '@/models/clock'
 import SignalManager from '@/models/signal-manager'
 import Debug, { Level } from '@/debug'
@@ -26,12 +26,21 @@ test('Operation 1 bus', () => {
     })
 
     const valX = busX.getValue().toNumber()
+    const valOB1 = outputBus1.getValue().toNumber()
+    const valOB2 = outputBus2.getValue().toNumber()
 
     SignalManager.emit(Signals.XP1, 1)
     Clock.waitAndTick(1, 1)
 
     expect(outputBus1.getValue().toNumber()).toEqual(valX + 1)
     expect(outputBus2.getValue().toNumber()).toEqual(valX + 1)
+    expect(OC.getLastOutputedValue().toNumber()).toEqual(valX + 1)
+
+    Clock.waitAndTick(MAXIMUM_ALLOWED_BUS_POWER_TIME + 1, 1)
+
+    expect(outputBus1.getValue().toNumber()).toEqual(valOB1)
+    expect(outputBus2.getValue().toNumber()).toEqual(valOB2)
+    expect(OC.getLastOutputedValue().toNumber()).toEqual(valX + 1)
 
     OC.addOperation(Signals.XP1, () => {
         return int(0)
@@ -42,6 +51,9 @@ test('Operation 1 bus', () => {
 
     expect(outputBus1.getValue().toNumber()).toEqual(0)
     expect(outputBus2.getValue().toNumber()).toEqual(0)
+    expect(OC.getLastOutputedValue().toNumber()).toEqual(0)
+
+    expect(Object.keys(OC.getAllOperations())).toContain(Signals.XP1.toString())
 })
 
 test('Operation 2 bus', () => {
@@ -58,6 +70,9 @@ test('Operation 2 bus', () => {
 
     expect(outputBus1.getValue().toNumber()).toEqual(17)
     expect(outputBus2.getValue().toNumber()).toEqual(17)
+    expect(OC.getLastOutputedValue().toNumber()).toEqual(17)
+
+    expect(Object.keys(OC.getAllOperations())).toContain(Signals.ADD.toString())
 })
 
 test('Operation 3 bus', () => {
@@ -74,6 +89,7 @@ test('Operation 3 bus', () => {
 
     expect(outputBus1.getValue().toNumber()).toEqual(50)
     expect(outputBus2.getValue().toNumber()).toEqual(50)
+    expect(OC.getLastOutputedValue().toNumber()).toEqual(50)
 })
 
 test('Bad signals', () => {
@@ -83,12 +99,14 @@ test('Bad signals', () => {
 
     const val1 = outputBus1.getValue()
     const val2 = outputBus2.getValue()
+    const valOC = OC.getLastOutputedValue()
 
     SignalManager.emit(Signals.BADSIG, 1)
     Clock.waitAndTick(1, 1)
 
     expect(outputBus1.getValue()).toEqual(val1)
     expect(outputBus2.getValue()).toEqual(val2)
+    expect(OC.getLastOutputedValue()).toEqual(valOC)
 })
 
 test('Multiple signals', () => {
@@ -104,4 +122,7 @@ test('Multiple signals', () => {
     Clock.waitAndTick(1, 1)
 
     expect(critMessages.length).toBe(size + 1)
+
+    expect(Object.keys(OC.getAllOperations())).toContain(Signals.ADD.toString())
+    expect(Object.keys(OC.getAllOperations())).toContain(Signals.XP1.toString())
 })
