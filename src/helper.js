@@ -2,6 +2,7 @@ import ClassicComponent from '@/models/registers/classic-component'
 import InsulatorComponent from '@/models/registers/insulator-component'
 import Register from '@/models/registers/register-model'
 import InstructionRegister from '@/models/instruction-register-model'
+import { Signals } from '@/globals'
 
 /**
  * Classe qui regroupe des fonctions d'aide.
@@ -311,6 +312,20 @@ class Helper {
         )
 
         return ret / fontSize
+    }
+
+    getSignalName(signal) {
+        if (typeof signal !== 'string' && typeof signal !== 'number') {
+            return ''
+        }
+
+        for (const [name, value] of Object.entries(Signals)) {
+            if (value.toString() === signal.toString()) {
+                return name
+            }
+        }
+
+        return ''
     }
 }
 
