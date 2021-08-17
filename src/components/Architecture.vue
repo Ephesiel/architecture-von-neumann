@@ -1,7 +1,4 @@
 <template>
-    <!--
-    <button @click="arch.stepByStep()">Pas à pas</button><br />
-    <button @click="arch.phaseByPhase()">Phase par phase</button>-->
     <svg
         version="1.1"
         baseProfile="full"

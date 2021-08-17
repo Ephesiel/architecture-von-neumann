@@ -41,6 +41,7 @@
             :x="signalPoint(index).x"
             :y="signalPoint(index).y"
             :font-size="fontSize"
+            :fill="op.color"
             >{{ op.name }}
             <title>{{ op.description }}</title>
         </text>
@@ -77,6 +78,7 @@ export default {
                     signal: signal,
                     name: Helper.getSignalName(signal),
                     description: operation.description,
+                    color: this.$store.state.signals[signal] ? 'red' : 'black',
                 })
             }
 
