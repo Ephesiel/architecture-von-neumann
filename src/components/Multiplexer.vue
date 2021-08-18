@@ -25,12 +25,12 @@ export default {
         x: Number,
         y: Number,
         width: Number,
-        fontSize: Number,
     },
     data() {
         return {
             path: '',
             places: [],
+            fontSize: this.$store.state.architecture.fontSize,
         }
     },
     computed: {

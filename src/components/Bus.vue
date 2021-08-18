@@ -76,7 +76,7 @@ export default {
         power() {
             return this.signal === ''
                 ? false
-                : this.$store.state.signals[Signals[this.signal]]
+                : this.$store.state.engine.signals[Signals[this.signal]]
         },
     },
     watch: {
@@ -122,8 +122,6 @@ export default {
                 let swip = ux > 0 ? 1 : 0
 
                 str += `L ${xb} ${yb} A ${r} ${r} 0 0 ${swip} ${xe} ${ye}`
-
-                console.log(xb, yb, xe, ye)
             }
 
             str += `L ${n.x} ${n.y}`

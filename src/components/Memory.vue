@@ -69,7 +69,6 @@ export default {
         width: Number,
         height: Number,
         dataProcessor: Function,
-        fontSize: Number,
     },
     data() {
         return {
@@ -78,6 +77,7 @@ export default {
             noColor: '#ffcc66',
             yesText: 'Toutes les données sont affichées.',
             noText: 'Seulement les données existantes sont affichées.',
+            fontSize: this.$store.state.architecture.fontSize,
         }
     },
     computed: {

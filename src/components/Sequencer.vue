@@ -12,14 +12,12 @@
             :width="75"
             :x="0"
             :y="200"
-            :font-size="fontSize"
         />
         <Multiplexer
             :multiplexer-model="sequencerModel.phaseMult"
             :width="50"
             :x="200"
             :y="200"
-            :font-size="fontSize"
         />
         <Memory
             :memory-model="sequencerModel.microprogammedMemory"
@@ -28,7 +26,6 @@
             :x="-300"
             :y="400"
             :dataProcessor="translate"
-            :font-size="fontSize"
         />
     </g>
 </template>
@@ -44,7 +41,6 @@ export default {
     name: 'Sequencer',
     props: {
         sequencerModel: SequencerModel,
-        fontSize: Number,
     },
     components: {
         //Register,

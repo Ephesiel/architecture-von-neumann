@@ -6,7 +6,7 @@
         :width="realWidth"
         :height="realHeight"
         :stroke-width="strokeWidth"
-        :font-size="fontSize"
+        :font-size="$store.state.architecture.fontSize"
         xmlns="http://www.w3.org/2000/svg"
     >
         <Bus v-for="(bus, index) of buses" :key="index" v-bind="bus" />
@@ -48,7 +48,6 @@ export default {
             arch: new Architecture(),
             width: architectureData.datas.width,
             height: architectureData.datas.height,
-            fontSize: architectureData.datas.fontSize,
         }
     },
     created() {
@@ -59,6 +58,10 @@ export default {
                 }
             }
         })
+        this.$store.commit(
+            'changeArchitectureFontSize',
+            architectureData.datas.fontSize
+        )
     },
     computed: {
         registers() {
@@ -84,7 +87,7 @@ export default {
             return this.sanitizeAlu(alu)
         },
         realWidth() {
-            return this.$store.state.pageWidth
+            return this.$store.state.page.width
         },
         realHeight() {
             return this.realWidth * (this.height / this.width)
@@ -109,7 +112,6 @@ export default {
                 y: register.y,
                 width: register.w,
                 height: register.h,
-                fontSize: this.fontSize,
                 type: register.type,
             }
 
@@ -155,7 +157,6 @@ export default {
                 y: alu.y,
                 width: alu.w,
                 height: alu.h,
-                fontSize: this.fontSize,
                 letters: alu.letters,
             }
 
