@@ -22,35 +22,24 @@
             :y="labelPoint.y"
             fill="black"
             class="label"
-            :font-size="fontSize"
             >{{ label }}</text
         >
-        <text
-            :x="currentValuePoint.x"
-            :y="currentValuePoint.y"
-            fill="black"
-            :font-size="fontSize"
-            >{{ formatCurrentValue }}</text
-        >
-        <text
-            :x="nextValuePoint.x"
-            :y="nextValuePoint.y"
-            fill="black"
-            :font-size="fontSize"
-            >{{ formatNextValue }}</text
-        >
+        <text :x="currentValuePoint.x" :y="currentValuePoint.y" fill="black">{{
+            formatCurrentValue
+        }}</text>
+        <text :x="nextValuePoint.x" :y="nextValuePoint.y" fill="black">{{
+            formatNextValue
+        }}</text>
         <text
             :x="currentValueBinaryPoint.x"
             :y="currentValueBinaryPoint.y"
             fill="black"
-            :font-size="fontSize"
             >{{ formatCurrentValueBinary }}</text
         >
         <text
             :x="nextValueBinaryPoint.x"
             :y="nextValueBinaryPoint.y"
             fill="black"
-            :font-size="fontSize"
             >{{ formatNextValueBinary }}</text
         >
     </g>
@@ -72,12 +61,12 @@ export default {
             type: String,
             default: 'L',
         },
-        fontSize: Number,
     },
     data: function () {
         return {
             rows: 2,
             color: 'rgb(249, 240, 157)',
+            fontSize: this.$store.state.architecture.fontSize,
         }
     },
     computed: {

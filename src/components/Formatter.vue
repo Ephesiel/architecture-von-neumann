@@ -11,7 +11,7 @@
         <text
             :x="raPoint.x"
             :y="raPoint.y"
-            :font-size="fontSize"
+            :font-size="$store.state.architecture.fontSize"
             fill="black"
             >{{ ra.toString() }}</text
         >
@@ -30,7 +30,6 @@ export default {
         y: Number,
         width: Number,
         height: Number,
-        fontSize: Number,
     },
     computed: {
         transform() {

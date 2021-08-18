@@ -6,22 +6,11 @@
             :fill="color"
             stroke="black"
         ></rect>
-        <text
-            v-for="(l, index) of letters"
-            :key="index"
-            :x="l.x"
-            :y="l.y"
-            :font-size="fontSize"
-            >{{ l.letter }}</text
-        >
-        <text :x="valuePoint.x" :y="valuePoint.y" :font-size="fontSize">{{
-            formatValue
+        <text v-for="(l, index) of letters" :key="index" :x="l.x" :y="l.y">{{
+            l.letter
         }}</text>
-        <text
-            :x="binaryValuePoint.x"
-            :y="binaryValuePoint.y"
-            :font-size="fontSize"
-        >
+        <text :x="valuePoint.x" :y="valuePoint.y">{{ formatValue }}</text>
+        <text :x="binaryValuePoint.x" :y="binaryValuePoint.y">
             <tspan :x="binaryValuePoint.x">{{ firstDigits }}</tspan>
             <tspan :x="binaryValuePoint.x" :dy="fontSize">{{
                 lastDigits
@@ -40,7 +29,6 @@
             :key="index"
             :x="signalPoint(index).x"
             :y="signalPoint(index).y"
-            :font-size="fontSize"
             :fill="op.color"
             >{{ op.name }}
             <title>{{ op.description }}</title>
@@ -60,12 +48,12 @@ export default {
         y: Number,
         width: Number,
         height: Number,
-        fontSize: Number,
         letters: Array,
     },
     data() {
         return {
             color: 'rgb(82, 187, 118)',
+            fontSize: this.$store.state.architecture.fontSize,
         }
     },
     computed: {
@@ -78,7 +66,9 @@ export default {
                     signal: signal,
                     name: Helper.getSignalName(signal),
                     description: operation.description,
-                    color: this.$store.state.signals[signal] ? 'red' : 'black',
+                    color: this.$store.state.engine.signals[signal]
+                        ? 'red'
+                        : 'black',
                 })
             }
 

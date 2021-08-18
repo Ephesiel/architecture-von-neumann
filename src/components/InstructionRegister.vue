@@ -6,7 +6,6 @@
             :y="-formatterHeight"
             :width="width"
             :height="formatterHeight"
-            :font-size="fontSize"
         />
         <Register
             :register-model="registerModel"
@@ -14,9 +13,8 @@
             :height="height"
             :x="0"
             :y="0"
-            :font-size="fontSize"
         />
-        <Sequencer :sequencer-model="sequencerModel" :font-size="fontSize" />
+        <Sequencer :sequencer-model="sequencerModel" />
     </g>
 </template>
 
@@ -37,7 +35,6 @@ export default {
         y: Number,
         width: Number,
         height: Number,
-        fontSize: Number,
     },
     data() {
         return {
