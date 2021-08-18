@@ -13,26 +13,36 @@
             "h": 4,
             "type": "Register"
         },
-        "bus": {
+        "buses": {
             "x": 0,
             "y": 0,
-            "bridges": "&bridges",
-            "sig": "",
-            "next": "&bus",
+            "bridges": "&bridge",
+            "signal": "$signal",
+            "next": "&buses",
             "type": "Bus"
         },
-        "bridges": {
+        "signal": {
+            "name": "",
+            "insulator": "$insulator",
+            "x": 2.5,
+            "y": -1
+        },
+        "bridge": {
             "dist": 0,
             "size": 2
+        },
+        "insulator": {
+            "dist": 0,
+            "size": 1
         },
         "alu": {
             "x": 0,
             "y": 0,
             "w": 10,
             "h": 10,
-            "letters": "&letters"
+            "letters": "&letter"
         },
-        "letters": {
+        "letter": {
             "x": 0,
             "y": 0,
             "letter": "X"
@@ -49,32 +59,32 @@
         { "model": "RAM", "x": 50, "y": 34 },
         { "model": "RE", "x": 100, "y": 34 }
     ],
-    "bus": [
+    "buses": [
         { "model": "bus1", "color": "blue", "powerFromSig": true, "x": 8, "y": 12, "next": [
             {"y": -11, "next": [
                 {"x": 32, "next": [
-                    {"y": 4, "sig": "RAB1"},
+                    {"y": 4, "signal": {"name": "RAB1", "insulator": {"dist": 3}}},
                     {"x": 40, "next": [
-                        {"y": 4, "sig": "RBB1"},
+                        {"y": 4, "signal": {"name":  "RBB1", "insulator": {"dist": 3}}},
                         {"x": 40, "next": [
-                            {"y": 4, "sig": "RCB1"},
+                            {"y": 4, "signal": {"name":  "RCB1", "insulator": {"dist": 3}}},
                             {"x": 40, "next": [
                                 {"y": 14, "next": [
                                     {"x": -25, "next": [
-                                        {"y": 4, "sig": "RIB1"},
+                                        {"y": 4, "signal": {"name":  "RIB1", "insulator": {"dist": 3}}},
                                         {"x": -35, "next": [
-                                            {"y": 5, "sig": "SPB1"},
+                                            {"y": 5, "signal": {"name":  "SPB1", "insulator": {"dist": 4}}},
                                             {"x": -35, "next": [
-                                                {"y": 5, "sig": "RXB1"},
+                                                {"y": 5, "signal": {"name":  "RXB1", "insulator": {"dist": 4}}},
                                                 {"x": -35, "next": [
-                                                    {"y": 5, "sig": "COB1"}
+                                                    {"y": 5, "signal": {"name":  "COB1", "insulator": {"dist": 4}}}
                                                 ]}
                                             ]}
                                         ]}
                                     ]},
                                     {"y": 15, "next": [
                                         {"x": -50, "next": [
-                                            {"y": 4, "sig": "REB1"}
+                                            {"y": 4, "signal": {"name":  "REB1", "insulator": {"dist": 3}}}
                                         ]}
                                     ]}
                                 ]}
@@ -87,28 +97,28 @@
         { "model": "bus2", "color": "green", "powerFromSig": true, "x": 14, "y": 12, "next": [
             {"y": -9, "next": [
                 {"x": 36, "bridges": [{"dist": 25}], "next": [
-                    {"y": 2, "sig": "RAB2"},
+                    {"y": 2, "signal": {"name":  "RAB2", "insulator": {"dist": 1}}},
                     {"x": 40, "bridges": [{"dist": 29}], "next": [
-                        {"y": 2, "sig": "RBB2"},
+                        {"y": 2, "signal": {"name":  "RBB2", "insulator": {"dist": 1}}},
                         {"x": 40, "bridges": [{"dist": 29}], "next": [
-                            {"y": 2, "sig": "RCB2"},
+                            {"y": 2, "signal": {"name":  "RCB2", "insulator": {"dist": 1}}},
                             {"x": 32, "bridges": [{"dist": 29}], "next": [
                                 {"y": 14, "next": [
                                     {"x": -17, "bridges": [{"dist": 1}], "next": [
-                                        {"y": 2, "sig": "RIB2"},
+                                        {"y": 2, "signal": {"name":  "RIB2", "insulator": {"dist": 1}}},
                                         {"x": -35, "bridges": [{"dist": 9}], "next": [
-                                            {"y": 3, "sig": "SPB2"},
+                                            {"y": 3, "signal": {"name":  "SPB2", "insulator": {"dist": 2}}},
                                             {"x": -35, "bridges": [{"dist": 9}], "next": [
-                                                {"y": 3, "sig": "RXB2"},
+                                                {"y": 3, "signal": {"name":  "RXB2", "insulator": {"dist": 2}}},
                                                 {"x": -35, "bridges": [{"dist": 9}], "next": [
-                                                    {"y": 3, "sig": "COB2"}
+                                                    {"y": 3, "signal": {"name":  "COB2", "insulator": {"dist": 2}}}
                                                 ]}
                                             ]}
                                         ]}
                                     ]},
                                     {"y": 15, "next": [
                                         {"x": -42, "next": [
-                                            {"y": 2, "sig": "REB2"}
+                                            {"y": 2, "signal": {"name":  "REB2", "insulator": {"dist": 1}}}
                                         ]}
                                     ]}
                                 ]}
@@ -124,32 +134,32 @@
                     {"y": -14, "next": [
                         {"y": -15, "next": [
                             {"x": 27, "next": [
-                                {"y": -3, "sig": "eRA"},
+                                {"y": -3, "signal": {"name":  "eRA", "x": 2, "y": 1}},
                                 {"x": 40, "next": [
-                                    {"y": -3, "sig": "eRB"},
+                                    {"y": -3, "signal": {"name":  "eRB", "x": 2, "y": 1}},
                                     {"x": 40, "next": [
-                                        {"y": -3, "sig": "eRC"}
+                                        {"y": -3, "signal": {"name":  "eRC", "x": 2, "y": 1}}
                                     ]}
                                 ]}
                             ]}
                         ]},
                         {"x": 17, "next": [
-                            {"y": -3, "sig": "eCO"},
+                            {"y": -3, "signal": {"name":  "eCO", "x": 2, "y": 1}},
                             {"x": 35, "next": [
-                                {"y": -3, "sig": "eRX"},
+                                {"y": -3, "signal": {"name":  "eRX", "x": 2, "y": 1}},
                                 {"x": 35, "next": [
-                                    {"y": -3, "sig": "eSP"},
+                                    {"y": -3, "signal": {"name":  "eSP", "x": 2, "y": 1}},
                                     {"x": 35, "next": [
-                                        {"y": -2.4, "sig": "eRI"}
+                                        {"y": -2.4, "signal": {"name":  "eRI", "x": 2, "y": 1}}
                                     ]}
                                 ]}
                             ]}
                         ]}
                     ]},
                     {"x": 47, "next": [
-                        {"y": -3, "sig": "eRAM"},
+                        {"y": -3, "signal": {"name":  "eRAM", "x": 2, "y": 1}},
                         {"x": 50, "next": [
-                            {"y": -3, "sig": "eRE"}
+                            {"y": -3, "signal": {"name":  "eRE", "x": 2, "y": 1}}
                         ]}
                     ]}
                 ]}

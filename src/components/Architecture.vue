@@ -73,7 +73,7 @@ export default {
             return registers.map(this.sanitizeRegister)
         },
         buses() {
-            const buses = Helper.getJsonValues(architectureData, 'bus')
+            const buses = Helper.getJsonValues(architectureData, 'buses')
             return buses.map((bus) => {
                 // Map renvoie jusqu'à 3 paramètres qui ne nous intéressent pas
                 // C'est pourquoi on n'appelle pas directement la fonction en
@@ -130,7 +130,7 @@ export default {
                 bridges: [],
                 color: bus.color,
                 powerFromSignal: bus.powerFromSig,
-                signal: bus.sig,
+                signal: bus.signal,
             }
 
             for (const bridge of bus.bridges) {

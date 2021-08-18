@@ -15,15 +15,15 @@
                 :by="20 * powerSpeed * 100 * (powerFromSignal ? 1 : -1) + '%'"
             />
         </path>
+        <circle
+            v-if="n.signal !== null && n.signal.insulator !== null"
+            v-bind="insulatorDraw(n)"
+            :fill="powers[index] ? 'green' : 'red'"
+            stroke="black"
+        />
         <Bus ref="test" v-bind="n" @power="onPower(index, $event)" />
     </template>
-    <text
-        :x="x + 2"
-        :y="y + 1 * (powerFromSignal ? -1 : 1)"
-        :fill="power ? 'red' : 'black'"
-        v-if="signal !== ''"
-        >{{ signal }}</text
-    >
+    <text v-if="signal !== null" v-bind="signalText">{{ signal.name }}</text>
 </template>
 
 <script>
@@ -33,38 +33,14 @@ import { Signals } from '@/globals'
 export default {
     emits: ['power'],
     props: {
-        model: {
-            type: Bus,
-            required: true,
-        },
-        x: {
-            type: Number,
-            default: 0,
-        },
-        y: {
-            type: Number,
-            default: 0,
-        },
-        next: {
-            type: Array,
-            default: () => [],
-        },
-        bridges: {
-            type: Array,
-            default: () => [],
-        },
-        signal: {
-            type: String,
-            default: '',
-        },
-        powerFromSignal: {
-            type: Boolean,
-            default: true,
-        },
-        color: {
-            type: String,
-            default: 'black',
-        },
+        model: { type: Bus, required: true },
+        x: { type: Number, default: 0 },
+        y: { type: Number, default: 0 },
+        next: { type: Array, default: () => [] },
+        bridges: { type: Array, default: () => [] },
+        signal: { type: Object, default: () => null },
+        powerFromSignal: { type: Boolean, default: true },
+        color: { type: String, default: 'black' },
     },
     data() {
         return {
@@ -74,9 +50,16 @@ export default {
     },
     computed: {
         power() {
-            return this.signal === ''
+            return this.signal === null
                 ? false
-                : this.$store.state.engine.signals[Signals[this.signal]]
+                : this.$store.state.engine.signals[Signals[this.signal.name]]
+        },
+        signalText() {
+            return {
+                x: this.x + this.signal.x,
+                y: this.y + this.signal.y,
+                fill: this.power ? 'red' : 'black',
+            }
         },
     },
     watch: {
@@ -95,37 +78,62 @@ export default {
             const power = this.powers.filter((p) => p === true).length > 0
             this.$emit('power', power)
         },
+        insulatorDraw(n) {
+            // Vecteur directeur
+            const uv = this.unitVector(n)
+            // Centre du cercle
+            const center = this.projection(this, n.signal.insulator.dist, uv)
+
+            return {
+                cx: center.x,
+                cy: center.y,
+                r: n.signal.insulator.size / 2,
+            }
+        },
         path(n) {
             let str = `M ${this.x} ${this.y}`
 
-            // Vecteur de la droite
-            let vx = n.x - this.x
-            let vy = n.y - this.y
-
-            // Distance totale de la droite
-            let dv = Math.sqrt(Math.pow(vx, 2) + Math.pow(vy, 2))
-
-            // Vecteur unitaire
-            let ux = vx / dv
-            let uy = vy / dv
+            // Vecteur directeur
+            const uv = this.unitVector(n)
 
             for (const bridge of n.bridges) {
                 // Début du pont
-                let xb = bridge.dist * ux + this.x
-                let yb = bridge.dist * uy + this.y
-
+                const begin = this.projection(this, bridge.dist, uv)
                 // Fin du pont
-                let xe = xb + bridge.size * ux
-                let ye = yb + bridge.size * uy
+                const end = this.projection(begin, bridge.size, uv)
+                // Rayon du demi-cercle
+                const r = bridge.size / 2
+                // Si le vecteur va vers la droite, le pont sera "au dessus"
+                // Si le vecteur va vers la gauche, le pont sera "en dessous"
+                const swip = uv.x > 0 ? 1 : 0
 
-                let r = bridge.size / 2
-                let swip = ux > 0 ? 1 : 0
-
-                str += `L ${xb} ${yb} A ${r} ${r} 0 0 ${swip} ${xe} ${ye}`
+                str += `L ${begin.x} ${begin.y} A ${r} ${r} 0 0 ${swip} ${end.x} ${end.y}`
             }
 
             str += `L ${n.x} ${n.y}`
             return str
+        },
+        unitVector(n) {
+            // Vecteur du segment du bus
+            const v = {
+                x: n.x - this.x,
+                y: n.y - this.y,
+            }
+
+            // Longueur du segment
+            const s = Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2))
+
+            // Vecteur unitaire
+            return {
+                x: v.x / s,
+                y: v.y / s,
+            }
+        },
+        projection(startingPoint, distance, unitVector) {
+            return {
+                x: distance * unitVector.x + startingPoint.x,
+                y: distance * unitVector.y + startingPoint.y,
+            }
         },
     },
 }

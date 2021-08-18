@@ -62,7 +62,7 @@ const store = createStore({
 })
 
 // On change la taille de la page en fonction de la fenêtre
-const page = document.getElementsByTagName('html')[0]
+const page = document.getElementsByTagName('body')[0]
 
 new ResizeObserver(function () {
     store.commit('changePageSize', page)
