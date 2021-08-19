@@ -25,14 +25,14 @@ test('Json', () => {
         { x: 12, y: '15' },
     ])
 
-    json.globals = []
+    json.props = []
 
     expect(Helper.getJsonValues(json, 'registers')).toEqual([
         { x: 0 },
         { x: 12, y: '15' },
     ])
 
-    json.globals = {
+    json.props = {
         registers: {
             x: 0,
             y: 0,
@@ -45,14 +45,14 @@ test('Json', () => {
         { x: 12, y: 0, w: 0 },
     ])
 
-    json.globals.registers = { x: [], y: 's', w: {} }
+    json.props.registers = { x: [], y: 's', w: {} }
 
     expect(Helper.getJsonValues(json, 'registers')).toEqual([
         { x: [], y: 's', w: {} },
         { x: [], y: '15', w: {} },
     ])
 
-    json.globals = {
+    json.props = {
         registers: {
             x: 0,
             y: 0,
@@ -70,7 +70,7 @@ test('Json', () => {
         { x: 12, y: 0, w: 0, bus: 'bus' },
     ])
 
-    json.globals.registers.bus = '$bus'
+    json.props.registers.bus = '$bus'
 
     expect(Helper.getJsonValues(json, 'registers')).toEqual([
         { x: 0, y: 0, w: 0, bus: null },
@@ -85,7 +85,7 @@ test('Json', () => {
         { x: 12, y: 0, w: 0, bus: null },
     ])
 
-    json.globals.bus.bus = '$bus'
+    json.props.bus.bus = '$bus'
 
     expect(Helper.getJsonValues(json, 'registers')).toEqual([
         { x: 0, y: 0, w: 0, bus: { x: 72, y: 's', bus: null } },
@@ -99,7 +99,7 @@ test('Json', () => {
         { x: 12, y: 0, w: 0, bus: null },
     ])
 
-    json.globals.bus.bus = '&bus'
+    json.props.bus.bus = '&bus'
 
     expect(Helper.getJsonValues(json, 'registers')).toEqual([
         { x: 0, y: 0, w: 0, bus: { x: 72, y: 's', bus: [] } },

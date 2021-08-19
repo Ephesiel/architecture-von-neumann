@@ -21,26 +21,42 @@
             :fill="powers[index] ? 'green' : 'red'"
             stroke="black"
         />
+        <path
+            v-for="(arrow, indexArrow) of n.arrows"
+            :key="indexArrow"
+            :d="pathForArrow(arrow, n)"
+            :stroke="color"
+            fill="none"
+        />
         <Bus ref="test" v-bind="n" @power="onPower(index, $event)" />
     </template>
+    <text
+        v-for="(label, index) of labels"
+        :key="index"
+        :x="x + label.x"
+        :y="y + label.y"
+        font-weight="bold"
+        >{{ name }}</text
+    >
     <text v-if="signal !== null" v-bind="signalText">{{ signal.name }}</text>
 </template>
 
 <script>
-import Bus from '@/models/bus-model'
 import { Signals } from '@/globals'
 
 export default {
     emits: ['power'],
     props: {
-        model: { type: Bus, required: true },
-        x: { type: Number, default: 0 },
-        y: { type: Number, default: 0 },
-        next: { type: Array, default: () => [] },
-        bridges: { type: Array, default: () => [] },
-        signal: { type: Object, default: () => null },
-        powerFromSignal: { type: Boolean, default: true },
-        color: { type: String, default: 'black' },
+        name: String,
+        x: Number,
+        y: Number,
+        next: Array,
+        bridges: Array,
+        arrows: Array,
+        labels: Array,
+        signal: Object,
+        powerFromSignal: Boolean,
+        color: String,
     },
     data() {
         return {
@@ -97,12 +113,12 @@ export default {
             const uv = this.unitVector(n)
 
             for (const bridge of n.bridges) {
-                // Début du pont
-                const begin = this.projection(this, bridge.dist, uv)
-                // Fin du pont
-                const end = this.projection(begin, bridge.size, uv)
                 // Rayon du demi-cercle
                 const r = bridge.size / 2
+                // Début du pont
+                const begin = this.projection(this, bridge.dist - r, uv)
+                // Fin du pont
+                const end = this.projection(begin, bridge.size, uv)
                 // Si le vecteur va vers la droite, le pont sera "au dessus"
                 // Si le vecteur va vers la gauche, le pont sera "en dessous"
                 const swip = uv.x > 0 ? 1 : 0
@@ -112,6 +128,35 @@ export default {
 
             str += `L ${n.x} ${n.y}`
             return str
+        },
+        pathForArrow(arrow, n) {
+            const angle =
+                (!this.powerFromSignal * 180 + arrow.angle) * (Math.PI / 180.0)
+            const cosA = Math.cos(angle)
+            const sinA = Math.sin(angle)
+            const cosB = Math.cos(-angle)
+            const sinB = Math.sin(-angle)
+
+            // Vecteur directeur
+            const uv = this.unitVector(n)
+            // Vecteur première branche
+            const av = {
+                x: cosA * uv.x - sinA * uv.y,
+                y: sinA * uv.x + cosA * uv.y,
+            }
+            // Vecteur seconde branche
+            const bv = {
+                x: cosB * uv.x - sinB * uv.y,
+                y: sinB * uv.x + cosB * uv.y,
+            }
+            // Pointe de la flèche
+            const center = this.projection(this, arrow.dist, uv)
+            // Première branche
+            const pointA = this.projection(center, arrow.size / 2, av)
+            // Seconde branche
+            const pointB = this.projection(center, arrow.size / 2, bv)
+
+            return `M ${pointA.x} ${pointA.y} L ${center.x} ${center.y} L ${pointB.x} ${pointB.y}`
         },
         unitVector(n) {
             // Vecteur du segment du bus
