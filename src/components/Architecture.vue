@@ -123,11 +123,12 @@ export default {
         },
         sanitizeBus(bus, x = 0, y = 0) {
             let b = {
-                model: this.arch[bus.model],
+                name: bus.name,
                 x: bus.x + x,
                 y: bus.y + y,
                 next: [],
                 bridges: [],
+                labels: bus.labels,
                 color: bus.color,
                 powerFromSignal: bus.powerFromSig,
                 signal: bus.signal,
@@ -142,7 +143,7 @@ export default {
             })
 
             for (const subBus of bus.next) {
-                subBus.model = bus.model
+                subBus.name = bus.name
                 subBus.color = bus.color
                 subBus.powerFromSig = bus.powerFromSig
                 b.next.push(this.sanitizeBus(subBus, bus.x + x, bus.y + y))

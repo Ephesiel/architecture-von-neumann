@@ -23,21 +23,29 @@
         />
         <Bus ref="test" v-bind="n" @power="onPower(index, $event)" />
     </template>
+    <text
+        v-for="(label, index) of labels"
+        :key="index"
+        :x="x + label.x"
+        :y="y + label.y"
+        font-weight="bold"
+        >{{ name }}</text
+    >
     <text v-if="signal !== null" v-bind="signalText">{{ signal.name }}</text>
 </template>
 
 <script>
-import Bus from '@/models/bus-model'
 import { Signals } from '@/globals'
 
 export default {
     emits: ['power'],
     props: {
-        model: { type: Bus, required: true },
+        name: { type: String, default: '' },
         x: { type: Number, default: 0 },
         y: { type: Number, default: 0 },
         next: { type: Array, default: () => [] },
         bridges: { type: Array, default: () => [] },
+        labels: { type: Array, default: () => [] },
         signal: { type: Object, default: () => null },
         powerFromSignal: { type: Boolean, default: true },
         color: { type: String, default: 'black' },
@@ -50,6 +58,7 @@ export default {
     },
     computed: {
         power() {
+            console.log(this.labels, this.name)
             return this.signal === null
                 ? false
                 : this.$store.state.engine.signals[Signals[this.signal.name]]

@@ -81,7 +81,7 @@ class Helper {
      * Permet de récupérer un tableau contenant tous les objets du type donné
      * qui se trouve dans le json.
      *
-     * Un objet "globals" peut exister dans le json, cet objet peut avoir des
+     * Un objet "props" peut exister dans le json, cet objet peut avoir des
      * sous objets qui représentent les valeurs "par défaut" d'un objet type.
      * Ainsi, si les valeurs ne sont pas donnés dans les objets, elles seront
      * automatiquement remplacées par les valeurs par défaut.
@@ -92,7 +92,7 @@ class Helper {
      *
      * ```json
      * {
-     *     "globals": {
+     *     "props": {
      *         "registers": {
      *             "x": 0,
      *             "y": 0,
@@ -122,7 +122,7 @@ class Helper {
      * ]
      * ```
      *
-     * Il est également possible d'ajouter des macros aux globals. Pour dire
+     * Il est également possible d'ajouter des macros aux props. Pour dire
      * qu'un objet contient d'autres objets, il faut mettre un "$" suivi du
      * type de l'objet.
      *
@@ -138,7 +138,7 @@ class Helper {
      *
      * ```json
      * {
-     *     "globals": {
+     *     "props": {
      *         "registers": {
      *             "x": 0,
      *             "y": 0,
@@ -188,7 +188,7 @@ class Helper {
             return []
         }
 
-        const globals = {}
+        const props = {}
         const objects = {}
         const arrays = {}
 
@@ -197,42 +197,42 @@ class Helper {
         // trouve un objet "$nomObj", il sera remplacé par un objet de type
         // nomObj
         const createDefaultValues = (type) => {
-            if (typeof globals[type] !== 'undefined') {
+            if (typeof props[type] !== 'undefined') {
                 return
             }
-            if (typeof json.globals[type] !== 'object') {
-                globals[type] = {}
+            if (typeof json.props[type] !== 'object') {
+                props[type] = {}
                 return
             }
 
-            globals[type] = { ...json.globals[type] }
+            props[type] = { ...json.props[type] }
             objects[type] = {}
             arrays[type] = {}
 
-            for (const [k, v] of Object.entries(globals[type])) {
+            for (const [k, v] of Object.entries(props[type])) {
                 if (typeof v === 'string' && v.startsWith('$')) {
                     const t = v.slice(1)
-                    globals[type][k] = null
+                    props[type][k] = null
                     objects[type][k] = t
                     createDefaultValues(t)
                 }
                 if (typeof v === 'string' && v.startsWith('&')) {
                     const t = v.slice(1)
-                    globals[type][k] = []
+                    props[type][k] = []
                     arrays[type][k] = t
                     createDefaultValues(t)
                 }
             }
         }
 
-        if (typeof json.globals === 'object') {
+        if (typeof json.props === 'object') {
             createDefaultValues(type)
         } else {
-            globals[type] = {}
+            props[type] = {}
         }
 
         const verifyValue = (obj, type) => {
-            for (const [k, v] of Object.entries(globals[type])) {
+            for (const [k, v] of Object.entries(props[type])) {
                 // Objet spécifique dont il faut vérifier toutes les clés
                 if (k in objects[type]) {
                     // Si la clé n'existe pas ou que la valeur est absurde, on
