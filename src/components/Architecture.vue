@@ -128,6 +128,7 @@ export default {
                 y: bus.y + y,
                 next: [],
                 bridges: [],
+                arrows: bus.arrows,
                 labels: bus.labels,
                 color: bus.color,
                 powerFromSignal: bus.powerFromSig,
