@@ -1,34 +1,48 @@
 <template>
-    <svg
-        version="1.1"
-        baseProfile="full"
-        :viewBox="`0 0 ${width} ${height}`"
+    <MouseMovingComponent
         :width="realWidth"
         :height="realHeight"
-        :stroke-width="strokeWidth"
-        :font-size="$store.state.architecture.fontSize"
-        xmlns="http://www.w3.org/2000/svg"
+        :componentWidth="componentWidth"
+        :componentHeight="componentHeight"
+        @wheel="changeScale"
+        style="border: 1px solid black"
     >
-        <Bus v-for="(bus, index) of buses" :key="index" v-bind="bus" />
-        <ALU v-bind="alu" />
+        <svg
+            version="1.1"
+            baseProfile="full"
+            :viewBox="`0 0 ${width} ${height}`"
+            width="100%"
+            height="100%"
+            :stroke-width="strokeWidth"
+            :font-size="$store.state.architecture.fontSize"
+            xmlns="http://www.w3.org/2000/svg"
+            style="overflow: visible"
+        >
+            <Bus v-for="(bus, index) of buses" :key="index" v-bind="bus" />
+            <ALU v-bind="alu" />
 
-        <component
-            v-for="(register, index) of registers"
-            :key="index"
-            :is="register.type"
-            v-bind="register"
-        ></component>
+            <component
+                v-for="(register, index) of registers"
+                :key="index"
+                :is="register.type"
+                v-bind="register"
+            ></component>
 
-        Désolé, votre navigateur ne supporte pas le SVG.
-    </svg>
+            Désolé, votre navigateur ne supporte pas le SVG.
+        </svg>
+    </MouseMovingComponent>
+
     <button @click="stepByStep()">Pas à pas</button><br />
-    <button @click="phaseByPhase()">Phase par phase</button>
+    <button @click="phaseByPhase()">Phase par phase</button><br />
+    <label>Scale de l'architecture</label>
+    <input type="range" min="50" max="200" v-model="scale" />
 </template>
 
 <script>
 import Architecture from '@/models/von-neumann-architecture-model'
 import Register from '@/components/Register.vue'
 import InstructionRegister from '@/components/InstructionRegister.vue'
+import MouseMovingComponent from '@/components/MouseMovingComponent.vue'
 import Bus from '@/components/Bus.vue'
 import ALU from '@/components/ArithmeticLogicUnit.vue'
 import Clock from '@/models/clock'
@@ -42,12 +56,14 @@ export default {
         InstructionRegister,
         Bus,
         ALU,
+        MouseMovingComponent,
     },
     data() {
         return {
             arch: new Architecture(),
             width: architectureData.datas.width,
             height: architectureData.datas.height,
+            scale: 100,
         }
     },
     created() {
@@ -86,14 +102,25 @@ export default {
 
             return this.sanitizeAlu(alu)
         },
+        strokeWidth() {
+            return this.width / 1000
+        },
+        scaleRatio() {
+            return this.scale / 100
+        },
+        // Taille que la div prend sur la page
         realWidth() {
             return this.$store.state.page.width
         },
         realHeight() {
             return this.realWidth * (this.height / this.width)
         },
-        strokeWidth() {
-            return this.width / 1000
+        // Taille du composant intérieur qui peut être bougé avec la souris
+        componentWidth() {
+            return this.realWidth * this.scaleRatio
+        },
+        componentHeight() {
+            return this.realHeight * this.scaleRatio
         },
     },
     methods: {
@@ -163,6 +190,10 @@ export default {
             }
 
             return a
+        },
+        changeScale(event) {
+            this.scale -= event.deltaY * 0.1
+            this.scale = Math.max(50, Math.min(this.scale, 200))
         },
     },
 }
