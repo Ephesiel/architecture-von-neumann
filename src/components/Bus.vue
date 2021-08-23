@@ -3,7 +3,6 @@
         <path
             :d="path(n)"
             :stroke="color"
-            :class="powers[index] ? 'path' : ''"
             :stroke-dasharray="powers[index] ? '1 0.5' : 0"
             fill="none"
         >

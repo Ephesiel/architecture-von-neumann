@@ -72,10 +72,10 @@
     ],
     "buses": [
         { "name": "Bus 1", "color": "blue", "powerFromSig": true, "x": 8, "y": 13, "next": [
-            {"y": -11, "arrows": [{"dist": 5}], "next": [
+            {"y": -11, "labels": [{"x": 15}], "arrows": [{"dist": 5}], "next": [
                 {"x": 32, "arrows": [{"dist": 10}], "next": [
                     {"y": 4, "signal": {"name": "RAB1", "insulator": {"dist": 3}}},
-                    {"x": 40, "labels": [{"x": 10}], "next": [
+                    {"x": 40, "next": [
                         {"y": 4, "signal": {"name":  "RBB1", "insulator": {"dist": 3}}},
                         {"x": 40, "arrows": [{"dist": 20}], "next": [
                             {"y": 4, "signal": {"name":  "RCB1", "insulator": {"dist": 3}}},
@@ -83,7 +83,7 @@
                                 {"y": 14, "arrows": [{"dist": 7}], "next": [
                                     {"x": -25, "next": [
                                         {"y": 4, "signal": {"name":  "RIB1", "insulator": {"dist": 3}}},
-                                        {"x": -35, "arrows": [{"dist": 16}], "labels": [{"x": -10}], "next": [
+                                        {"x": -35, "arrows": [{"dist": 16}], "next": [
                                             {"y": 5, "signal": {"name":  "SPB1", "insulator": {"dist": 4}}},
                                             {"x": -35, "next": [
                                                 {"y": 5, "signal": {"name":  "RXB1", "insulator": {"dist": 4}}},
@@ -106,10 +106,10 @@
             ]}
         ]},
         { "name": "Bus 2", "color": "green", "powerFromSig": true, "x": 14, "y": 13, "next": [
-            {"y": -9, "arrows": [{"dist": 5}], "next": [
+            {"y": -9, "labels": [{"x": 9, "y": 1}], "arrows": [{"dist": 5}], "next": [
                 {"x": 36, "arrows": [{"dist": 4}], "bridges": [{"dist": 26}], "next": [
                     {"y": 2, "signal": {"name":  "RAB2", "insulator": {"dist": 1}}},
-                    {"x": 40, "labels": [{}], "bridges": [{"dist": 30}], "next": [
+                    {"x": 40, "bridges": [{"dist": 30}], "next": [
                         {"y": 2, "signal": {"name":  "RBB2", "insulator": {"dist": 1}}},
                         {"x": 40, "arrows": [{"dist": 10}], "bridges": [{"dist": 30}], "next": [
                             {"y": 2, "signal": {"name":  "RCB2", "insulator": {"dist": 1}}},
@@ -117,7 +117,7 @@
                                 {"y": 14, "arrows": [{"dist": 5}], "next": [
                                     {"x": -17, "bridges": [{"dist": 2}], "next": [
                                         {"y": 2, "signal": {"name":  "RIB2", "insulator": {"dist": 1}}},
-                                        {"x": -35, "arrows": [{"dist": 26}], "labels": [{"x": -20}], "bridges": [{"dist": 10}], "next": [
+                                        {"x": -35, "arrows": [{"dist": 26}], "bridges": [{"dist": 10}], "next": [
                                             {"y": 3, "signal": {"name":  "SPB2", "insulator": {"dist": 2}}},
                                             {"x": -35, "bridges": [{"dist": 10}], "next": [
                                                 {"y": 3, "signal": {"name":  "RXB2", "insulator": {"dist": 2}}},
@@ -141,7 +141,7 @@
         ]},
         { "name": "Bus 3", "color": "orange", "powerFromSig": false, "x": 11, "y": 23, "next": [
             {"y": 19, "arrows": [{"dist": 10}], "next": [
-                {"x": 7, "labels": [{"x": 13}], "arrows": [{"dist": 4}], "next": [
+                {"x": 7, "labels": [{"x": 5}], "arrows": [{"dist": 4}], "next": [
                     {"y": -14, "arrows": [{"dist": 10}], "next": [
                         {"y": -15, "next": [
                             {"x": 27, "arrows": [{"dist": 10}], "next": [
