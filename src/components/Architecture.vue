@@ -2,8 +2,9 @@
     <MouseMovingComponent
         :width="realWidth"
         :height="realHeight"
-        :componentWidth="componentWidth"
-        :componentHeight="componentHeight"
+        :componentWidth="realWidth"
+        :componentHeight="realHeight"
+        :scale="scaleRatio"
         @wheel="changeScale"
         style="border: 1px solid black"
     >
@@ -108,19 +109,11 @@ export default {
         scaleRatio() {
             return this.scale / 100
         },
-        // Taille que la div prend sur la page
         realWidth() {
             return this.$store.state.page.width
         },
         realHeight() {
             return this.realWidth * (this.height / this.width)
-        },
-        // Taille du composant intérieur qui peut être bougé avec la souris
-        componentWidth() {
-            return this.realWidth * this.scaleRatio
-        },
-        componentHeight() {
-            return this.realHeight * this.scaleRatio
         },
     },
     methods: {

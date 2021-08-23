@@ -3,21 +3,21 @@
         :style="`width: ${width}px; height: ${height}px;`"
         @mousedown="startDrag"
         @mousemove="doDrag"
-        @wheel="changeScale"
         class="moving-component-wrapper"
     >
         <div
-            :style="`width: ${componentWidth}px;
-            height: ${componentHeight}px;
+            :style="`width: ${sizes.componentWidth}px;
+            height: ${sizes.componentHeight}px;
             top: ${offset.top}px;
             left: ${offset.left}px;`"
             class="moving-component"
         >
             <slot></slot>
         </div>
+        <!-- DEBUG
         <div
-            :style="`width: ${componentWidth}px;
-            height: ${componentHeight}px;
+            :style="`width: ${sizes.componentWidth}px;
+            height: ${sizes.componentHeight}px;
             top: ${offset.top}px;
             left: ${offset.left}px;
             border: 1px solid black`"
@@ -32,31 +32,34 @@
             class="moving-component"
             style="top: 0; left: 0"
         >
-            <circle r="5" :cx="center.x" :cy="center.y" />
+            <circle r="5" :cx="width / 2" :cy="height / 2" />
         </svg>
+        -->
     </div>
 </template>
-<script lang="ts">
+<script>
 export default {
     props: {
         width: Number,
         height: Number,
         componentWidth: Number,
         componentHeight: Number,
+        scale: { type: Number, default: 1 },
     },
     data() {
         return {
             dragging: false,
             draggingPos: { x: 0, y: 0 },
             offset: { top: 0, left: 0 },
-            test: { x: 0, y: 0 },
         }
     },
     computed: {
-        center() {
+        sizes() {
             return {
-                x: this.width / 2,
-                y: this.height / 2,
+                height: this.height,
+                width: this.width,
+                componentHeight: this.componentHeight * this.scale,
+                componentWidth: this.componentWidth * this.scale,
             }
         },
     },
@@ -82,13 +85,24 @@ export default {
         },
     },
     watch: {
-        componentWidth: function (newWidth, oldWidth) {
-            const ratioLeft = (this.center.x - this.offset.left) / oldWidth
-            this.offset.left = this.center.x - ratioLeft * newWidth
-        },
-        componentHeight: function (newHeight, oldHeight) {
-            const ratioAbove = (this.center.y - this.offset.top) / oldHeight
-            this.offset.top = this.center.y - ratioAbove * newHeight
+        // Lorsque les tailles changent, on veut garder le même ratio du
+        // composant interne visible
+        // Si le changement implique un zoom, le zoom se fait depuis le centre
+        sizes: function (newSizes, oldSizes) {
+            // Les centres
+            const oldC = { x: oldSizes.width / 2, y: oldSizes.height / 2 }
+            const newC = { x: newSizes.width / 2, y: newSizes.height / 2 }
+
+            // Les pourcentage du composants situés en haut et à gauche du centre
+            const ratio = {
+                left: (oldC.x - this.offset.left) / oldSizes.componentWidth,
+                above: (oldC.y - this.offset.top) / oldSizes.componentHeight,
+            }
+
+            // Le point en haut à gauche du composant change pour garder les
+            // mêmes ratios en haut et à gauche du centre du cadre
+            this.offset.left = newC.x - ratio.left * newSizes.componentWidth
+            this.offset.top = newC.y - ratio.above * newSizes.componentHeight
         },
     },
     mounted() {
