@@ -19,7 +19,7 @@
             xmlns="http://www.w3.org/2000/svg"
             style="overflow: visible"
         >
-            <Bus v-for="(bus, index) of buses" :key="index" v-bind="bus" />
+            <Bus v-for="(bus, index) of buses" :key="index" :datas="bus" />
             <ALU v-bind="alu" />
 
             <component
@@ -87,21 +87,28 @@ export default {
                 'registers'
             )
 
-            return registers.map(this.sanitizeRegister)
-        },
-        buses() {
-            const buses = Helper.getJsonValues(architectureData, 'buses')
-            return buses.map((bus) => {
-                // Map renvoie jusqu'à 3 paramètres qui ne nous intéressent pas
-                // C'est pourquoi on n'appelle pas directement la fonction en
-                // tant que callback
-                return this.sanitizeBus(bus)
+            return registers.map((register) => {
+                let reg = {
+                    registerModel: this.arch[register.model],
+                    datas: register,
+                    type: register.type,
+                }
+
+                if (register.type === 'InstructionRegister') {
+                    reg.sequencerModel = this.arch.sequencer
+                }
+
+                return reg
             })
         },
+        buses() {
+            return Helper.getJsonValues(architectureData, 'buses')
+        },
         alu() {
-            const alu = Helper.getJsonValues(architectureData, 'alu')[0]
-
-            return this.sanitizeAlu(alu)
+            return {
+                datas: Helper.getJsonValues(architectureData, 'alu')[0],
+                aluModel: this.arch.ALU,
+            }
         },
         strokeWidth() {
             return this.width / 1000
@@ -124,65 +131,6 @@ export default {
         phaseByPhase() {
             this.$store.commit('resetSignals')
             this.arch.phaseByPhase()
-        },
-        sanitizeRegister(register) {
-            let reg = {
-                registerModel: this.arch[register.model],
-                x: register.x,
-                y: register.y,
-                width: register.w,
-                height: register.h,
-                type: register.type,
-            }
-
-            if (reg.type === 'InstructionRegister') {
-                reg.sequencerModel = this.arch.sequencer
-            }
-
-            return reg
-        },
-        sanitizeBus(bus, x = 0, y = 0) {
-            let b = {
-                name: bus.name,
-                x: bus.x + x,
-                y: bus.y + y,
-                next: [],
-                bridges: [],
-                arrows: bus.arrows,
-                labels: bus.labels,
-                color: bus.color,
-                powerFromSignal: bus.powerFromSig,
-                signal: bus.signal,
-            }
-
-            for (const bridge of bus.bridges) {
-                b.bridges.push({ dist: bridge.dist, size: bridge.size })
-            }
-
-            b.bridges.sort((b1, b2) => {
-                return b1.dist > b2.dist ? 1 : b1.dist < b2.dist ? -1 : 0
-            })
-
-            for (const subBus of bus.next) {
-                subBus.name = bus.name
-                subBus.color = bus.color
-                subBus.powerFromSig = bus.powerFromSig
-                b.next.push(this.sanitizeBus(subBus, bus.x + x, bus.y + y))
-            }
-
-            return b
-        },
-        sanitizeAlu(alu) {
-            let a = {
-                aluModel: this.arch.ALU,
-                x: alu.x,
-                y: alu.y,
-                width: alu.w,
-                height: alu.h,
-                letters: alu.letters,
-            }
-
-            return a
         },
         changeScale(event) {
             this.scale -= event.deltaY * 0.1

@@ -266,6 +266,67 @@ class Helper {
         return json[type].map((v) => verifyValue({ ...v }, type))
     }
 
+    /**
+     * Vérifie qu'une valeur est d'un certain type.
+     * Si la valeur n'existe pas ou n'est pas du bon type, renvoie une valeur
+     * par défaut. Si la valeur est du bon type, la même valeur est renvoyée.
+     *
+     * Il est possible de donner une valeur par défaut à renvoyer si la valeur
+     * n'est pas bonne. Si aucune valeur n'est donnée en troisième paramètre,
+     * la fonction renverra une valeur par défaut en fonction du type.
+     *
+     * @param {*} value La valeur a vérifier
+     * @param {String|Object} type Le type que doit avoir la valeur
+     * @param {*} defaultValue La valeur par défaut à renvoyer si la valeur
+     *                         n'est pas du bon type
+     * @returns
+     */
+    verifyValue(value, type, defaultValue = undefined) {
+        const defaultValues = {
+            number: 0,
+            boolean: false,
+            string: '',
+            bigint: 0n,
+            function: () => {},
+            array: [],
+            object: null,
+        }
+
+        let goodValue = false
+
+        switch (type) {
+            case 'number':
+            case 'boolean':
+            case 'string':
+            case 'bigint':
+            case 'function':
+                goodValue = typeof value === type
+                break
+            case 'array':
+                goodValue = Array.isArray(value)
+                break
+            case 'object':
+                goodValue = typeof value === type && !Array.isArray(value)
+                break
+            default:
+                if (typeof type === 'function') {
+                    goodValue = value instanceof type
+                }
+        }
+
+        if (goodValue) {
+            return value
+        }
+        if (typeof defaultValue !== 'undefined') {
+            return defaultValue
+        }
+        if (typeof defaultValues[type] !== 'undefined') {
+            return defaultValues[type]
+        }
+
+        return null
+    }
+
     transform(x, y) {
         return `translate(${x}, ${y})`
     }

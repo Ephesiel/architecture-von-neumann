@@ -53,14 +53,7 @@ export default {
     label: 'Register',
     props: {
         registerModel: RegisterModel,
-        x: Number,
-        y: Number,
-        width: Number,
-        height: Number,
-        labelPos: {
-            type: String,
-            default: 'L',
-        },
+        datas: { type: Object, default: () => {} },
     },
     data: function () {
         return {
@@ -70,6 +63,22 @@ export default {
         }
     },
     computed: {
+        x() {
+            console.log(this.datas)
+            return Helper.verifyValue(this.datas.x, 'number')
+        },
+        y() {
+            return Helper.verifyValue(this.datas.y, 'number')
+        },
+        width() {
+            return Helper.verifyValue(this.datas.w, 'number')
+        },
+        height() {
+            return Helper.verifyValue(this.datas.h, 'number')
+        },
+        labelPos() {
+            return Helper.verifyValue(this.datas.labelPos, 'string', 'L')
+        },
         componentsWidth() {
             return {
                 label: 0.1 * this.width,

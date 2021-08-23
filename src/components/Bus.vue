@@ -27,7 +27,7 @@
             :stroke="color"
             fill="none"
         />
-        <Bus ref="test" v-bind="n" @power="onPower(index, $event)" />
+        <Bus :datas="n" @power="onPower(index, $event)" />
     </template>
     <text
         v-for="(label, index) of labels"
@@ -42,20 +42,12 @@
 
 <script>
 import { Signals } from '@/globals'
+import Helper from '@/helper'
 
 export default {
     emits: ['power'],
     props: {
-        name: String,
-        x: Number,
-        y: Number,
-        next: Array,
-        bridges: Array,
-        arrows: Array,
-        labels: Array,
-        signal: Object,
-        powerFromSignal: Boolean,
-        color: String,
+        datas: { type: Object, default: () => {} },
     },
     data() {
         return {
@@ -64,6 +56,96 @@ export default {
         }
     },
     computed: {
+        name() {
+            return Helper.verifyValue(this.datas.name, 'string', 'Bus unamed')
+        },
+        x() {
+            return Helper.verifyValue(this.datas.x, 'number')
+        },
+        y() {
+            return Helper.verifyValue(this.datas.y, 'number')
+        },
+        color() {
+            return Helper.verifyValue(this.datas.color, 'string', 'black')
+        },
+        powerFromSignal() {
+            return Helper.verifyValue(this.datas.powerFromSignal, 'boolean')
+        },
+        signal() {
+            const signal = Helper.verifyValue(this.datas.signal, 'object')
+
+            if (signal !== null) {
+                signal.name = Helper.verifyValue(signal.name, 'string')
+                signal.x = Helper.verifyValue(signal.x, 'number')
+                signal.y = Helper.verifyValue(signal.y, 'number')
+                signal.insulator = Helper.verifyValue(
+                    signal.insulator,
+                    'object'
+                )
+
+                if (signal.insulator !== null) {
+                    signal.insulator.dist = Helper.verifyValue(
+                        signal.insulator.dist,
+                        'number'
+                    )
+                    signal.insulator.size = Helper.verifyValue(
+                        signal.insulator.size,
+                        'number',
+                        1
+                    )
+                }
+            }
+
+            return signal
+        },
+        labels() {
+            const labels = Helper.verifyValue(this.datas.labels, 'array')
+
+            for (const label of labels) {
+                label.x += Helper.verifyValue(label.x, 'number')
+                label.y += Helper.verifyValue(label.y, 'number')
+            }
+
+            return labels
+        },
+        arrows() {
+            const arrows = Helper.verifyValue(this.datas.arrows, 'array')
+
+            for (const arrow of arrows) {
+                arrow.dist += Helper.verifyValue(arrow.dist, 'number')
+                arrow.size += Helper.verifyValue(arrow.size, 'number', 1)
+                arrow.angle += Helper.verifyValue(arrow.angle, 'number', 40)
+            }
+
+            return arrows
+        },
+        next() {
+            const next = Helper.verifyValue(this.datas.next, 'array')
+
+            for (const subBus of next) {
+                subBus.name = this.name
+                subBus.color = this.color
+                subBus.powerFromSignal = this.powerFromSignal
+                subBus.x += this.x
+                subBus.y += this.y
+            }
+
+            return next
+        },
+        bridges() {
+            const bridges = Helper.verifyValue(this.datas.bridges, 'array')
+
+            for (const bridge of bridges) {
+                bridge.dist = Helper.verifyValue(bridge.dist, 'number')
+                bridge.size = Helper.verifyValue(bridge.size, 'number', 1)
+            }
+
+            bridges.sort((b1, b2) => {
+                return b1.dist > b2.dist ? 1 : b1.dist < b2.dist ? -1 : 0
+            })
+
+            return bridges
+        },
         power() {
             return this.signal === null
                 ? false

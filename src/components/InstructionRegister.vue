@@ -7,13 +7,7 @@
             :width="width"
             :height="formatterHeight"
         />
-        <Register
-            :register-model="registerModel"
-            :width="width"
-            :height="height"
-            :x="0"
-            :y="0"
-        />
+        <Register :register-model="registerModel" :datas="registerDatas" />
         <Sequencer :sequencer-model="sequencerModel" />
     </g>
 </template>
@@ -31,10 +25,7 @@ export default {
     props: {
         registerModel: RegisterDecorator,
         sequencerModel: SequencerModel,
-        x: Number,
-        y: Number,
-        width: Number,
-        height: Number,
+        datas: { type: Object, default: () => {} },
     },
     data() {
         return {
@@ -47,6 +38,26 @@ export default {
         Sequencer,
     },
     computed: {
+        x() {
+            return Helper.verifyValue(this.datas.x, 'number')
+        },
+        y() {
+            return Helper.verifyValue(this.datas.y, 'number')
+        },
+        width() {
+            return Helper.verifyValue(this.datas.w, 'number')
+        },
+        height() {
+            return Helper.verifyValue(this.datas.h, 'number')
+        },
+        registerDatas() {
+            return {
+                x: 0,
+                y: 0,
+                w: this.width,
+                h: this.height,
+            }
+        },
         transform() {
             return Helper.transform(this.x, this.y)
         },

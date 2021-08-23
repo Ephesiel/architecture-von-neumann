@@ -44,11 +44,7 @@ export default {
     name: 'ArithmeticLogicUnit',
     props: {
         aluModel: ALUModel,
-        x: Number,
-        y: Number,
-        width: Number,
-        height: Number,
-        letters: Array,
+        datas: { type: Object, default: () => {} },
     },
     data() {
         return {
@@ -57,6 +53,29 @@ export default {
         }
     },
     computed: {
+        x() {
+            return Helper.verifyValue(this.datas.x, 'number')
+        },
+        y() {
+            return Helper.verifyValue(this.datas.y, 'number')
+        },
+        width() {
+            return Helper.verifyValue(this.datas.w, 'number')
+        },
+        height() {
+            return Helper.verifyValue(this.datas.h, 'number')
+        },
+        letters() {
+            const letters = Helper.verifyValue(this.datas.letters, 'array')
+
+            for (const letter of letters) {
+                letter.x = Helper.verifyValue(letter.x, 'number')
+                letter.y = Helper.verifyValue(letter.y, 'number')
+                letter.letter = Helper.verifyValue(letter.letter, 'string', 'X')
+            }
+
+            return letters
+        },
         operations() {
             let op = []
             for (const [signal, operation] of Object.entries(
