@@ -102,8 +102,8 @@ export default {
             const labels = Helper.verifyValue(this.datas.labels, 'array')
 
             for (const label of labels) {
-                label.x += Helper.verifyValue(label.x, 'number')
-                label.y += Helper.verifyValue(label.y, 'number')
+                label.x = Helper.verifyValue(label.x, 'number')
+                label.y = Helper.verifyValue(label.y, 'number')
             }
 
             return labels
@@ -112,9 +112,9 @@ export default {
             const arrows = Helper.verifyValue(this.datas.arrows, 'array')
 
             for (const arrow of arrows) {
-                arrow.dist += Helper.verifyValue(arrow.dist, 'number')
-                arrow.size += Helper.verifyValue(arrow.size, 'number', 1)
-                arrow.angle += Helper.verifyValue(arrow.angle, 'number', 40)
+                arrow.dist = Helper.verifyValue(arrow.dist, 'number')
+                arrow.size = Helper.verifyValue(arrow.size, 'number', 1)
+                arrow.angle = Helper.verifyValue(arrow.angle, 'number', 40)
             }
 
             return arrows

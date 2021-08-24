@@ -64,7 +64,6 @@ export default {
     },
     computed: {
         x() {
-            console.log(this.datas)
             return Helper.verifyValue(this.datas.x, 'number')
         },
         y() {
