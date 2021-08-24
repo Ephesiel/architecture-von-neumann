@@ -3,7 +3,8 @@
         <path
             :d="path(bus)"
             :stroke="color"
-            :stroke-dasharray="powers[index] ? '1 0.5' : 0"
+            :stroke-width="width"
+            :stroke-dasharray="powers[index] ? animationStrokeDasharray : 0"
             fill="none"
         >
             <animate
@@ -17,14 +18,18 @@
         <circle
             v-if="bus.signal !== null && bus.signal.insulator !== null"
             v-bind="insulatorDraw(bus)"
-            :fill="powers[index] ? 'green' : 'red'"
-            stroke="black"
+            :fill="
+                powers[index] ? activeInsulatorColor : inactiveInsulatorColor
+            "
+            :stroke="insulatorStrokeColor"
+            :stroke-width="insulatorStrokeWidth"
         />
         <path
             v-for="(arrow, indexArrow) of bus.arrows"
             :key="indexArrow"
             :d="pathForArrow(arrow, bus)"
             :stroke="color"
+            :stroke-width="width"
             fill="none"
         />
         <Bus :datas="bus" @power="onPower(index, $event)" />
@@ -43,6 +48,7 @@
 <script>
 import { Signals } from '@/globals'
 import { verifyValue } from '@/functions'
+import architectureStyle from '@/view-datas/architecture-style.json'
 
 export default {
     emits: ['power'],
@@ -52,7 +58,22 @@ export default {
     data() {
         return {
             powers: [],
-            powerSpeed: 60,
+            width: architectureStyle.busWidth,
+            powerSpeed: architectureStyle.busAnimationSpeed,
+            animationStrokeDasharray:
+                architectureStyle.busAnimationStrokeDasharray,
+
+            inactiveSignalColor: architectureStyle.inactiveSignalColor,
+            activeSignalColor: architectureStyle.activeSignalColor,
+
+            inactiveInsulatorColor: architectureStyle.inactiveInsulatorColor,
+            insulatorStrokeColor: architectureStyle.insulatorStrokeColor,
+            insulatorStrokeWidth: architectureStyle.insulatorStrokeWidth,
+            insulatorRadius: architectureStyle.insulatorRadius,
+            activeInsulatorColor: architectureStyle.activeInsulatorColor,
+
+            arrowSize: architectureStyle.busArrowSize,
+            arrowAngle: architectureStyle.busArrowAngle,
         }
     },
     computed: {
@@ -89,7 +110,9 @@ export default {
             return {
                 x: this.x + this.signal.x,
                 y: this.y + this.signal.y,
-                fill: this.power ? 'red' : 'black',
+                fill: this.power
+                    ? this.activeSignalColor
+                    : this.inactiveSignalColor,
             }
         },
     },
@@ -130,8 +153,6 @@ export default {
 
             for (const arrow of arrows) {
                 arrow.dist = verifyValue(arrow.dist, 'number')
-                arrow.size = verifyValue(arrow.size, 'number', 1)
-                arrow.angle = verifyValue(arrow.angle, 'number', 40)
             }
 
             return arrows
@@ -150,11 +171,6 @@ export default {
                         signal.insulator.dist,
                         'number'
                     )
-                    signal.insulator.size = verifyValue(
-                        signal.insulator.size,
-                        'number',
-                        1
-                    )
                 }
             }
 
@@ -162,19 +178,27 @@ export default {
         },
         verifyNextBuses(nextBuses) {
             nextBuses = verifyValue(nextBuses, 'array')
+            const nextB = []
 
             for (const bus of nextBuses) {
-                bus.name = this.name
-                bus.color = this.color
-                bus.powerFromSignal = this.powerFromSignal
-                bus.x += this.x
-                bus.y += this.y
-                bus.arrows = this.verifyArrows(bus.arrows)
-                bus.bridges = this.verifyBridges(bus.bridges)
-                bus.signal = this.verifySignal(bus.signal)
+                // Deep copy à cause des + sur les coordonnées
+                // Sinon lorsque l'objet est rerender, l'objet `datas` aura été
+                // modifié, ce qu'il ne faut absolument pas faire
+                const b = { ...bus }
+
+                b.name = this.name
+                b.color = this.color
+                b.powerFromSignal = this.powerFromSignal
+                b.x += this.x
+                b.y += this.y
+                b.arrows = this.verifyArrows(bus.arrows)
+                b.bridges = this.verifyBridges(bus.bridges)
+                b.signal = this.verifySignal(bus.signal)
+
+                nextB.push(b)
             }
 
-            return nextBuses
+            return nextB
         },
         onPower(index, value) {
             this.powers[index] = value
@@ -188,14 +212,14 @@ export default {
         },
         insulatorDraw(bus) {
             // Vecteur directeur
-            const uv = this.unitVector(bus)
+            const uv = this.multVector(this.unitVector(bus), -1)
             // Centre du cercle
-            const center = this.projection(this, bus.signal.insulator.dist, uv)
+            const center = this.projection(bus, bus.signal.insulator.dist, uv)
 
             return {
                 cx: center.x,
                 cy: center.y,
-                r: bus.signal.insulator.size / 2,
+                r: this.insulatorRadius / 2,
             }
         },
         path(bus) {
@@ -223,7 +247,8 @@ export default {
         },
         pathForArrow(arrow, bus) {
             const angle =
-                (!this.powerFromSignal * 180 + arrow.angle) * (Math.PI / 180.0)
+                (!this.powerFromSignal * 180 + this.arrowAngle) *
+                (Math.PI / 180.0)
             const cosA = Math.cos(angle)
             const sinA = Math.sin(angle)
             const cosB = Math.cos(-angle)
@@ -244,9 +269,9 @@ export default {
             // Pointe de la flèche
             const center = this.projection(this, arrow.dist, uv)
             // Première branche
-            const pointA = this.projection(center, arrow.size / 2, av)
+            const pointA = this.projection(center, this.arrowSize / 2, av)
             // Seconde branche
-            const pointB = this.projection(center, arrow.size / 2, bv)
+            const pointB = this.projection(center, this.arrowSize / 2, bv)
 
             return `M ${pointA.x} ${pointA.y} L ${center.x} ${center.y} L ${pointB.x} ${pointB.y}`
         },
@@ -270,6 +295,12 @@ export default {
             return {
                 x: distance * unitVector.x + startingPoint.x,
                 y: distance * unitVector.y + startingPoint.y,
+            }
+        },
+        multVector(v, t) {
+            return {
+                x: v.x * t,
+                y: v.y * t,
             }
         },
     },

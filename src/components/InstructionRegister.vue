@@ -57,6 +57,7 @@ export default {
                 y: 0,
                 w: this.width,
                 h: this.height,
+                labelPos: this.datas.labelPos,
             }
         },
         transform() {

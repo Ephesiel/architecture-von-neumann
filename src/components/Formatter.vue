@@ -5,22 +5,17 @@
             y="0"
             :width="width"
             :height="height"
-            fill="transparent"
-            stroke="black"
+            :fill="color"
+            :stroke="strokeColor"
         ></rect>
-        <text
-            :x="raPoint.x"
-            :y="raPoint.y"
-            :font-size="$store.state.architecture.fontSize"
-            fill="black"
-            >{{ ra.toString() }}</text
-        >
+        <text :x="raPoint.x" :y="raPoint.y">{{ ra.toString() }}</text>
     </g>
 </template>
 
 <script>
 import Integer from '@/integer'
 import Helper from '@/helper'
+import architectureStyle from '@/view-datas/architecture-style.json'
 
 export default {
     name: 'Formatter',
@@ -30,6 +25,13 @@ export default {
         y: Number,
         width: Number,
         height: Number,
+    },
+    data() {
+        return {
+            fontSize: architectureStyle.fontSize,
+            color: architectureStyle.formatterColor,
+            strokeColor: architectureStyle.elementStrokeColor,
+        }
     },
     computed: {
         transform() {

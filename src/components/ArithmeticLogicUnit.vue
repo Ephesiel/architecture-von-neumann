@@ -4,7 +4,7 @@
             :width="width"
             :height="height"
             :fill="color"
-            stroke="black"
+            :stroke="strokeColor"
         ></rect>
         <text v-for="(l, index) of letters" :key="index" :x="l.x" :y="l.y">{{
             l.letter
@@ -21,8 +21,8 @@
             :height="signalRectSize.h"
             :x="signalRectPoint.x"
             :y="signalRectPoint.y"
-            fill="white"
-            stroke="black"
+            :fill="signalBoxColor"
+            :stroke="strokeColor"
         ></rect>
         <text
             v-for="(op, index) of operations"
@@ -40,6 +40,7 @@
 import ALUModel from '@/models/arithmetic-logic-unit-model'
 import Helper from '@/helper'
 import { verifyValue } from '@/functions'
+import architectureStyle from '@/view-datas/architecture-style.json'
 
 export default {
     name: 'ArithmeticLogicUnit',
@@ -49,8 +50,12 @@ export default {
     },
     data() {
         return {
-            color: 'rgb(82, 187, 118)',
-            fontSize: this.$store.state.architecture.fontSize,
+            color: architectureStyle.aluColor,
+            signalBoxColor: architectureStyle.signalBoxColor,
+            fontSize: architectureStyle.fontSize,
+            strokeColor: architectureStyle.elementStrokeColor,
+            inactiveSignalColor: architectureStyle.inactiveSignalColor,
+            activeSignalColor: architectureStyle.activeSignalColor,
         }
     },
     computed: {
@@ -87,8 +92,8 @@ export default {
                     name: Helper.getSignalName(signal),
                     description: operation.description,
                     color: this.$store.state.engine.signals[signal]
-                        ? 'red'
-                        : 'black',
+                        ? this.activeSignalColor
+                        : this.inactiveSignalColor,
                 })
             }
 

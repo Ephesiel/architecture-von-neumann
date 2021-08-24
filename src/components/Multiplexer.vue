@@ -16,6 +16,7 @@
 
 <script>
 import MultiplexerModel from '@/models/multiplexer-model'
+import architectureStyle from '@/view-datas/architecture-style.json'
 import Helper from '@/helper'
 
 export default {
@@ -30,7 +31,7 @@ export default {
         return {
             path: '',
             places: [],
-            fontSize: this.$store.state.architecture.fontSize,
+            fontSize: architectureStyle.fontSize,
         }
     },
     computed: {

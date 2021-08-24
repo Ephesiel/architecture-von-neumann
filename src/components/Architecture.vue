@@ -15,7 +15,8 @@
             width="100%"
             height="100%"
             :stroke-width="strokeWidth"
-            :font-size="$store.state.architecture.fontSize"
+            :font-size="fontSize"
+            :fill="fontColor"
             xmlns="http://www.w3.org/2000/svg"
             style="overflow: visible"
         >
@@ -48,6 +49,7 @@ import Bus from '@/components/Bus.vue'
 import ALU from '@/components/ArithmeticLogicUnit.vue'
 import Clock from '@/models/clock'
 import architectureData from '@/view-datas/architecture.json'
+import architectureStyle from '@/view-datas/architecture-style.json'
 import { getJsonValues } from '@/functions'
 
 export default {
@@ -62,8 +64,11 @@ export default {
     data() {
         return {
             arch: new Architecture(),
-            width: architectureData.datas.width,
-            height: architectureData.datas.height,
+            width: architectureStyle.svgWidth,
+            height: architectureStyle.svgHeight,
+            fontSize: architectureStyle.fontSize,
+            fontColor: architectureStyle.fontColor,
+            strokeWidth: architectureStyle.elementStrokeWidth,
             scale: 100,
         }
     },
@@ -75,10 +80,6 @@ export default {
                 }
             }
         })
-        this.$store.commit(
-            'changeArchitectureFontSize',
-            architectureData.datas.fontSize
-        )
     },
     computed: {
         registers() {
@@ -106,9 +107,6 @@ export default {
                 datas: getJsonValues(architectureData, 'alu')[0],
                 aluModel: this.arch.ALU,
             }
-        },
-        strokeWidth() {
-            return this.width / 1000
         },
         scaleRatio() {
             return this.scale / 100
