@@ -1,9 +1,10 @@
 <template>
-    <template v-for="(n, index) of next" :key="index">
+    <template v-for="(bus, index) of nextBuses" :key="index">
         <path
-            :d="path(n)"
+            :d="path(bus)"
             :stroke="color"
-            :stroke-dasharray="powers[index] ? '1 0.5' : 0"
+            :stroke-width="width"
+            :stroke-dasharray="powers[index] ? animationStrokeDasharray : 0"
             fill="none"
         >
             <animate
@@ -15,19 +16,23 @@
             />
         </path>
         <circle
-            v-if="n.signal !== null && n.signal.insulator !== null"
-            v-bind="insulatorDraw(n)"
-            :fill="powers[index] ? 'green' : 'red'"
-            stroke="black"
+            v-if="bus.signal !== null && bus.signal.insulator !== null"
+            v-bind="insulatorDraw(bus)"
+            :fill="
+                powers[index] ? activeInsulatorColor : inactiveInsulatorColor
+            "
+            :stroke="insulatorStrokeColor"
+            :stroke-width="insulatorStrokeWidth"
         />
         <path
-            v-for="(arrow, indexArrow) of n.arrows"
+            v-for="(arrow, indexArrow) of bus.arrows"
             :key="indexArrow"
-            :d="pathForArrow(arrow, n)"
+            :d="pathForArrow(arrow, bus)"
             :stroke="color"
+            :stroke-width="width"
             fill="none"
         />
-        <Bus :datas="n" @power="onPower(index, $event)" />
+        <Bus :datas="bus" @power="onPower(index, $event)" />
     </template>
     <text
         v-for="(label, index) of labels"
@@ -42,7 +47,8 @@
 
 <script>
 import { Signals } from '@/globals'
-import Helper from '@/helper'
+import { verifyValue } from '@/functions'
+import architectureStyle from '@/view-datas/architecture-style.json'
 
 export default {
     emits: ['power'],
@@ -52,99 +58,48 @@ export default {
     data() {
         return {
             powers: [],
-            powerSpeed: 60,
+            width: architectureStyle.busWidth,
+            powerSpeed: architectureStyle.busAnimationSpeed,
+            animationStrokeDasharray:
+                architectureStyle.busAnimationStrokeDasharray,
+
+            inactiveSignalColor: architectureStyle.inactiveSignalColor,
+            activeSignalColor: architectureStyle.activeSignalColor,
+
+            inactiveInsulatorColor: architectureStyle.inactiveInsulatorColor,
+            insulatorStrokeColor: architectureStyle.insulatorStrokeColor,
+            insulatorStrokeWidth: architectureStyle.insulatorStrokeWidth,
+            insulatorRadius: architectureStyle.insulatorRadius,
+            activeInsulatorColor: architectureStyle.activeInsulatorColor,
+
+            arrowSize: architectureStyle.busArrowSize,
+            arrowAngle: architectureStyle.busArrowAngle,
         }
     },
     computed: {
         name() {
-            return Helper.verifyValue(this.datas.name, 'string', 'Bus unamed')
+            return verifyValue(this.datas.name, 'string', 'Bus unamed')
         },
         x() {
-            return Helper.verifyValue(this.datas.x, 'number')
+            return verifyValue(this.datas.x, 'number')
         },
         y() {
-            return Helper.verifyValue(this.datas.y, 'number')
+            return verifyValue(this.datas.y, 'number')
         },
         color() {
-            return Helper.verifyValue(this.datas.color, 'string', 'black')
+            return verifyValue(this.datas.color, 'string', 'black')
         },
         powerFromSignal() {
-            return Helper.verifyValue(this.datas.powerFromSignal, 'boolean')
+            return verifyValue(this.datas.powerFromSignal, 'boolean')
         },
         signal() {
-            const signal = Helper.verifyValue(this.datas.signal, 'object')
-
-            if (signal !== null) {
-                signal.name = Helper.verifyValue(signal.name, 'string')
-                signal.x = Helper.verifyValue(signal.x, 'number')
-                signal.y = Helper.verifyValue(signal.y, 'number')
-                signal.insulator = Helper.verifyValue(
-                    signal.insulator,
-                    'object'
-                )
-
-                if (signal.insulator !== null) {
-                    signal.insulator.dist = Helper.verifyValue(
-                        signal.insulator.dist,
-                        'number'
-                    )
-                    signal.insulator.size = Helper.verifyValue(
-                        signal.insulator.size,
-                        'number',
-                        1
-                    )
-                }
-            }
-
-            return signal
+            return this.verifySignal(this.datas.signal)
         },
         labels() {
-            const labels = Helper.verifyValue(this.datas.labels, 'array')
-
-            for (const label of labels) {
-                label.x += Helper.verifyValue(label.x, 'number')
-                label.y += Helper.verifyValue(label.y, 'number')
-            }
-
-            return labels
+            return this.verifyLabels(this.datas.labels)
         },
-        arrows() {
-            const arrows = Helper.verifyValue(this.datas.arrows, 'array')
-
-            for (const arrow of arrows) {
-                arrow.dist += Helper.verifyValue(arrow.dist, 'number')
-                arrow.size += Helper.verifyValue(arrow.size, 'number', 1)
-                arrow.angle += Helper.verifyValue(arrow.angle, 'number', 40)
-            }
-
-            return arrows
-        },
-        next() {
-            const next = Helper.verifyValue(this.datas.next, 'array')
-
-            for (const subBus of next) {
-                subBus.name = this.name
-                subBus.color = this.color
-                subBus.powerFromSignal = this.powerFromSignal
-                subBus.x += this.x
-                subBus.y += this.y
-            }
-
-            return next
-        },
-        bridges() {
-            const bridges = Helper.verifyValue(this.datas.bridges, 'array')
-
-            for (const bridge of bridges) {
-                bridge.dist = Helper.verifyValue(bridge.dist, 'number')
-                bridge.size = Helper.verifyValue(bridge.size, 'number', 1)
-            }
-
-            bridges.sort((b1, b2) => {
-                return b1.dist > b2.dist ? 1 : b1.dist < b2.dist ? -1 : 0
-            })
-
-            return bridges
+        nextBuses() {
+            return this.verifyNextBuses(this.datas.next)
         },
         power() {
             return this.signal === null
@@ -155,7 +110,9 @@ export default {
             return {
                 x: this.x + this.signal.x,
                 y: this.y + this.signal.y,
-                fill: this.power ? 'red' : 'black',
+                fill: this.power
+                    ? this.activeSignalColor
+                    : this.inactiveSignalColor,
             }
         },
     },
@@ -165,6 +122,84 @@ export default {
         },
     },
     methods: {
+        verifyLabels(labels) {
+            labels = verifyValue(labels, 'array')
+
+            for (const label of labels) {
+                label.x = verifyValue(label.x, 'number')
+                label.y = verifyValue(label.y, 'number')
+            }
+
+            return labels
+        },
+        verifyBridges(bridges) {
+            bridges = verifyValue(bridges, 'array')
+
+            for (const bridge of bridges) {
+                bridge.dist = verifyValue(bridge.dist, 'number')
+                bridge.size = verifyValue(bridge.size, 'number', 1)
+            }
+
+            // On trie les ponts car on en aura besoin pour faire le path
+            // S'ils ne sont pas dans l'ordre, ça risque de faire un chemin étrange
+            bridges.sort((b1, b2) => {
+                return b1.dist > b2.dist ? 1 : b1.dist < b2.dist ? -1 : 0
+            })
+
+            return bridges
+        },
+        verifyArrows(arrows) {
+            arrows = verifyValue(arrows, 'array')
+
+            for (const arrow of arrows) {
+                arrow.dist = verifyValue(arrow.dist, 'number')
+            }
+
+            return arrows
+        },
+        verifySignal(signal) {
+            signal = verifyValue(signal, 'object')
+
+            if (signal !== null) {
+                signal.name = verifyValue(signal.name, 'string')
+                signal.x = verifyValue(signal.x, 'number')
+                signal.y = verifyValue(signal.y, 'number')
+                signal.insulator = verifyValue(signal.insulator, 'object')
+
+                if (signal.insulator !== null) {
+                    signal.insulator.dist = verifyValue(
+                        signal.insulator.dist,
+                        'number'
+                    )
+                }
+            }
+
+            return signal
+        },
+        verifyNextBuses(nextBuses) {
+            nextBuses = verifyValue(nextBuses, 'array')
+            const nextB = []
+
+            for (const bus of nextBuses) {
+                // Deep copy à cause des + sur les coordonnées
+                // Sinon lorsque l'objet est rerender, l'objet `datas` aura été
+                // modifié, ce qu'il ne faut absolument pas faire
+                const b = { ...bus }
+
+                b.name = this.name
+                b.color = this.color
+                b.powerFromSignal = this.powerFromSignal
+                b.x += this.x
+                b.y += this.y
+                b.arrows = this.verifyArrows(bus.arrows)
+                b.bridges = this.verifyBridges(bus.bridges)
+                b.signal = this.verifySignal(bus.signal)
+
+                nextB.push(b)
+            }
+
+            return nextB
+        },
         onPower(index, value) {
             this.powers[index] = value
 
@@ -175,25 +210,25 @@ export default {
             const power = this.powers.filter((p) => p === true).length > 0
             this.$emit('power', power)
         },
-        insulatorDraw(n) {
+        insulatorDraw(bus) {
             // Vecteur directeur
-            const uv = this.unitVector(n)
+            const uv = this.multVector(this.unitVector(bus), -1)
             // Centre du cercle
-            const center = this.projection(this, n.signal.insulator.dist, uv)
+            const center = this.projection(bus, bus.signal.insulator.dist, uv)
 
             return {
                 cx: center.x,
                 cy: center.y,
-                r: n.signal.insulator.size / 2,
+                r: this.insulatorRadius / 2,
             }
         },
-        path(n) {
+        path(bus) {
             let str = `M ${this.x} ${this.y}`
 
             // Vecteur directeur
-            const uv = this.unitVector(n)
+            const uv = this.unitVector(bus)
 
-            for (const bridge of n.bridges) {
+            for (const bridge of bus.bridges) {
                 // Rayon du demi-cercle
                 const r = bridge.size / 2
                 // Début du pont
@@ -207,19 +242,20 @@ export default {
                 str += `L ${begin.x} ${begin.y} A ${r} ${r} 0 0 ${swip} ${end.x} ${end.y}`
             }
 
-            str += `L ${n.x} ${n.y}`
+            str += `L ${bus.x} ${bus.y}`
             return str
         },
-        pathForArrow(arrow, n) {
+        pathForArrow(arrow, bus) {
             const angle =
-                (!this.powerFromSignal * 180 + arrow.angle) * (Math.PI / 180.0)
+                (!this.powerFromSignal * 180 + this.arrowAngle) *
+                (Math.PI / 180.0)
             const cosA = Math.cos(angle)
             const sinA = Math.sin(angle)
             const cosB = Math.cos(-angle)
             const sinB = Math.sin(-angle)
 
             // Vecteur directeur
-            const uv = this.unitVector(n)
+            const uv = this.unitVector(bus)
             // Vecteur première branche
             const av = {
                 x: cosA * uv.x - sinA * uv.y,
@@ -233,17 +269,17 @@ export default {
             // Pointe de la flèche
             const center = this.projection(this, arrow.dist, uv)
             // Première branche
-            const pointA = this.projection(center, arrow.size / 2, av)
+            const pointA = this.projection(center, this.arrowSize / 2, av)
             // Seconde branche
-            const pointB = this.projection(center, arrow.size / 2, bv)
+            const pointB = this.projection(center, this.arrowSize / 2, bv)
 
             return `M ${pointA.x} ${pointA.y} L ${center.x} ${center.y} L ${pointB.x} ${pointB.y}`
         },
-        unitVector(n) {
+        unitVector(bus) {
             // Vecteur du segment du bus
             const v = {
-                x: n.x - this.x,
-                y: n.y - this.y,
+                x: bus.x - this.x,
+                y: bus.y - this.y,
             }
 
             // Longueur du segment
@@ -259,6 +295,12 @@ export default {
             return {
                 x: distance * unitVector.x + startingPoint.x,
                 y: distance * unitVector.y + startingPoint.y,
+            }
+        },
+        multVector(v, t) {
+            return {
+                x: v.x * t,
+                y: v.y * t,
             }
         },
     },

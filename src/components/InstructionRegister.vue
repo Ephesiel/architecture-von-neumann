@@ -19,6 +19,7 @@ import Sequencer from '@/components/Sequencer.vue'
 import RegisterDecorator from '@/models/registers/register-decorator'
 import SequencerModel from '@/models/sequencer'
 import Helper from '@/helper'
+import { verifyValue } from '@/functions'
 
 export default {
     name: 'InstructionRegister',
@@ -39,16 +40,16 @@ export default {
     },
     computed: {
         x() {
-            return Helper.verifyValue(this.datas.x, 'number')
+            return verifyValue(this.datas.x, 'number')
         },
         y() {
-            return Helper.verifyValue(this.datas.y, 'number')
+            return verifyValue(this.datas.y, 'number')
         },
         width() {
-            return Helper.verifyValue(this.datas.w, 'number')
+            return verifyValue(this.datas.w, 'number')
         },
         height() {
-            return Helper.verifyValue(this.datas.h, 'number')
+            return verifyValue(this.datas.h, 'number')
         },
         registerDatas() {
             return {
@@ -56,6 +57,7 @@ export default {
                 y: 0,
                 w: this.width,
                 h: this.height,
+                labelPos: this.datas.labelPos,
             }
         },
         transform() {

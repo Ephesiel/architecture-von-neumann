@@ -1,9 +1,4 @@
 {
-    "datas": {
-        "width": 170,
-        "height": 50,
-        "fontSize": 1
-    },
     "props": {
         "registers": {
             "model": "RA",
@@ -11,7 +6,8 @@
             "y": 0,
             "w": 30,
             "h": 4,
-            "type": "Register"
+            "type": "Register",
+            "labelPos": "L"
         },
         "buses": {
             "name": "bus",
@@ -34,17 +30,14 @@
             "y": -1
         },
         "arrow": {
-            "dist": 0,
-            "size": 1.8,
-            "angle": 40
+            "dist": 0
         },
         "bridge": {
             "dist": 0,
             "size": 2
         },
         "insulator": {
-            "dist": 0,
-            "size": 1
+            "dist": 1
         },
         "alu": {
             "x": 0,
@@ -73,29 +66,29 @@
     "buses": [
         { "name": "Bus 1", "color": "blue", "powerFromSignal": true, "x": 8, "y": 13, "next": [
             {"y": -11, "labels": [{"x": 15}], "arrows": [{"dist": 5}], "next": [
-                {"x": 32, "arrows": [{"dist": 10}], "next": [
-                    {"y": 4, "signal": {"name": "RAB1", "insulator": {"dist": 3}}},
+                {"test": true, "x": 32, "arrows": [{"dist": 10}], "next": [
+                    {"y": 4, "signal": {"name": "RAB1", "insulator": {}}},
                     {"x": 40, "next": [
-                        {"y": 4, "signal": {"name":  "RBB1", "insulator": {"dist": 3}}},
+                        {"y": 4, "signal": {"name":  "RBB1", "insulator": {}}},
                         {"x": 40, "arrows": [{"dist": 20}], "next": [
-                            {"y": 4, "signal": {"name":  "RCB1", "insulator": {"dist": 3}}},
+                            {"y": 4, "signal": {"name":  "RCB1", "insulator": {}}},
                             {"x": 40, "next": [
                                 {"y": 14, "arrows": [{"dist": 7}], "next": [
                                     {"x": -25, "next": [
-                                        {"y": 4, "signal": {"name":  "RIB1", "insulator": {"dist": 3}}},
+                                        {"y": 4, "signal": {"name":  "RIB1", "insulator": {}}},
                                         {"x": -35, "arrows": [{"dist": 16}], "next": [
-                                            {"y": 5, "signal": {"name":  "SPB1", "insulator": {"dist": 4}}},
+                                            {"y": 5, "signal": {"name":  "SPB1", "insulator": {}}},
                                             {"x": -35, "next": [
-                                                {"y": 5, "signal": {"name":  "RXB1", "insulator": {"dist": 4}}},
+                                                {"y": 5, "signal": {"name":  "RXB1", "insulator": {}}},
                                                 {"x": -35, "arrows": [{"dist": 16}], "next": [
-                                                    {"y": 5, "signal": {"name":  "COB1", "insulator": {"dist": 4}}}
+                                                    {"y": 5, "signal": {"name":  "COB1", "insulator": {}}}
                                                 ]}
                                             ]}
                                         ]}
                                     ]},
                                     {"y": 15, "arrows": [{"dist": 7}], "next": [
                                         {"x": -50, "arrows": [{"dist": 25}], "next": [
-                                            {"y": 4, "signal": {"name":  "REB1", "insulator": {"dist": 3}}}
+                                            {"y": 4, "signal": {"name":  "REB1", "insulator": {}}}
                                         ]}
                                     ]}
                                 ]}
@@ -108,28 +101,28 @@
         { "name": "Bus 2", "color": "green", "powerFromSignal": true, "x": 14, "y": 13, "next": [
             {"y": -9, "labels": [{"x": 9, "y": 1}], "arrows": [{"dist": 5}], "next": [
                 {"x": 36, "arrows": [{"dist": 4}], "bridges": [{"dist": 26}], "next": [
-                    {"y": 2, "signal": {"name":  "RAB2", "insulator": {"dist": 1}}},
+                    {"y": 2, "signal": {"name":  "RAB2", "insulator": {}}},
                     {"x": 40, "bridges": [{"dist": 30}], "next": [
-                        {"y": 2, "signal": {"name":  "RBB2", "insulator": {"dist": 1}}},
+                        {"y": 2, "signal": {"name":  "RBB2", "insulator": {}}},
                         {"x": 40, "arrows": [{"dist": 10}], "bridges": [{"dist": 30}], "next": [
-                            {"y": 2, "signal": {"name":  "RCB2", "insulator": {"dist": 1}}},
+                            {"y": 2, "signal": {"name":  "RCB2", "insulator": {}}},
                             {"x": 32, "bridges": [{"dist": 30}], "next": [
                                 {"y": 14, "arrows": [{"dist": 5}], "next": [
                                     {"x": -17, "bridges": [{"dist": 2}], "next": [
-                                        {"y": 2, "signal": {"name":  "RIB2", "insulator": {"dist": 1}}},
+                                        {"y": 2, "signal": {"name":  "RIB2", "insulator": {}}},
                                         {"x": -35, "arrows": [{"dist": 26}], "bridges": [{"dist": 10}], "next": [
-                                            {"y": 3, "signal": {"name":  "SPB2", "insulator": {"dist": 2}}},
+                                            {"y": 3, "signal": {"name":  "SPB2", "insulator": {}}},
                                             {"x": -35, "bridges": [{"dist": 10}], "next": [
-                                                {"y": 3, "signal": {"name":  "RXB2", "insulator": {"dist": 2}}},
+                                                {"y": 3, "signal": {"name":  "RXB2", "insulator": {}}},
                                                 {"x": -35, "arrows": [{"dist": 26}], "bridges": [{"dist": 10}], "next": [
-                                                    {"y": 3, "signal": {"name":  "COB2", "insulator": {"dist": 2}}}
+                                                    {"y": 3, "signal": {"name":  "COB2", "insulator": {}}}
                                                 ]}
                                             ]}
                                         ]}
                                     ]},
                                     {"y": 15, "arrows": [{"dist": 5}], "next": [
                                         {"x": -42, "arrows": [{"dist": 27}], "next": [
-                                            {"y": 2, "signal": {"name":  "REB2", "insulator": {"dist": 1}}}
+                                            {"y": 2, "signal": {"name":  "REB2", "insulator": {}}}
                                         ]}
                                     ]}
                                 ]}

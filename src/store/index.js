@@ -39,25 +39,10 @@ const modulePage = {
     },
 }
 
-/**
- * Module sur les détails de l'affichage de l'architecture
- */
-const moduleArchitecture = {
-    state: {
-        fontSize: 1,
-    },
-    mutations: {
-        changeArchitectureFontSize: (state, fontSize) => {
-            state.fontSize = fontSize
-        },
-    },
-}
-
 const store = createStore({
     modules: {
         engine: moduleEngine,
         page: modulePage,
-        architecture: moduleArchitecture,
     },
 })
 

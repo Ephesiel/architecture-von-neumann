@@ -58,6 +58,7 @@
 <script>
 import Helper from '@/helper'
 import MemoryModel from '@/models/memory/memory-model'
+import architectureStyle from '@/view-datas/architecture-style.json'
 import { uint } from '@/integer'
 
 export default {
@@ -77,7 +78,7 @@ export default {
             noColor: '#ffcc66',
             yesText: 'Toutes les données sont affichées.',
             noText: 'Seulement les données existantes sont affichées.',
-            fontSize: this.$store.state.architecture.fontSize,
+            fontSize: architectureStyle.fontSize,
         }
     },
     computed: {

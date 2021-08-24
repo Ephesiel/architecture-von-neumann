@@ -1,0 +1,30 @@
+{
+    "fontSize": 1,
+    "fontColor": "black",
+    "svgWidth": 170,
+    "svgHeight": 50,
+    "elementStrokeColor": "black",
+    "elementStrokeWidth": 0.1,
+
+    "aluColor": "rgb(82, 187, 118)",
+    "signalBoxColor": "transparent",
+    
+    "inactiveSignalColor": "inherit",
+    "activeSignalColor": "red",
+
+    "inactiveInsulatorColor": "red",
+    "activeInsulatorColor": "green",
+    "insulatorStrokeColor": "black",
+    "insulatorStrokeWidth": 0.2,
+    "insulatorRadius": 1,
+
+    "busArrowSize": 2,
+    "busArrowAngle": 40,
+
+    "busWidth": 0.3,
+    "busAnimationStrokeDasharray": "1 0.5",
+    "busAnimationSpeed": 60,
+
+    "registerColor": "rgb(249, 240, 157)",
+    "formatterColor": "transparent"
+}

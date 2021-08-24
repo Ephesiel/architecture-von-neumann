@@ -6,7 +6,7 @@
             :width="width - componentsWidth.label"
             :height="height"
             :fill="color"
-            stroke="black"
+            :stroke="strokeColor"
         ></rect>
         <rect
             :x="labelRectX"
@@ -14,40 +14,35 @@
             :width="componentsWidth.label"
             :height="height"
             :fill="color"
-            stroke="black"
+            :stroke="strokeColor"
         ></rect>
         <text
             :transform="labelTransform"
             :x="labelPoint.x"
             :y="labelPoint.y"
-            fill="black"
             class="label"
             >{{ label }}</text
         >
-        <text :x="currentValuePoint.x" :y="currentValuePoint.y" fill="black">{{
+        <text :x="currentValuePoint.x" :y="currentValuePoint.y">{{
             formatCurrentValue
         }}</text>
-        <text :x="nextValuePoint.x" :y="nextValuePoint.y" fill="black">{{
+        <text :x="nextValuePoint.x" :y="nextValuePoint.y">{{
             formatNextValue
         }}</text>
-        <text
-            :x="currentValueBinaryPoint.x"
-            :y="currentValueBinaryPoint.y"
-            fill="black"
-            >{{ formatCurrentValueBinary }}</text
-        >
-        <text
-            :x="nextValueBinaryPoint.x"
-            :y="nextValueBinaryPoint.y"
-            fill="black"
-            >{{ formatNextValueBinary }}</text
-        >
+        <text :x="currentValueBinaryPoint.x" :y="currentValueBinaryPoint.y">{{
+            formatCurrentValueBinary
+        }}</text>
+        <text :x="nextValueBinaryPoint.x" :y="nextValueBinaryPoint.y">{{
+            formatNextValueBinary
+        }}</text>
     </g>
 </template>
 
 <script>
 import RegisterModel from '@/models/registers/register-model'
+import architectureStyle from '@/view-datas/architecture-style.json'
 import Helper from '@/helper'
+import { verifyValue } from '@/functions'
 
 export default {
     label: 'Register',
@@ -58,26 +53,26 @@ export default {
     data: function () {
         return {
             rows: 2,
-            color: 'rgb(249, 240, 157)',
-            fontSize: this.$store.state.architecture.fontSize,
+            color: architectureStyle.registerColor,
+            fontSize: architectureStyle.fontSize,
+            strokeColor: architectureStyle.elementStrokeColor,
         }
     },
     computed: {
         x() {
-            console.log(this.datas)
-            return Helper.verifyValue(this.datas.x, 'number')
+            return verifyValue(this.datas.x, 'number')
         },
         y() {
-            return Helper.verifyValue(this.datas.y, 'number')
+            return verifyValue(this.datas.y, 'number')
         },
         width() {
-            return Helper.verifyValue(this.datas.w, 'number')
+            return verifyValue(this.datas.w, 'number')
         },
         height() {
-            return Helper.verifyValue(this.datas.h, 'number')
+            return verifyValue(this.datas.h, 'number')
         },
         labelPos() {
-            return Helper.verifyValue(this.datas.labelPos, 'string', 'L')
+            return verifyValue(this.datas.labelPos, 'string', 'L')
         },
         componentsWidth() {
             return {
