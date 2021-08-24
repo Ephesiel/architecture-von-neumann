@@ -39,6 +39,7 @@
 <script>
 import ALUModel from '@/models/arithmetic-logic-unit-model'
 import Helper from '@/helper'
+import { verifyValue } from '@/functions'
 
 export default {
     name: 'ArithmeticLogicUnit',
@@ -54,24 +55,24 @@ export default {
     },
     computed: {
         x() {
-            return Helper.verifyValue(this.datas.x, 'number')
+            return verifyValue(this.datas.x, 'number')
         },
         y() {
-            return Helper.verifyValue(this.datas.y, 'number')
+            return verifyValue(this.datas.y, 'number')
         },
         width() {
-            return Helper.verifyValue(this.datas.w, 'number')
+            return verifyValue(this.datas.w, 'number')
         },
         height() {
-            return Helper.verifyValue(this.datas.h, 'number')
+            return verifyValue(this.datas.h, 'number')
         },
         letters() {
-            const letters = Helper.verifyValue(this.datas.letters, 'array')
+            const letters = verifyValue(this.datas.letters, 'array')
 
             for (const letter of letters) {
-                letter.x = Helper.verifyValue(letter.x, 'number')
-                letter.y = Helper.verifyValue(letter.y, 'number')
-                letter.letter = Helper.verifyValue(letter.letter, 'string', 'X')
+                letter.x = verifyValue(letter.x, 'number')
+                letter.y = verifyValue(letter.y, 'number')
+                letter.letter = verifyValue(letter.letter, 'string', 'X')
             }
 
             return letters

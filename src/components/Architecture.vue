@@ -48,7 +48,7 @@ import Bus from '@/components/Bus.vue'
 import ALU from '@/components/ArithmeticLogicUnit.vue'
 import Clock from '@/models/clock'
 import architectureData from '@/view-datas/architecture.json'
-import Helper from '@/helper'
+import { getJsonValues } from '@/functions'
 
 export default {
     name: 'Architecture',
@@ -82,10 +82,7 @@ export default {
     },
     computed: {
         registers() {
-            const registers = Helper.getJsonValues(
-                architectureData,
-                'registers'
-            )
+            const registers = getJsonValues(architectureData, 'registers')
 
             return registers.map((register) => {
                 let reg = {
@@ -102,11 +99,11 @@ export default {
             })
         },
         buses() {
-            return Helper.getJsonValues(architectureData, 'buses')
+            return getJsonValues(architectureData, 'buses')
         },
         alu() {
             return {
-                datas: Helper.getJsonValues(architectureData, 'alu')[0],
+                datas: getJsonValues(architectureData, 'alu')[0],
                 aluModel: this.arch.ALU,
             }
         },
