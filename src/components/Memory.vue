@@ -1,24 +1,16 @@
 <template>
     <g :transform="transform">
-        <g class="button">
-            <rect
-                @click="updateToggledData"
-                x="0"
-                y="0"
-                :width="width"
-                :height="0.1 * height"
-                stroke="black"
-                :fill="displayAll ? yesColor : noColor"
-            />
-            <text
-                @click="updateToggledData"
-                :font-size="fontSize"
-                :x="labelPoint.x"
-                :y="labelPoint.y"
-                class="unselectable"
-                >{{ displayAll ? yesText : noText }}</text
-            >
-        </g>
+        <Button
+            :x="0"
+            :y="0"
+            :width="width"
+            :height="0.1 * height"
+            activatedText="Toutes les données sont affichées."
+            deactivatedText="Seulement les données existantes sont affichées."
+            activatedColor="#ccff66"
+            deactivatedColor="#ffcc66"
+            @click="buttonClicked()"
+        />
 
         <foreignObject
             :width="width"
@@ -60,9 +52,13 @@ import Helper from '@/helper'
 import MemoryModel from '@/models/memory/memory-model'
 import architectureStyle from '@/view-datas/architecture-style.json'
 import { uint } from '@/integer'
+import Button from '@/components/Button.vue'
 
 export default {
     name: 'Memory',
+    components: {
+        Button,
+    },
     props: {
         memoryModel: MemoryModel,
         x: Number,
@@ -73,12 +69,8 @@ export default {
     },
     data() {
         return {
-            displayAll: false,
-            yesColor: '#ccff66',
-            noColor: '#ffcc66',
-            yesText: 'Toutes les données sont affichées.',
-            noText: 'Seulement les données existantes sont affichées.',
             fontSize: architectureStyle.fontSize,
+            displayAll: false,
         }
     },
     computed: {
@@ -116,7 +108,7 @@ export default {
         },
     },
     methods: {
-        updateToggledData() {
+        buttonClicked() {
             this.displayAll = !this.displayAll
         },
     },

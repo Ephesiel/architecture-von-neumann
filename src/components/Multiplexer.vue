@@ -25,13 +25,13 @@ export default {
         multiplexerModel: MultiplexerModel,
         x: Number,
         y: Number,
-        width: Number,
     },
     data() {
         return {
             path: '',
             places: [],
             fontSize: architectureStyle.fontSize,
+            width: 0,
         }
     },
     computed: {
@@ -71,6 +71,7 @@ export default {
             } -${height / 2 - y} v -${y / 2} l -${
                 this.width - this.numberSize.w
             } -${height / 2 - y} Z`
+            this.width = height / 2
             return str
         },
     },
