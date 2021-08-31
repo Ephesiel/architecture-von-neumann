@@ -1,5 +1,11 @@
 <template>
-    <g :transform="transform" class="button">
+    <g
+        :transform="transform"
+        class="button"
+        @click="updateToggledData"
+        @mousedown="switchVeilDisplay()"
+        @mouseup="switchVeilDisplay()"
+    >
         <rect
             @click="updateToggledData"
             x="0"
@@ -9,14 +15,25 @@
             stroke="black"
             :fill="color"
         />
+
         <text
-            @click="updateToggledData"
             :font-size="fontSize"
             :x="labelPoint.x"
             :y="labelPoint.y"
             class="unselectable"
             >{{ text }}</text
         >
+
+        <rect
+            x="0"
+            y="0"
+            :width="width"
+            :height="height"
+            stroke="black"
+            fill="black"
+            fill-opacity="0.1"
+            v-show="isVeilShown"
+        />
     </g>
 </template>
 
@@ -39,10 +56,11 @@ export default {
     emits: ['click'],
     data() {
         return {
-            timesActivated: -1,
+            timesActivated: 0,
             text: '',
             color: '',
             fontSize: architectureStyle.fontSize,
+            isVeilShown: false,
         }
     },
     computed: {
@@ -61,8 +79,12 @@ export default {
             this.$emit('click')
             this.timesActivated++
 
+            const isPair = (this.timesActivated & 1) == 0
+            this.updateTextAndColor(isPair)
+        },
+        updateTextAndColor(isPair) {
             // Pair : 0, 2, 4, ... -> désactivé
-            if ((this.timesActivated & 1) == 0) {
+            if (isPair) {
                 this.text = this.deactivatedText
                 this.color = this.deactivatedColor
             } else {
@@ -71,9 +93,12 @@ export default {
                 this.color = this.activatedColor
             }
         },
+        switchVeilDisplay() {
+            this.isVeilShown = !this.isVeilShown
+        },
     },
     created() {
-        this.updateToggledData()
+        this.updateTextAndColor(true)
     },
 }
 </script>

@@ -92,7 +92,7 @@ export default {
     data() {
         return {
             fontSize: architectureStyle.fontSize,
-            displayAll: true,
+            displayAll: false,
             canScroll: true,
             scrolled: 0,
         }
