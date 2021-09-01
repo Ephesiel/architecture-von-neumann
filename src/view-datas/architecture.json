@@ -175,5 +175,8 @@
             { "x": 2, "y": 1.2, "letter": "X" },
             { "x": 8, "y": 1.2, "letter": "Y" }
         ]}
+    ],
+    "datasManager": [
+        { "x": 83.5, "y": 32, "w": 13, "h": 5, "text": "Gestion des données" }
     ]
 }

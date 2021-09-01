@@ -103,7 +103,7 @@
 export function getJsonValues(json, type) {
     if (typeof json !== 'object' || !Array.isArray(json[type])) {
         console.error(
-            'Impossible de récupérer la valeur demandée, vérifiez que le ' +
+            `Impossible de récupérer la valeur ${type}, vérifiez que le ` +
                 'json est bien construit'
         )
         return []
