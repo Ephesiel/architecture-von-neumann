@@ -26,5 +26,7 @@
     "busAnimationSpeed": 60,
 
     "registerColor": "rgb(249, 240, 157)",
-    "formatterColor": "transparent"
+    "formatterColor": "transparent",
+
+    "datasManagerColor": "rgb(196, 71, 71)"
 }

@@ -22,6 +22,7 @@
         >
             <Bus v-for="(bus, index) of buses" :key="index" :datas="bus" />
             <ALU v-bind="alu" />
+            <DatasManager v-bind="datasManager" />
 
             <component
                 v-for="(register, index) of registers"
@@ -81,6 +82,7 @@ import InstructionRegister from '@/components/InstructionRegister.vue'
 import MouseMovingComponent from '@/components/MouseMovingComponent.vue'
 import Bus from '@/components/Bus.vue'
 import ALU from '@/components/ArithmeticLogicUnit.vue'
+import DatasManager from '@/components/DatasManager.vue'
 import Clock from '@/models/clock'
 import architectureData from '@/view-datas/architecture.json'
 import architectureStyle from '@/view-datas/architecture-style.json'
@@ -93,6 +95,7 @@ export default {
         InstructionRegister,
         Bus,
         ALU,
+        DatasManager,
         MouseMovingComponent,
     },
     data() {
@@ -140,6 +143,11 @@ export default {
             return {
                 datas: getJsonValues(architectureData, 'alu')[0],
                 aluModel: this.arch.ALU,
+            }
+        },
+        datasManager() {
+            return {
+                datas: getJsonValues(architectureData, 'datasManager')[0],
             }
         },
         scaleRatio() {
