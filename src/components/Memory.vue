@@ -22,7 +22,7 @@
                 <table
                     :style="{
                         height: `${compsGeometry.table.h}px`,
-                        width: `${compsGeometry.table.w}%`,
+                        width: `100%`,
                         fontSize: `${fontSize}px`,
                     }"
                 >
@@ -183,7 +183,7 @@ table {
     text-align: center;
     border-collapse: collapse;
     border-spacing: 2px;
-    overflow-x: auto;
+    //overflow-x: auto;
 
     td:last-child {
         width: 100%;

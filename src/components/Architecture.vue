@@ -147,10 +147,6 @@ export default {
                     type: register.type,
                 }
 
-                if (register.type === 'InstructionRegister') {
-                    reg.sequencerModel = this.arch.sequencer
-                }
-
                 return reg
             })
         },

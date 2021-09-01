@@ -1,0 +1,90 @@
+{
+    "props": {
+        "registers": {
+            "model": "RAMM",
+            "x": 0,
+            "y": 0,
+            "w": 30,
+            "h": 4,
+            "type": "Register",
+            "labelPos": "L"
+        },
+        "multiplexers": {
+            "model": "phaseMult",
+            "x": 0,
+            "y": 0
+        },
+        "texts": {
+            "content": "",
+            "dynamic": false,
+            "color": "black",
+            "background": "white",
+            "border": "none",
+            "font": "",
+            "x": 0,
+            "y": 0
+        }
+    },
+    "registers": [
+        { "model": "RAMM", "x": 30, "y": 6 },
+        { "model": "REMM", "x": 30, "y": 25 }
+    ],
+    "multiplexers": [
+        { "model": "conditiontMult", "x": 20, "y": 21 },
+        { "model": "nextAddrMult", "x": 30, "y": 21 },
+        { "model": "phaseMult", "x": 40, "y": 21 }
+    ],
+    "texts": [
+        {
+            "content": "Plus1",
+            "background": "yellow",
+            "border": "black",
+            "font": "bold",
+            "x": 35,
+            "y": 5
+        },
+        {
+            "content": "phaseCounter.currentPhase",
+            "dynamic": true,
+            "border": "black",
+            "x": 38,
+            "y": 25
+        },
+        {
+            "content": "phaseCounter.busOutput.value",
+            "dynamic": true,
+            "border": "black",
+            "x": 35,
+            "y": 25
+        },
+        {
+            "content": "fetch.currentValue",
+            "dynamic": true,
+            "border": "black",
+            "x": 30,
+            "y": 25
+        },
+        {
+            "content": "busSelMS.value",
+            "dynamic": true,
+            "border": "black",
+            "x": 27,
+            "y": 27
+        },
+        {
+            "content": "busInputCOPMA.value",
+            "dynamic": true,
+            "border": "black",
+            "x": 22,
+            "y": 25
+        }
+    ],
+    "memory": [
+        {
+            "width": 50,
+            "height": 20,
+            "x": 50,
+            "y": 20
+        }
+    ]
+}
