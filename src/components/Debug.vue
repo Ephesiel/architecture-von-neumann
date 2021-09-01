@@ -2,10 +2,16 @@
     <svg
         version="1.1"
         baseProfile="full"
-        width="300"
-        height="300"
+        :viewBox="`0 0 ${width} ${height}`"
+        width="100%"
+        height="100%"
+        :stroke-width="strokeWidth"
+        :font-size="fontSize"
+        :fill="fontColor"
         xmlns="http://www.w3.org/2000/svg"
+        style="overflow: visible"
     >
+        <Sequencer :sequencer-model="arch.sequencer" :datas="{ w: 30, h: 4 }" />
         Désolé, votre navigateur ne supporte pas le SVG.
     </svg>
     <div>
@@ -15,15 +21,24 @@
 </template>
 
 <script>
+import Sequencer from '@/components/Sequencer.vue'
 import Architecture from '@/models/von-neumann-architecture-model'
 import Clock from '@/models/clock'
+import architectureStyle from '@/view-datas/architecture-style.json'
 
 export default {
     name: 'Architecture',
-    components: {},
+    components: {
+        Sequencer,
+    },
     data() {
         return {
             arch: new Architecture(),
+            width: architectureStyle.svgWidth,
+            height: architectureStyle.svgHeight,
+            fontSize: architectureStyle.fontSize,
+            fontColor: architectureStyle.fontColor,
+            strokeWidth: architectureStyle.elementStrokeWidth,
         }
     },
     created() {

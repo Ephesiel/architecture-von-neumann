@@ -9,22 +9,20 @@
         />-->
         <Multiplexer
             :multiplexer-model="sequencerModel.nextAddrMult"
-            :width="75"
-            :x="0"
-            :y="200"
+            :x="10"
+            :y="20"
         />
         <Multiplexer
             :multiplexer-model="sequencerModel.phaseMult"
-            :width="50"
-            :x="200"
-            :y="200"
+            :x="10"
+            :y="20"
         />
         <Memory
             :memory-model="sequencerModel.microprogammedMemory"
-            :width="1000"
-            :height="500"
-            :x="-300"
-            :y="400"
+            :width="100"
+            :height="30"
+            :x="50"
+            :y="4"
             :dataProcessor="translate"
         />
     </g>

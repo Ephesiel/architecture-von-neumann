@@ -8,16 +8,13 @@
             :height="formatterHeight"
         />
         <Register :register-model="registerModel" :datas="registerDatas" />
-        <Sequencer :sequencer-model="sequencerModel" />
     </g>
 </template>
 
 <script>
 import Register from '@/components/Register.vue'
 import Formatter from '@/components/Formatter.vue'
-import Sequencer from '@/components/Sequencer.vue'
 import RegisterDecorator from '@/models/registers/register-decorator'
-import SequencerModel from '@/models/sequencer'
 import Helper from '@/helper'
 import { verifyValue } from '@/functions'
 
@@ -25,7 +22,6 @@ export default {
     name: 'InstructionRegister',
     props: {
         registerModel: RegisterDecorator,
-        sequencerModel: SequencerModel,
         datas: { type: Object, default: () => {} },
     },
     data() {
@@ -36,7 +32,6 @@ export default {
     components: {
         Register,
         Formatter,
-        Sequencer,
     },
     computed: {
         x() {
