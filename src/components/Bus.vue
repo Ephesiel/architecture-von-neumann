@@ -12,11 +12,17 @@
                 dur="20000s"
                 repeatCount="indefinite"
                 attributeName="stroke-dashoffset"
-                :by="20 * powerSpeed * 100 * (powerFromSignal ? 1 : -1) + '%'"
+                :by="
+                    20 *
+                        powerSpeed *
+                        100 *
+                        (powerFromSignal ^ powerSwitchDirection ? 1 : -1) +
+                    '%'
+                "
             />
         </path>
         <circle
-            v-if="bus.signal !== null && bus.signal.insulator !== null"
+            v-if="bus.insulator !== null"
             v-bind="insulatorDraw(bus)"
             :fill="
                 powers[index] ? activeInsulatorColor : inactiveInsulatorColor
@@ -42,7 +48,15 @@
         font-weight="bold"
         >{{ name }}</text
     >
-    <text v-if="signal !== null" v-bind="signalText">{{ signal.name }}</text>
+    <template v-for="(signal, index) of signals" :key="index">
+        <text
+            v-if="signal.display"
+            :x="x + signal.x"
+            :y="y + signal.y"
+            :fill="power.isOn ? activeSignalColor : inactiveSignalColor"
+            >{{ signal.name }}</text
+        >
+    </template>
 </template>
 
 <script>
@@ -57,7 +71,11 @@ export default {
     },
     data() {
         return {
+            // Si le courant est présent dans chaque branche
             powers: [],
+            // Est-ce que le courant va dans le même sens que normalement
+            powerSwitchDirection: false,
+
             width: architectureStyle.busWidth,
             powerSpeed: architectureStyle.busAnimationSpeed,
             animationStrokeDasharray:
@@ -92,32 +110,37 @@ export default {
         powerFromSignal() {
             return verifyValue(this.datas.powerFromSignal, 'boolean')
         },
-        signal() {
-            return this.verifySignal(this.datas.signal)
+        signals() {
+            return this.verifySignals(this.datas.signals)
         },
         labels() {
             return this.verifyLabels(this.datas.labels)
+        },
+        insulator() {
+            return this.verifyInsulator(this.datas.insulator)
         },
         nextBuses() {
             return this.verifyNextBuses(this.datas.next)
         },
         power() {
-            return this.signal === null
-                ? false
-                : this.$store.state.engine.signals[Signals[this.signal.name]]
-        },
-        signalText() {
-            return {
-                x: this.x + this.signal.x,
-                y: this.y + this.signal.y,
-                fill: this.power
-                    ? this.activeSignalColor
-                    : this.inactiveSignalColor,
+            const power = {
+                isOn: false,
+                switchDirection: false,
             }
+
+            for (const signal of this.signals) {
+                if (this.$store.state.engine.signals[Signals[signal.name]]) {
+                    power.isOn = true
+                    power.switchDirection = signal.switchDirection
+                }
+            }
+
+            return power
         },
     },
     watch: {
         power: function () {
+            console.log(this.power)
             this.$emit('power', this.power)
         },
     },
@@ -153,28 +176,40 @@ export default {
 
             for (const arrow of arrows) {
                 arrow.dist = verifyValue(arrow.dist, 'number')
+                arrow.switch = verifyValue(arrow.switch, 'boolean')
             }
 
             return arrows
         },
-        verifySignal(signal) {
-            signal = verifyValue(signal, 'object')
+        verifySignals(signals) {
+            signals = verifyValue(signals, 'array')
+            let goodSignals = []
 
-            if (signal !== null) {
+            for (const signal of signals) {
                 signal.name = verifyValue(signal.name, 'string')
                 signal.x = verifyValue(signal.x, 'number')
                 signal.y = verifyValue(signal.y, 'number')
-                signal.insulator = verifyValue(signal.insulator, 'object')
+                signal.display = verifyValue(signal.display, 'boolean')
+                signal.switchDirection = verifyValue(
+                    signal.switchDirection,
+                    'boolean'
+                )
 
-                if (signal.insulator !== null) {
-                    signal.insulator.dist = verifyValue(
-                        signal.insulator.dist,
-                        'number'
-                    )
+                if (typeof Signals[signal.name] !== undefined) {
+                    goodSignals.push(signal)
                 }
             }
 
-            return signal
+            return goodSignals
+        },
+        verifyInsulator(insulator) {
+            insulator = verifyValue(insulator, 'object')
+
+            if (insulator !== null) {
+                insulator.dist = verifyValue(insulator.dist, 'number')
+            }
+
+            return insulator
         },
         verifyNextBuses(nextBuses) {
             nextBuses = verifyValue(nextBuses, 'array')
@@ -193,28 +228,36 @@ export default {
                 b.y += this.y
                 b.arrows = this.verifyArrows(bus.arrows)
                 b.bridges = this.verifyBridges(bus.bridges)
-                b.signal = this.verifySignal(bus.signal)
+                b.signals = this.verifySignals(bus.signals)
 
                 nextB.push(b)
             }
 
             return nextB
         },
-        onPower(index, value) {
-            this.powers[index] = value
+        onPower(index, power) {
+            this.powers[index] = power.isOn
+            this.powerSwitchDirection = power.isOn
+                ? power.switchDirection
+                : this.powerSwitchDirection
 
             // On vérifie si un des sous bus a encore du courant
             // En effet, si un bus envoi qu'il n'a plus de courant mais qu'un
             // autre en a toujours, il faut continuer de montrer que le courant
             // passe
-            const power = this.powers.filter((p) => p === true).length > 0
+
+            // Le cas où deux bus envoient du courant dans des directions
+            // opposées n'est pas géré car il ne devrait jamais avoir lieu.
+            // Dans ce genre de cas, le comportement sera sans doute étrange.
+            power.isOn = this.powers.filter((p) => p === true).length > 0
+            power.switchDirection = this.powerSwitchDirection
             this.$emit('power', power)
         },
         insulatorDraw(bus) {
             // Vecteur directeur
             const uv = this.multVector(this.unitVector(bus), -1)
             // Centre du cercle
-            const center = this.projection(bus, bus.signal.insulator.dist, uv)
+            const center = this.projection(bus, bus.insulator.dist, uv)
 
             return {
                 cx: center.x,
@@ -247,7 +290,8 @@ export default {
         },
         pathForArrow(arrow, bus) {
             const angle =
-                (!this.powerFromSignal * 180 + this.arrowAngle) *
+                (!(this.powerFromSignal ^ arrow.switch) * 180 +
+                    this.arrowAngle) *
                 (Math.PI / 180.0)
             const cosA = Math.cos(angle)
             const sinA = Math.sin(angle)
