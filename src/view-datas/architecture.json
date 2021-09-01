@@ -67,6 +67,34 @@
         { "model": "RE", "x": 100, "y": 35 }
     ],
     "buses": [
+        { "name": "Bus sM", "powerFromSignal": false, "x": 87, "y": 37, "next": [
+            {
+                "y": 10,
+                "arrows": [{"dist": 10}],
+                "signals": [{"name":  "sM", "x": -2, "y": -8}]
+            }
+        ]},
+        { "name": "Bus eM", "powerFromSignal": false, "x": 93, "y": 37, "next": [
+            {
+                "y": 10,
+                "arrows": [{"dist": 10}],
+                "signals": [{"name":  "eM", "x": 2, "y": -8}]
+            }
+        ]},
+        { "name": "Bus eRAM", "powerFromSignal": false, "x": 75, "y": 39, "next": [
+            {
+                "y": 8,
+                "arrows": [{"dist": 8}],
+                "signals": [{"name":  "sM", "display": false}, {"name":  "eM", "display": false}]
+            }
+        ]},
+        { "name": "Bus eRE", "powerFromSignal": false, "x": 105, "y": 39, "next": [
+            {
+                "y": 8,
+                "arrows": [{"dist": 8}, {"dist": 0, "switch": true}],
+                "signals": [{"name":  "sM", "display": false, "switchDirection": true}, {"name":  "eM", "display": false}]
+            }
+        ]},
         { "name": "Bus 1", "color": "blue", "powerFromSignal": true, "x": 8, "y": 13, "next": [
             {"y": -11, "labels": [{"x": 15}], "arrows": [{"dist": 5}], "next": [
                 {"test": true, "x": 32, "arrows": [{"dist": 10}], "next": [
@@ -165,44 +193,12 @@
                     ]},
                     {"x": 47, "next": [
                         {"y": -3, "signals": [{"name":  "eRAM", "x": 2, "y": 1}]},
-                        {"x": 50, "arrows": [{"dist": 25}], "next": [
+                        {"x": 50, "bridges": [{"dist": 10}, {"dist": 22}, {"dist": 28}, {"dist": 40}], "arrows": [{"dist": 25.5}], "next": [
                             {"y": -3, "signals": [{"name":  "eRE", "x": 2, "y": 1}]}
                         ]}
                     ]}
                 ]}
             ]}
-        ]},
-        { "name": "Bus sM", "powerFromSignal": false, "x": 87, "y": 37, "next": [
-            {
-                "y": 10,
-                "arrows": [{"dist": 10}],
-                "bridges": [{"dist": 5}],
-                "signals": [{"name":  "sM", "x": -2, "y": -8}]
-            }
-        ]},
-        { "name": "Bus eM", "powerFromSignal": false, "x": 93, "y": 37, "next": [
-            {
-                "y": 10,
-                "arrows": [{"dist": 10}],
-                "bridges": [{"dist": 5}],
-                "signals": [{"name":  "eM", "x": 2, "y": -8}]
-            }
-        ]},
-        { "name": "Bus eRAM", "powerFromSignal": false, "x": 75, "y": 39, "next": [
-            {
-                "y": 8,
-                "arrows": [{"dist": 8}],
-                "bridges": [{"dist": 3}],
-                "signals": [{"name":  "sM", "display": false}, {"name":  "eM", "display": false}]
-            }
-        ]},
-        { "name": "Bus eRE", "powerFromSignal": false, "x": 105, "y": 39, "next": [
-            {
-                "y": 8,
-                "arrows": [{"dist": 8}, {"dist": 0, "switch": true}],
-                "bridges": [{"dist": 3}],
-                "signals": [{"name":  "sM", "display": false, "switchDirection": true}, {"name":  "eM", "display": false}]
-            }
         ]}
     ],
     "alu": [
