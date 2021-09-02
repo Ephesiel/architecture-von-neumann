@@ -41,6 +41,8 @@
         <Bus
             :datas="bus"
             :hasPower="hasPower"
+            :model1="model1"
+            :model2="model2"
             @power="onPower(index, $event)"
         />
     </template>
@@ -52,26 +54,30 @@
         font-weight="bold"
         >{{ name }}</text
     >
-    <template v-for="(signal, index) of signals" :key="index">
-        <text
-            v-if="signal.display"
-            :x="x + signal.x"
-            :y="y + signal.y"
-            :fill="power.isOn ? activeSignalColor : inactiveSignalColor"
-            >{{ signal.name }}</text
-        >
-    </template>
+    <Signal
+        v-for="(signal, index) of signals"
+        :key="index"
+        :x="x + signal.x"
+        :y="y + signal.y"
+        :signal="signal.name"
+    />
 </template>
 
 <script>
-import { Signals } from '@/globals'
+import Signal from '@/components/Signal.vue'
+import BusModel from '@/models/bus-model'
 import { verifyValue } from '@/functions'
 import architectureStyle from '@/view-datas/architecture-style.json'
 
 export default {
     emits: ['power'],
+    components: {
+        Signal,
+    },
     props: {
         datas: { type: Object, default: () => {} },
+        model1: { type: BusModel },
+        model2: { type: BusModel, default: null },
         // Peut prendre un paramètre qui est le composant lui-même
         // Renvoi un int sur 2 bits. Le premier représente si le courant passe
         // Le second représente la direction du courant 0 = pareil que le bus, 1 = sens inverse
@@ -93,9 +99,6 @@ export default {
             powerSpeed: architectureStyle.busAnimationSpeed,
             animationStrokeDasharray:
                 architectureStyle.busAnimationStrokeDasharray,
-
-            inactiveSignalColor: architectureStyle.inactiveSignalColor,
-            activeSignalColor: architectureStyle.activeSignalColor,
 
             inactiveInsulatorColor: architectureStyle.inactiveInsulatorColor,
             insulatorStrokeColor: architectureStyle.insulatorStrokeColor,
@@ -136,19 +139,22 @@ export default {
             return this.verifyNextBuses(this.datas.next)
         },
         power() {
-            const result = this.hasPower(this)
+            if (this.nextBuses.length === 0) {
+                const result = this.hasPower(this)
 
-            const power = {
-                isOn: (result & 1) === 1,
-                switchDirection: (result & 2) === 2,
+                const power = {
+                    isOn: (result & 1) === 1,
+                    switchDirection: (result & 2) === 2,
+                }
+
+                return power
             }
 
-            return power
+            return null
         },
     },
     watch: {
         power: function () {
-            console.log(this.x, this.y, this.power, this.signals)
             this.$emit('power', this.power)
         },
     },
@@ -191,24 +197,18 @@ export default {
         },
         verifySignals(signals) {
             signals = verifyValue(signals, 'array')
-            let goodSignals = []
 
             for (const signal of signals) {
                 signal.name = verifyValue(signal.name, 'string')
                 signal.x = verifyValue(signal.x, 'number')
                 signal.y = verifyValue(signal.y, 'number')
-                signal.display = verifyValue(signal.display, 'boolean')
                 signal.switchDirection = verifyValue(
                     signal.switchDirection,
                     'boolean'
                 )
-
-                if (typeof Signals[signal.name] !== undefined) {
-                    goodSignals.push(signal)
-                }
             }
 
-            return goodSignals
+            return signals
         },
         verifyInsulator(insulator) {
             insulator = verifyValue(insulator, 'object')
