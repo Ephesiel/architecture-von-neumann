@@ -20,7 +20,12 @@
             xmlns="http://www.w3.org/2000/svg"
             style="overflow: visible"
         >
-            <Bus v-for="(bus, index) of buses" :key="index" :datas="bus" />
+            <Bus
+                v-for="(bus, index) of buses"
+                :key="index"
+                :datas="bus"
+                :hasPower="busHasPower"
+            />
             <ALU v-bind="alu" />
             <DatasManager v-bind="datasManager" />
 
@@ -84,6 +89,7 @@ import Bus from '@/components/Bus.vue'
 import ALU from '@/components/ArithmeticLogicUnit.vue'
 import DatasManager from '@/components/DatasManager.vue'
 import Clock from '@/models/clock'
+import { Signals } from '@/globals'
 import architectureData from '@/view-datas/architecture.json'
 import architectureStyle from '@/view-datas/architecture-style.json'
 import { getJsonValues } from '@/functions'
@@ -172,6 +178,18 @@ export default {
         changeScale(event) {
             this.scale -= event.deltaY * 0.1
             this.scale = Math.max(50, Math.min(this.scale, 200))
+        },
+        busHasPower(bus) {
+            let result = 0
+
+            for (const signal of bus.signals) {
+                if (this.$store.state.engine.signals[Signals[signal.name]]) {
+                    result += 1
+                    result += signal.switchDirection ? 2 : 0
+                }
+            }
+
+            return result
         },
     },
 }

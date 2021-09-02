@@ -16,7 +16,7 @@
                     20 *
                         powerSpeed *
                         100 *
-                        (powerFromSignal ^ powerSwitchDirection ? 1 : -1) +
+                        (!(powerFromSource ^ powerSwitchDirection) ? 1 : -1) +
                     '%'
                 "
             />
@@ -38,7 +38,11 @@
             :stroke-width="width"
             fill="none"
         />
-        <Bus :datas="bus" @power="onPower(index, $event)" />
+        <Bus
+            :datas="bus"
+            :hasPower="hasPower"
+            @power="onPower(index, $event)"
+        />
     </template>
     <text
         v-for="(label, index) of labels"
@@ -68,6 +72,15 @@ export default {
     emits: ['power'],
     props: {
         datas: { type: Object, default: () => {} },
+        // Peut prendre un paramètre qui est le composant lui-même
+        // Renvoi un int sur 2 bits. Le premier représente si le courant passe
+        // Le second représente la direction du courant 0 = pareil que le bus, 1 = sens inverse
+        hasPower: {
+            type: Function,
+            default: () => {
+                return 0
+            },
+        },
     },
     data() {
         return {
@@ -107,8 +120,8 @@ export default {
         color() {
             return verifyValue(this.datas.color, 'string', 'black')
         },
-        powerFromSignal() {
-            return verifyValue(this.datas.powerFromSignal, 'boolean')
+        powerFromSource() {
+            return verifyValue(this.datas.powerFromSource, 'boolean')
         },
         signals() {
             return this.verifySignals(this.datas.signals)
@@ -123,16 +136,11 @@ export default {
             return this.verifyNextBuses(this.datas.next)
         },
         power() {
-            const power = {
-                isOn: false,
-                switchDirection: false,
-            }
+            const result = this.hasPower(this)
 
-            for (const signal of this.signals) {
-                if (this.$store.state.engine.signals[Signals[signal.name]]) {
-                    power.isOn = true
-                    power.switchDirection = signal.switchDirection
-                }
+            const power = {
+                isOn: (result & 1) === 1,
+                switchDirection: (result & 2) === 2,
             }
 
             return power
@@ -140,7 +148,7 @@ export default {
     },
     watch: {
         power: function () {
-            console.log(this.power)
+            console.log(this.x, this.y, this.power, this.signals)
             this.$emit('power', this.power)
         },
     },
@@ -223,7 +231,7 @@ export default {
 
                 b.name = this.name
                 b.color = this.color
-                b.powerFromSignal = this.powerFromSignal
+                b.powerFromSource = this.powerFromSource
                 b.x += this.x
                 b.y += this.y
                 b.arrows = this.verifyArrows(bus.arrows)
@@ -290,7 +298,7 @@ export default {
         },
         pathForArrow(arrow, bus) {
             const angle =
-                (!(this.powerFromSignal ^ arrow.switch) * 180 +
+                ((this.powerFromSource ^ arrow.switch) * 180 +
                     this.arrowAngle) *
                 (Math.PI / 180.0)
             const cosA = Math.cos(angle)
