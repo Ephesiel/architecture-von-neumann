@@ -24,19 +24,20 @@
             :fill="signalBoxColor"
             :stroke="strokeColor"
         ></rect>
-        <text
+        <Signal
             v-for="(op, index) of operations"
             :key="index"
             :x="signalPoint(index).x"
             :y="signalPoint(index).y"
-            :fill="op.color"
-            >{{ op.name }}
+            :signal="op.name"
+        >
             <title>{{ op.description }}</title>
-        </text>
+        </Signal>
     </g>
 </template>
 
 <script>
+import Signal from '@/components/Signal.vue'
 import ALUModel from '@/models/arithmetic-logic-unit-model'
 import Helper from '@/helper'
 import { verifyValue } from '@/functions'
@@ -44,6 +45,9 @@ import architectureStyle from '@/view-datas/architecture-style.json'
 
 export default {
     name: 'ArithmeticLogicUnit',
+    components: {
+        Signal,
+    },
     props: {
         aluModel: ALUModel,
         datas: { type: Object, default: () => {} },
@@ -91,9 +95,6 @@ export default {
                     signal: signal,
                     name: Helper.getSignalName(signal),
                     description: operation.description,
-                    color: this.$store.state.engine.signals[signal]
-                        ? this.activeSignalColor
-                        : this.inactiveSignalColor,
                 })
             }
 

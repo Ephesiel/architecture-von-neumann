@@ -16,7 +16,7 @@
                     20 *
                         powerSpeed *
                         100 *
-                        (powerFromSignal ^ powerSwitchDirection ? 1 : -1) +
+                        (!(powerFromSource ^ powerSwitchDirection) ? 1 : -1) +
                     '%'
                 "
             />
@@ -38,7 +38,13 @@
             :stroke-width="width"
             fill="none"
         />
-        <Bus :datas="bus" @power="onPower(index, $event)" />
+        <Bus
+            :datas="bus"
+            :hasPower="hasPower"
+            :model1="model1"
+            :model2="model2"
+            @power="onPower(index, $event)"
+        />
     </template>
     <text
         v-for="(label, index) of labels"
@@ -48,26 +54,39 @@
         font-weight="bold"
         >{{ name }}</text
     >
-    <template v-for="(signal, index) of signals" :key="index">
-        <text
-            v-if="signal.display"
-            :x="x + signal.x"
-            :y="y + signal.y"
-            :fill="power.isOn ? activeSignalColor : inactiveSignalColor"
-            >{{ signal.name }}</text
-        >
-    </template>
+    <Signal
+        v-for="(signal, index) of signals"
+        :key="index"
+        :x="x + signal.x"
+        :y="y + signal.y"
+        :signal="signal.name"
+    />
 </template>
 
 <script>
-import { Signals } from '@/globals'
+import Signal from '@/components/Signal.vue'
+import BusModel from '@/models/bus-model'
 import { verifyValue } from '@/functions'
 import architectureStyle from '@/view-datas/architecture-style.json'
 
 export default {
     emits: ['power'],
+    components: {
+        Signal,
+    },
     props: {
         datas: { type: Object, default: () => {} },
+        model1: { type: BusModel },
+        model2: { type: BusModel, default: null },
+        // Peut prendre un paramètre qui est le composant lui-même
+        // Renvoi un int sur 2 bits. Le premier représente si le courant passe
+        // Le second représente la direction du courant 0 = pareil que le bus, 1 = sens inverse
+        hasPower: {
+            type: Function,
+            default: () => {
+                return 0
+            },
+        },
     },
     data() {
         return {
@@ -80,9 +99,6 @@ export default {
             powerSpeed: architectureStyle.busAnimationSpeed,
             animationStrokeDasharray:
                 architectureStyle.busAnimationStrokeDasharray,
-
-            inactiveSignalColor: architectureStyle.inactiveSignalColor,
-            activeSignalColor: architectureStyle.activeSignalColor,
 
             inactiveInsulatorColor: architectureStyle.inactiveInsulatorColor,
             insulatorStrokeColor: architectureStyle.insulatorStrokeColor,
@@ -107,8 +123,8 @@ export default {
         color() {
             return verifyValue(this.datas.color, 'string', 'black')
         },
-        powerFromSignal() {
-            return verifyValue(this.datas.powerFromSignal, 'boolean')
+        powerFromSource() {
+            return verifyValue(this.datas.powerFromSource, 'boolean')
         },
         signals() {
             return this.verifySignals(this.datas.signals)
@@ -123,24 +139,28 @@ export default {
             return this.verifyNextBuses(this.datas.next)
         },
         power() {
-            const power = {
-                isOn: false,
-                switchDirection: false,
-            }
+            // La méthode n'est utile que sur les "feuilles" du bus
+            // Le chemin de la racine vers la feuille qui a du courant aura
+            // automatiquement du courant
+            if (this.nextBuses.length === 0) {
+                const result = this.hasPower(this)
 
-            for (const signal of this.signals) {
-                if (this.$store.state.engine.signals[Signals[signal.name]]) {
-                    power.isOn = true
-                    power.switchDirection = signal.switchDirection
+                const power = {
+                    isOn: (result & 1) === 1,
+                    switchDirection: (result & 2) === 2,
                 }
+
+                return power
             }
 
-            return power
+            // Il faut renvoyer quelque chose, mais ce n'est pas utile
+            // Il faut en revanche que ce soit constant, pour que la méthode
+            // watch ne soit pas appelée
+            return null
         },
     },
     watch: {
         power: function () {
-            console.log(this.power)
             this.$emit('power', this.power)
         },
     },
@@ -183,24 +203,18 @@ export default {
         },
         verifySignals(signals) {
             signals = verifyValue(signals, 'array')
-            let goodSignals = []
 
             for (const signal of signals) {
                 signal.name = verifyValue(signal.name, 'string')
                 signal.x = verifyValue(signal.x, 'number')
                 signal.y = verifyValue(signal.y, 'number')
-                signal.display = verifyValue(signal.display, 'boolean')
                 signal.switchDirection = verifyValue(
                     signal.switchDirection,
                     'boolean'
                 )
-
-                if (typeof Signals[signal.name] !== undefined) {
-                    goodSignals.push(signal)
-                }
             }
 
-            return goodSignals
+            return signals
         },
         verifyInsulator(insulator) {
             insulator = verifyValue(insulator, 'object')
@@ -223,7 +237,7 @@ export default {
 
                 b.name = this.name
                 b.color = this.color
-                b.powerFromSignal = this.powerFromSignal
+                b.powerFromSource = this.powerFromSource
                 b.x += this.x
                 b.y += this.y
                 b.arrows = this.verifyArrows(bus.arrows)
@@ -290,7 +304,7 @@ export default {
         },
         pathForArrow(arrow, bus) {
             const angle =
-                (!(this.powerFromSignal ^ arrow.switch) * 180 +
+                ((this.powerFromSource ^ arrow.switch) * 180 +
                     this.arrowAngle) *
                 (Math.PI / 180.0)
             const cosA = Math.cos(angle)

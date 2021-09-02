@@ -17,6 +17,7 @@ import {
     NB_BITS_RA,
     TIME_ATU_FOR_LEVELS,
     TIME_ATU_FOR_PULSES,
+    MAXIMUM_ALLOWED_BUS_POWER_TIME,
 } from '@/globals'
 import { UNSIGNED, uint } from '@/integer'
 
@@ -325,7 +326,10 @@ export default class VonNeumannArchitecture {
         SignalManager.emit(Signals.SENDLEVELS, 1)
         Clock.waitAndTick(TIME_ATU_FOR_LEVELS - TIME_ATU_FOR_PULSES, 1)
         SignalManager.emit(Signals.SENDPULSES, 1)
-        Clock.waitAndTick(TIME_ATU_FOR_PULSES + 5, 1)
+        Clock.waitAndTick(
+            TIME_ATU_FOR_PULSES + MAXIMUM_ALLOWED_BUS_POWER_TIME + 5,
+            1
+        )
         this.canUpdateRegisters = true
     }
 
