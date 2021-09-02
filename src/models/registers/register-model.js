@@ -125,7 +125,10 @@ export default class Register {
      * @returns {Boolean} Si oui ou non la valeur T+1 a été modifiée.
      */
     tryValueUpdate(input, signal, alreadyModified, signals) {
-        if (typeof signal === 'undefined' || signals[signal] > 0) {
+        if (
+            input.hasPower() &&
+            (typeof signal === 'undefined' || signals[signal] > 0)
+        ) {
             if (alreadyModified) {
                 Debug.error(
                     'Erreur: 2 bus essaient de modifier le même registre.'

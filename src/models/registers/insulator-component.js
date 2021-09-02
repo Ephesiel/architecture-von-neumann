@@ -48,7 +48,11 @@ export default class InsulatorComponent extends RegisterDecorator {
             const bus = outputBus.bus
             const sig = outputBus.signal
 
-            outputs.push(new Insulator(bus, sig))
+            if (typeof sig === 'undefined') {
+                outputs.push(bus)
+            } else {
+                outputs.push(new Insulator(bus, sig))
+            }
         }
 
         this.register.setOutputs(outputs)
