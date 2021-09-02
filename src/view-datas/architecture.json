@@ -11,6 +11,8 @@
         },
         "buses": {
             "powerFromSource": false,
+            "model": "",
+            "model2": "",
             "name": "bus",
             "x": 0,
             "y": 0,
@@ -22,7 +24,6 @@
             "next": "&buses"
         },
         "signal": {
-            "display": true,
             "name": "",
             "x": 2.5,
             "y": -1,
@@ -82,21 +83,19 @@
                 "signals": [{"name":  "eM", "x": 2, "y": -8}]
             }
         ]},
-        { "name": "Bus eRAM", "powerFromSource": true, "x": 75, "y": 39, "next": [
+        { "model": "busRAM", "name": "Bus eRAM", "powerFromSource": true, "x": 75, "y": 39, "next": [
             {
                 "y": 8,
-                "arrows": [{"dist": 8}],
-                "signals": [{"name":  "sM", "display": false}, {"name":  "eM", "display": false}]
+                "arrows": [{"dist": 8}]
             }
         ]},
-        { "name": "Bus eRE", "powerFromSource": true, "x": 105, "y": 39, "next": [
+        { "model": "busEM", "model2": "busSM", "name": "Bus eRE", "powerFromSource": true, "x": 105, "y": 39, "next": [
             {
                 "y": 8,
-                "arrows": [{"dist": 8}, {"dist": 0, "switch": true}],
-                "signals": [{"name":  "sM", "display": false, "switchDirection": true}, {"name":  "eM", "display": false}]
+                "arrows": [{"dist": 8}, {"dist": 0, "switch": true}]
             }
         ]},
-        { "name": "Bus 1", "color": "blue", "powerFromSource": false, "x": 8, "y": 13, "next": [
+        { "model": "bus1", "name": "Bus 1", "color": "blue", "powerFromSource": false, "x": 8, "y": 13, "next": [
             {"y": -11, "labels": [{"x": 15}], "arrows": [{"dist": 5}], "next": [
                 {"test": true, "x": 32, "arrows": [{"dist": 10}], "next": [
                     {"y": 4, "signals": [{"name": "RAB1"}], "insulator": {}},
@@ -130,7 +129,7 @@
                 ]}
             ]}
         ]},
-        { "name": "Bus 2", "color": "green", "powerFromSource": false, "x": 14, "y": 13, "next": [
+        { "model": "bus2", "name": "Bus 2", "color": "green", "powerFromSource": false, "x": 14, "y": 13, "next": [
             {"y": -9, "labels": [{"x": 9, "y": 1}], "arrows": [{"dist": 5}], "next": [
                 {"x": 36, "arrows": [{"dist": 4}], "bridges": [{"dist": 26}], "next": [
                     {"y": 2, "signals": [{"name":  "RAB2"}], "insulator": {}},
@@ -164,7 +163,7 @@
                 ]}
             ]}
         ]},
-        { "name": "Bus 3", "color": "orange", "powerFromSource": true, "x": 11, "y": 23, "next": [
+        { "model": "bus3", "name": "Bus 3", "color": "orange", "powerFromSource": true, "x": 11, "y": 23, "next": [
             {"y": 19, "arrows": [{"dist": 10}], "next": [
                 {"x": 7, "labels": [{"x": 5}], "arrows": [{"dist": 4}], "next": [
                     {"y": -14, "arrows": [{"dist": 10}], "next": [

@@ -20,12 +20,7 @@
             xmlns="http://www.w3.org/2000/svg"
             style="overflow: visible"
         >
-            <Bus
-                v-for="(bus, index) of buses"
-                :key="index"
-                :datas="bus"
-                :hasPower="busHasPower"
-            />
+            <Bus v-for="(bus, index) of buses" :key="index" v-bind="bus" />
             <ALU v-bind="alu" />
             <DatasManager v-bind="datasManager" />
 
@@ -122,6 +117,23 @@ export default {
                     this.$store.commit('addSignal', signal)
                 }
             }
+            for (const bus of [
+                this.arch.bus1,
+                this.arch.bus2,
+                this.arch.bus3,
+                this.arch.busCondInput,
+                this.arch.busCondOutput,
+                this.arch.busCOPMA,
+                this.arch.busSM,
+                this.arch.busEM,
+                this.arch.busRAM,
+            ]) {
+                if (bus.hasPower()) {
+                    if (!this.$store.state.engine.powerBus.includes(bus)) {
+                        this.$store.commit('setPowerToBus', bus)
+                    }
+                }
+            }
         })
     },
     computed: {
@@ -143,7 +155,14 @@ export default {
             })
         },
         buses() {
-            return getJsonValues(architectureData, 'buses')
+            return getJsonValues(architectureData, 'buses').map((bus) => {
+                return {
+                    model1: bus.model !== '' ? this.arch[bus.model] : null,
+                    model2: bus.model2 !== '' ? this.arch[bus.model2] : null,
+                    hasPower: this.busHasPower,
+                    datas: bus,
+                }
+            })
         },
         alu() {
             return {
@@ -169,10 +188,12 @@ export default {
     methods: {
         stepByStep() {
             this.$store.commit('resetSignals')
+            this.$store.commit('resetBusPower')
             this.arch.stepByStep()
         },
         phaseByPhase() {
             this.$store.commit('resetSignals')
+            this.$store.commit('resetBusPower')
             this.arch.phaseByPhase()
         },
         changeScale(event) {
@@ -181,12 +202,34 @@ export default {
         },
         busHasPower(bus) {
             let result = 0
+            const powerBus = this.$store.state.engine.powerBus
+            const signals = this.$store.state.engine.signals
+
+            // Est-ce que le bus a du courant ? Il se peut que le bus n'est pas
+            // de modèle (c'est le cas pour sM et eM), dans ce cas, on
+            // considère que le courant passe toujours
+            const model1Power =
+                bus.model1 === null || powerBus.includes(bus.model1)
+
+            // Dans le cas d'un bus bidirectionnel, est-ce que le deuxième bus
+            // possède du courant
+            const model2Power = powerBus.includes(bus.model2)
+
+            // Si le bus possède un signal, alors le courant est en fonction du
+            // signal
+            const hasSignal = bus.signals.length > 0
+            let signalSend = false
 
             for (const signal of bus.signals) {
-                if (this.$store.state.engine.signals[Signals[signal.name]]) {
-                    result += 1
-                    result += signal.switchDirection ? 2 : 0
+                signalSend = signals[Signals[signal.name]]
+                if (signalSend) {
+                    break
                 }
+            }
+
+            if ((!hasSignal || signalSend) && (model1Power || model2Power)) {
+                result += 1
+                result += model2Power ? 2 : 0
             }
 
             return result

@@ -139,6 +139,9 @@ export default {
             return this.verifyNextBuses(this.datas.next)
         },
         power() {
+            // La méthode n'est utile que sur les "feuilles" du bus
+            // Le chemin de la racine vers la feuille qui a du courant aura
+            // automatiquement du courant
             if (this.nextBuses.length === 0) {
                 const result = this.hasPower(this)
 
@@ -150,6 +153,9 @@ export default {
                 return power
             }
 
+            // Il faut renvoyer quelque chose, mais ce n'est pas utile
+            // Il faut en revanche que ce soit constant, pour que la méthode
+            // watch ne soit pas appelée
             return null
         },
     },

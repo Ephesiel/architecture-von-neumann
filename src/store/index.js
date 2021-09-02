@@ -12,6 +12,7 @@ const moduleEngine = {
                 return [o[0], o[1] !== 0]
             })
         ),
+        powerBus: [],
     },
     mutations: {
         resetSignals: (state) => {
@@ -19,8 +20,14 @@ const moduleEngine = {
                 (s) => (state.signals[s] = false)
             )
         },
+        resetBusPower: (state) => {
+            state.powerBus = []
+        },
         addSignal: (state, signal) => {
             state.signals[signal] = true
+        },
+        setPowerToBus: (state, bus) => {
+            state.powerBus.push(bus)
         },
     },
 }
