@@ -119,12 +119,12 @@ export default class VonNeumannArchitecture {
             'RE',
             [
                 Helper.makeRObj(this.bus3, Signals.eRE),
-                Helper.makeRObj(this.busSM, Signals.sM),
+                Helper.makeRObj(this.busSM, null),
             ],
             [
                 Helper.makeRObj(this.bus1, Signals.REB1),
                 Helper.makeRObj(this.bus2, Signals.REB2),
-                Helper.makeRObj(this.busEM, Signals.eM),
+                Helper.makeRObj(this.busEM, null),
             ]
         )
         this.RX = Helper.makeArchReg(
