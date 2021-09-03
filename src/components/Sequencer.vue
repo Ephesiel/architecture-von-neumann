@@ -13,14 +13,38 @@
             v-bind="mult"
         ></Multiplexer>
 
-        <text
+        <g
             v-for="(text, index) of texts"
             :key="index"
-            :x="text.x"
-            :y="text.y"
-            :style="text.style"
-            >{{ text.content }}</text
+            :transform="`translate(${text.x}, ${text.y})`"
+            :width="text.w"
+            :height="text.h"
         >
+            <rect
+                v-if="text.border !== ''"
+                :width="text.w"
+                :height="text.h"
+                :stroke="text.border"
+                :fill="text.background"
+                stroke-width="0.1"
+            />
+            <text
+                :x="text.w / 2"
+                :y="text.h / 2"
+                v-if="text.content.indexOf('\n') > -1"
+            >
+                <tspan
+                    v-for="line of text.content.split('\n')"
+                    :key="line"
+                    :x="text.w / 2"
+                    dy="1"
+                    >{{ line }}</tspan
+                >
+            </text>
+            <text :x="text.w / 2" :y="text.h / 2" v-else>
+                {{ text.content }}
+            </text>
+        </g>
 
         <Memory v-bind="memory" />
     </g>
@@ -33,9 +57,7 @@ import Register from '@/components/Register.vue'
 import Multiplexer from '@/components/Multiplexer.vue'
 import Memory from '@/components/Memory.vue'
 import sequencerData from '@/view-datas/sequencer.json'
-//import architectureStyle from '@/view-datas/architecture-style.json'
 import { getJsonValues } from '@/functions'
-import Helper from '@/helper'
 import Integer from '@/integer'
 
 export default {
@@ -91,7 +113,7 @@ export default {
                     content = content[text.content.substr(st)]
 
                     if (content instanceof Integer) {
-                        content = content.toNumber()
+                        content = content.toString()
                     }
                 }
 
@@ -99,15 +121,11 @@ export default {
                     content: content,
                     x: text.x,
                     y: text.y,
-                    style: {
-                        font: text.font + ' ' + Helper.police,
-                        border:
-                            text.border.length > 0
-                                ? `0.1rem solid ${text.border}`
-                                : '',
-                        textColor: text.color,
-                        backgroundColor: text.background,
-                    },
+                    w: text.w,
+                    h: text.h,
+                    border: text.border === 'none' ? '' : text.border,
+                    background: text.background,
+                    color: text.color,
                 }
 
                 return t
@@ -123,3 +141,9 @@ export default {
     },
 }
 </script>
+
+<style lang="scss" scoped>
+.seqText {
+    line-height: 1.1;
+}
+</style>

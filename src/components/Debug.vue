@@ -19,10 +19,7 @@
             xmlns="http://www.w3.org/2000/svg"
             style="overflow: visible"
         >
-            <Sequencer
-                :sequencer-model="arch.sequencer"
-                :datas="{ w: 30, h: 4 }"
-            />
+            <Sequencer :sequencer-model="arch.sequencer" />
             Désolé, votre navigateur ne supporte pas le SVG.
         </svg>
     </MouseMovingComponent>
@@ -53,6 +50,7 @@ export default {
             fontSize: architectureStyle.fontSize,
             fontColor: architectureStyle.fontColor,
             strokeWidth: architectureStyle.elementStrokeWidth,
+            scale: 100,
         }
     },
     created() {
