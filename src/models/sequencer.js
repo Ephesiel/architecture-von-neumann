@@ -55,13 +55,13 @@ export default class Sequencer {
     busOutputFetch //: Bus
     busOutputPhase //: Bus
     busOutputPlus1 //: Bus
+    busInputCOPMA //: Bus
     conditiontMult //: Multiplexer
     nextAddrMult //: Multiplexer
     phaseMult //: Multiplexer
     RAMM //: Register
     REMM //: ERMM
     plus1 //: Plus1
-    COPMA //: Register
     phaseCounter //: PhaseCounter
     fetch //: Register
 
@@ -108,6 +108,7 @@ export default class Sequencer {
             MPM_BITS_ADDRESSES,
             UNSIGNED
         )
+        this.busInputCOPMA = busInputCOPMA
 
         // Instanciation des registres
         this.RAMM = new Register(

@@ -66,9 +66,9 @@ export default class Register {
         this.inputs = inputs
         this.outputs = outputs
         this.signalClockTick = signalClockTick
-        this.currentValue = int(0)
-        this.nextValue = int(0)
         this.name = name
+
+        this.setBitsOfValue()
     }
 
     // ------------------------------------------------------------------------
@@ -140,6 +140,32 @@ export default class Register {
         }
 
         return alreadyModified
+    }
+
+    setBitsOfValue() {
+        const setDefaultValue = () => {
+            this.currentValue = int(0)
+            this.nextValue = int(0)
+        }
+        if (typeof this.inputs === 'undefined' || this.inputs.length === 0) {
+            setDefaultValue()
+            return
+        }
+
+        let maxSize = 0
+
+        for (const input of this.inputs) {
+            if (input.bus.getValue().size > maxSize) {
+                maxSize = input.bus.getValue().size
+            }
+        }
+
+        if (maxSize !== 0) {
+            this.currentValue = int(0, maxSize)
+            this.nextValue = int(0, maxSize)
+        } else {
+            setDefaultValue()
+        }
     }
 
     setOutputs(outputs) {

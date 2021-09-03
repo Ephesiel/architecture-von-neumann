@@ -1,0 +1,434 @@
+{
+    "props": {
+        "registers": {
+            "model": "RAMM",
+            "x": 0,
+            "y": 0,
+            "w": 30,
+            "h": 4,
+            "type": "Register",
+            "labelPos": "L"
+        },
+        "multiplexers": {
+            "model": "phaseMult",
+            "x": 0,
+            "y": 0
+        },
+        "texts": {
+            "content": "",
+            "dynamic": false,
+            "color": "black",
+            "background": "transparent",
+            "border": "none",
+            "x": 0,
+            "y": 0,
+            "w": 10,
+            "h": 5
+        },
+        "buses": {
+            "powerFromSource": false,
+            "model": "",
+            "model2": "",
+            "name": "bus",
+            "x": 0,
+            "y": 0,
+            "labels": "&label",
+            "bridges": "&bridge",
+            "arrows": "&arrow",
+            "signals": "&signal",
+            "insulator": "$insulator",
+            "next": "&buses"
+        }
+    },
+    "registers": [
+        { "model": "RAMM", "x": 35, "y": 27, "w": 20 },
+        { "model": "REMM", "x": 65, "y": 8, "w": 60 }
+    ],
+    "multiplexers": [
+        { "model": "conditiontMult", "x": 5, "y": 30 },
+        { "model": "nextAddrMult", "x": 15, "y": 28 },
+        { "model": "phaseMult", "x": 27, "y": 30 }
+    ],
+    "texts": [
+        {
+            "content": "Plus1",
+            "background": "yellow",
+            "border": "black",
+            "x": 20,
+            "y": 20,
+            "w": 5,
+            "h": 2
+        },
+        {
+            "content": "phaseCounter.currentPhase",
+            "dynamic": true,
+            "border": "black",
+            "x": 32,
+            "y": 37,
+            "w": 3,
+            "h": 2
+        },
+        {
+            "content": "Phase",
+            "x": 29,
+            "y": 34
+        },
+        {
+            "content": "phaseCounter.busOutput.value",
+            "dynamic": true,
+            "border": "black",
+            "x": 28,
+            "y": 37,
+            "w": 3,
+            "h": 2
+        },
+        {
+            "content": "Sélecteur de\nphase",
+            "x": 27,
+            "y": 37,
+            "w": 6
+        },
+        {
+            "content": "fetch.currentValue",
+            "dynamic": true,
+            "border": "black",
+            "x": 20,
+            "y": 35,
+            "w": 4,
+            "h": 2
+        },
+        {
+            "content": "Adresse\nde début\ndu fetch",
+            "x": 19,
+            "y": 35,
+            "w": 6
+        },
+        {
+            "content": "busSelMS.value",
+            "dynamic": true,
+            "border": "black",
+            "x": 16,
+            "y": 38,
+            "w": 3,
+            "h": 2
+        },
+        {
+            "content": "busInputCOPMA.value",
+            "dynamic": true,
+            "border": "black",
+            "x": 7,
+            "y": 34,
+            "w": 4,
+            "h": 2
+        },
+        {
+            "content": "COPMA",
+            "x": 4,
+            "y": 35
+        }
+    ],
+    "memory": [
+        {
+            "width": 60,
+            "height": 30,
+            "x": 65,
+            "y": 15
+        }
+    ],
+    "buses": [
+        {
+            "model": "busInputMM",
+            "name": "Bus eRAMM",
+            "powerFromSource": true,
+            "x": 50,
+            "y": 27,
+            "next": [
+                {
+                    "y": -2,
+                    "next": [
+                        {
+                            "x": 15,
+                            "arrows": [{ "dist": 12 }]
+                        },
+                        {
+                            "y": -4,
+                            "next": [
+                                {
+                                    "x": -25,
+                                    "arrows": [{ "dist": 15 }]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "model": "busOutputPlus1",
+            "name": "Bus output Plus1",
+            "powerFromSource": true,
+            "x": 20,
+            "y": 21,
+            "next": [
+                {
+                    "x": -8,
+                    "arrows": [{ "dist": 3 }],
+                    "next": [
+                        {
+                            "y": 7.5,
+                            "arrows": [{ "dist": 4 }],
+                            "next": [
+                                {
+                                    "x": 3,
+                                    "arrows": [{ "dist": 2 }]
+                                }
+                            ]
+                        },
+                        {
+                            "x": -9,
+                            "next": [
+                                {
+                                    "y": 9.5,
+                                    "arrows": [{ "dist": 5 }],
+                                    "next": [
+                                        {
+                                            "x": 2
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "model": "busOutputConditionMult",
+            "name": "Bus output Mult 1",
+            "powerFromSource": true,
+            "x": 7.7,
+            "y": 31.7,
+            "next": [
+                {
+                    "x": 3.5,
+                    "next": [
+                        {
+                            "y": -1,
+                            "next": [
+                                {
+                                    "x": 3.8,
+                                    "arrows": [{ "dist": 1.5 }]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "model": "busInputCOPMA",
+            "name": "Bus COPMA",
+            "powerFromSource": true,
+            "x": 9,
+            "y": 34,
+            "next": [
+                {
+                    "y": -0.8,
+                    "next": [
+                        {
+                            "x": 6,
+                            "arrows": [{ "dist": 4 }]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "model": "busSelMS",
+            "name": "selMS",
+            "powerFromSource": true,
+            "x": 17.5,
+            "y": 38,
+            "next": [
+                {
+                    "y": -3
+                }
+            ]
+        },
+        {
+            "model": "busOutputNextAddrMult",
+            "name": "Bus output Mult 2",
+            "powerFromSource": true,
+            "x": 20,
+            "y": 32.2,
+            "next": [
+                {
+                    "x": 3.5,
+                    "next": [
+                        {
+                            "y": -1.5,
+                            "next": [
+                                {
+                                    "x": 3.5,
+                                    "arrows": [{ "dist": 2 }]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "model": "busOutputFetch",
+            "name": "Bus fetch",
+            "powerFromSource": true,
+            "x": 22,
+            "y": 35,
+            "next": [
+                {
+                    "y": -2,
+                    "next": [
+                        {
+                            "x": 5,
+                            "arrows": [{ "dist": 3 }]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "model": "",
+            "name": "Bus intermédiaire de phase",
+            "powerFromSource": true,
+            "x": 32,
+            "y": 38,
+            "next": [
+                {
+                    "x": -1
+                }
+            ]
+        },
+        {
+            "model": "busOutputPhase",
+            "name": "Bus sélection mult 3",
+            "powerFromSource": true,
+            "x": 29,
+            "y": 37,
+            "next": [
+                {
+                    "y": -4.2,
+                    "arrows": [{ "dist": 3 }]
+                }
+            ]
+        },
+        {
+            "model": "busOutputPhaseMult",
+            "name": "Bus output Mult 3",
+            "powerFromSource": true,
+            "x": 29.7,
+            "y": 31.8,
+            "next": [
+                {
+                    "x": 20,
+                    "arrows": [{ "dist": 15 }],
+                    "next": [
+                        {
+                            "y": -1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "model": "busOutputMM",
+            "name": "Bus output mémoire microprogrammée",
+            "powerFromSource": true,
+            "x": 105,
+            "y": 15,
+            "next": [
+                {
+                    "y": -3,
+                    "arrows": [{ "dist": 2 }]
+                }
+            ]
+        },
+        {
+            "model": "",
+            "name": "Bus REMM -> SelMS + nextAddr",
+            "powerFromSource": true,
+            "x": 105,
+            "y": 8,
+            "next": [
+                {
+                    "y": -2,
+                    "next": [
+                        {
+                            "x": 30,
+                            "arrows": [{ "dist": 20 }],
+                            "next": [
+                                {
+                                    "y": 40,
+                                    "arrows": [{ "dist": 25 }],
+                                    "next": [
+                                        {
+                                            "x": -117.5,
+                                            "arrows": [
+                                                { "dist": 25 },
+                                                { "dist": 50 },
+                                                { "dist": 75 },
+                                                { "dist": 100 }
+                                            ],
+                                            "next": [
+                                                {
+                                                    "model": "busSelMS",
+                                                    "y": -6,
+                                                    "arrows": [{ "dist": 4 }]
+                                                },
+                                                {
+                                                    "model": "busNextAddr",
+                                                    "x": -4,
+                                                    "next": [
+                                                        {
+                                                            "y": -10.5,
+                                                            "next": [
+                                                                { "x": 1.5 }
+                                                            ],
+                                                            "arrows": [
+                                                                { "dist": 6 }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "x": -10.5,
+                                                            "arrows": [
+                                                                { "dist": 6 }
+                                                            ],
+                                                            "next": [
+                                                                {
+                                                                    "y": -13.2,
+                                                                    "arrows": [
+                                                                        {
+                                                                            "dist": 8
+                                                                        }
+                                                                    ],
+                                                                    "next": [
+                                                                        {
+                                                                            "x": 2
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

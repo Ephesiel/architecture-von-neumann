@@ -84,10 +84,10 @@ import Bus from '@/components/Bus.vue'
 import ALU from '@/components/ArithmeticLogicUnit.vue'
 import DatasManager from '@/components/DatasManager.vue'
 import Clock from '@/models/clock'
-import { Signals } from '@/globals'
 import architectureData from '@/view-datas/architecture.json'
 import architectureStyle from '@/view-datas/architecture-style.json'
 import { getJsonValues } from '@/functions'
+import Helper from '@/helper'
 
 export default {
     name: 'Architecture',
@@ -147,10 +147,6 @@ export default {
                     type: register.type,
                 }
 
-                if (register.type === 'InstructionRegister') {
-                    reg.sequencerModel = this.arch.sequencer
-                }
-
                 return reg
             })
         },
@@ -159,7 +155,7 @@ export default {
                 return {
                     model1: bus.model !== '' ? this.arch[bus.model] : null,
                     model2: bus.model2 !== '' ? this.arch[bus.model2] : null,
-                    hasPower: this.busHasPower,
+                    hasPower: Helper.busHasPower,
                     datas: bus,
                 }
             })
@@ -199,40 +195,6 @@ export default {
         changeScale(event) {
             this.scale -= event.deltaY * 0.1
             this.scale = Math.max(50, Math.min(this.scale, 200))
-        },
-        busHasPower(bus) {
-            let result = 0
-            const powerBus = this.$store.state.engine.powerBus
-            const signals = this.$store.state.engine.signals
-
-            // Est-ce que le bus a du courant ? Il se peut que le bus n'est pas
-            // de modèle (c'est le cas pour sM et eM), dans ce cas, on
-            // considère que le courant passe toujours
-            const model1Power =
-                bus.model1 === null || powerBus.includes(bus.model1)
-
-            // Dans le cas d'un bus bidirectionnel, est-ce que le deuxième bus
-            // possède du courant
-            const model2Power = powerBus.includes(bus.model2)
-
-            // Si le bus possède un signal, alors le courant est en fonction du
-            // signal
-            const hasSignal = bus.signals.length > 0
-            let signalSend = false
-
-            for (const signal of bus.signals) {
-                signalSend = signals[Signals[signal.name]]
-                if (signalSend) {
-                    break
-                }
-            }
-
-            if ((!hasSignal || signalSend) && (model1Power || model2Power)) {
-                result += 1
-                result += model2Power ? 2 : 0
-            }
-
-            return result
         },
     },
 }
