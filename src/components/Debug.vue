@@ -33,7 +33,7 @@
 import Sequencer from '@/components/Sequencer.vue'
 import Architecture from '@/models/von-neumann-architecture-model'
 import Clock from '@/models/clock'
-import architectureStyle from '@/view-datas/architecture-style.json'
+import sequencerStyle from '@/view-datas/sequencer-style.json'
 import MouseMovingComponent from '@/components/MouseMovingComponent.vue'
 
 export default {
@@ -45,11 +45,11 @@ export default {
     data() {
         return {
             arch: new Architecture(),
-            width: architectureStyle.svgWidth,
-            height: architectureStyle.svgHeight,
-            fontSize: architectureStyle.fontSize,
-            fontColor: architectureStyle.fontColor,
-            strokeWidth: architectureStyle.elementStrokeWidth,
+            width: sequencerStyle.svgWidth,
+            height: sequencerStyle.svgHeight,
+            fontSize: sequencerStyle.fontSize,
+            fontColor: sequencerStyle.fontColor,
+            strokeWidth: sequencerStyle.elementStrokeWidth,
             scale: 100,
         }
     },

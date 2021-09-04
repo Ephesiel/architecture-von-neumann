@@ -1,11 +1,6 @@
 <template>
     <g :transform="transform">
-        <path
-            :d="path"
-            stroke="black"
-            stroke-width="0.1px"
-            fill="transparent"
-        />
+        <path :d="path" stroke="black" stroke-width="0.1px" fill="white" />
         <text
             v-for="(e, i) in this.multiplexerModel
                 .getNumberOfValueBuses()
