@@ -26,7 +26,7 @@
             "h": 5
         },
         "buses": {
-            "powerFromSource": false,
+            "powerFromSource": true,
             "model": "",
             "model2": "",
             "name": "bus",
@@ -202,466 +202,126 @@
         }
     ],
     "memory": [
-        {
-            "width": 60,
-            "height": 30,
-            "x": 65,
-            "y": 2
-        }
+        { "width": 60, "height": 30, "x": 65, "y": 2 }
     ],
     "buses": [
-        {
-            "model": "busInputMM",
-            "name": "Bus eRAMM",
-            "powerFromSource": true,
-            "x": 52,
-            "y": 14,
-            "next": [
-                {
-                    "y": -2,
-                    "next": [
-                        {
-                            "x": 13,
-                            "ref": "RAMM-Memory",
-                            "arrows": [{ "dist": 5 }]
-                        },
-                        {
-                            "y": -6,
-                            "next": [
-                                {
-                                    "x": -25,
-                                    "ref": "RAMM-Plus1",
-                                    "arrows": [{ "dist": 15 }]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "model": "busOutputPlus1",
-            "name": "Bus sortie Plus1",
-            "powerFromSource": true,
-            "x": 25,
-            "y": 6,
-            "next": [
-                {
-                    "x": -8,
-                    "arrows": [{ "dist": 3 }],
-                    "next": [
-                        {
-                            "y": 10.5,
-                            "arrows": [{ "dist": 5 }],
-                            "next": [
-                                {
-                                    "x": 3,
-                                    "ref": "Plus1-NextAdr"
-                                }
-                            ]
-                        },
-                        {
-                            "x": -12,
-                            "next": [
-                                {
-                                    "y": 11.5,
-                                    "arrows": [{ "dist": 5 }],
-                                    "next": [
-                                        {
-                                            "x": 3,
-                                            "ref": "Plus1-Cond"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "model": "busOutputConditionMult",
-            "name": "Bus sortie Mult 1",
-            "powerFromSource": true,
-            "x": 10.4,
-            "y": 18.7,
-            "next": [
-                {
-                    "x": 10,
-                    "ref": "Cond-NextAdr",
-                    "arrows": [{ "dist": 7 }]
-                }
-            ]
-        },
-        {
-            "model": "busInputCOPMA",
-            "name": "Bus COPMA",
-            "powerFromSource": true,
-            "x": 14,
-            "y": 27,
-            "next": [
-                {
-                    "y": -6.2,
-                    "next": [
-                        {
-                            "x": 6,
-                            "ref": "COPMA-NextAdr",
-                            "arrows": [{ "dist": 3.4 }]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "model": "busSelMS",
-            "name": "selMS",
-            "powerFromSource": true,
-            "x": 23,
-            "y": 27,
-            "next": [
-                {
-                    "y": -5.5,
-                    "ref": "SelMS-NextAdr"
-                }
-            ]
-        },
-        {
-            "model": "busOutputNextAddrMult",
-            "name": "Bus sortie Mult 2",
-            "powerFromSource": true,
-            "x": 24,
-            "y": 19.8,
-            "next": [
-                {
-                    "x": 11,
-                    "ref": "NextAdr-Phase",
-                    "arrows": [{ "dist": 8 }]
-                }
-            ]
-        },
-        {
-            "model": "busOutputFetch",
-            "name": "Bus fetch",
-            "powerFromSource": true,
-            "x": 30,
-            "y": 27,
-            "next": [
-                {
-                    "y": -5,
-                    "next": [
-                        {
-                            "x": 5,
-                            "ref": "Fetch-Phase",
-                            "arrows": [{ "dist": 2 }]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "model": "",
-            "name": "Bus intermédiaire de phase",
-            "powerFromSource": true,
-            "x": 41,
-            "y": 28,
-            "next": [
-                {
-                    "x": -2.2
-                }
-            ]
-        },
-        {
-            "model": "busOutputPhase",
-            "name": "Bus sélection mult 3",
-            "powerFromSource": true,
-            "x": 36.8,
-            "y": 27,
-            "next": [
-                {
-                    "y": -5.2,
-                    "ref": "Phase-Phase",
-                    "arrows": [{ "dist": 3 }]
-                }
-            ]
-        },
-        {
-            "model": "busOutputPhaseMult",
-            "name": "Bus sortie Mult 3",
-            "powerFromSource": true,
-            "x": 37.5,
-            "y": 21,
-            "next": [
-                {
-                    "x": 14.5,
-                    "arrows": [{ "dist": 6 }],
-                    "next": [
-                        {
-                            "signals": [{ "name": "eRAMM" }],
-                            "y": -3,
-                            "ref": "Phase-RAMM"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "model": "busOutputMM",
-            "name": "Bus sortie mémoire microprogrammée",
-            "powerFromSource": true,
-            "x": 122,
-            "y": 32,
-            "next": [
-                {
-                    "y": 14,
-                    "next": [
-                        {
-                            "x": -10,
-                            "arrows": [{ "dist": 5 }],
-                            "next": [
-                                {
-                                    "signals": [{ "name": "eREMM" }],
-                                    "y": -2,
-                                    "ref": "Memory-REMM"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "model": "busNextAddr",
-            "name": "Bus Adresse Suiv.",
-            "powerFromSource": true,
-            "x": 70,
-            "y": 40,
-            "next": [
-                {
-                    "y": -3,
-                    "labels": [{ "x": -7, "y": 1 }],
-                    "next": [
-                        {
-                            "x": -52,
-                            "arrows": [{ "dist": 20 }],
-                            "next": [
-                                {
-                                    "y": -13.9,
-                                    "arrows": [{ "dist": 3 }],
-                                    "next": [
-                                        {
-                                            "x": 2,
-                                            "ref": "REMM-NextAdr"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "x": -13,
-                                    "next": [
-                                        {
-                                            "y": -17.2,
-                                            "arrows": [{ "dist": 3 }],
-                                            "next": [
-                                                {
-                                                    "x": 3,
-                                                    "ref": "REMM-Cond"
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "model": "busSelMS",
-            "name": "Bus SelMS",
-            "powerFromSource": true,
-            "x": 72.5,
-            "y": 41,
-            "next": [
-                {
-                    "y": -6,
-                    "labels": [{ "x": -9.5 }],
-                    "next": [
-                        {
-                            "x": -49.5,
-                            "arrows": [{ "dist": 22.5 }],
-                            "next": [
-                                {
-                                    "y": -6,
-                                    "ref": "REMM-SelMS"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "model": "",
-            "name": "Bus niveaux",
-            "powerFromSource": true,
-            "x": 80,
-            "y": 40,
-            "next": [
-                {
-                    "y": -5,
-                    "ref": "Level",
-                    "arrows": [{ "dist": 5 }]
-                }
-            ]
-        },
-        {
-            "model": "",
-            "name": "Bus niveaux",
-            "powerFromSource": true,
-            "x": 83,
-            "y": 40,
-            "next": [
-                {
-                    "y": -5,
-                    "ref": "Level",
-                    "arrows": [{ "dist": 5 }]
-                }
-            ]
-        },
-        {
-            "model": "",
-            "name": "Bus niveaux",
-            "powerFromSource": true,
-            "x": 86,
-            "y": 40,
-            "next": [
-                {
-                    "y": -5,
-                    "ref": "Level",
-                    "arrows": [{ "dist": 5 }]
-                }
-            ]
-        },
-        {
-            "model": "",
-            "name": "Bus niveaux",
-            "powerFromSource": true,
-            "x": 89,
-            "y": 40,
-            "next": [
-                {
-                    "y": -5,
-                    "ref": "Level",
-                    "arrows": [{ "dist": 5 }]
-                }
-            ]
-        },
-        {
-            "model": "",
-            "name": "Bus impulsion",
-            "powerFromSource": true,
-            "x": 96,
-            "y": 40,
-            "next": [
-                {
-                    "y": -5,
-                    "ref": "Pulse",
-                    "arrows": [{ "dist": 5 }]
-                }
-            ]
-        },
-        {
-            "model": "",
-            "name": "Bus impulsion",
-            "powerFromSource": true,
-            "x": 99,
-            "y": 40,
-            "next": [
-                {
-                    "y": -5,
-                    "ref": "Pulse",
-                    "arrows": [{ "dist": 5 }]
-                }
-            ]
-        },
-        {
-            "model": "",
-            "name": "Bus impulsion",
-            "powerFromSource": true,
-            "x": 102,
-            "y": 40,
-            "next": [
-                {
-                    "y": -5,
-                    "ref": "Pulse",
-                    "arrows": [{ "dist": 5 }]
-                }
-            ]
-        },
-        {
-            "model": "",
-            "name": "Bus impulsion",
-            "powerFromSource": true,
-            "x": 105,
-            "y": 40,
-            "next": [
-                {
-                    "y": -5,
-                    "ref": "Pulse",
-                    "arrows": [{ "dist": 5 }]
-                }
-            ]
-        },
-        {
-            "model": "",
-            "color": "red",
-            "name": "Bus clock",
-            "powerFromSource": true,
-            "x": 112,
-            "y": 37,
-            "next": [
-                {
-                    "y": 2,
-                    "next": [
-                        {
-                            "x": -8,
-                            "next": [
-                                {
-                                    "y": -1,
-                                    "ref": "Pulse"
-                                },
-                                {
-                                    "x": -3,
-                                    "next": [
-                                        {
-                                            "y": -1,
-                                            "ref": "Pulse"
-                                        },
-                                        {
-                                            "x": -3,
-                                            "next": [
-                                                {
-                                                    "y": -1,
-                                                    "ref": "Pulse"
-                                                },
-                                                {
-                                                    "x": -3,
-                                                    "next": [
-                                                        {
-                                                            "y": -1,
-                                                            "ref": "Pulse"
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
+        { "model": "busInputMM", "name": "Bus eRAMM", "x": 52, "y": 14, "next": [
+            { "y": -2, "next": [
+                { "x": 13, "ref": "RAMM-Memory", "arrows": [{ "dist": 5 }] },
+                { "y": -6, "next": [ 
+                    { "x": -25, "ref": "RAMM-Plus1", "arrows": [{ "dist": 15 }]}
+                ]}
+            ]}
+        ]},
+        { "model": "busOutputPlus1", "name": "Bus sortie Plus1", "x": 25, "y": 6, "next": [
+            { "x": -8, "arrows": [{ "dist": 3 }], "next": [
+                { "y": 10.5, "arrows": [{ "dist": 5 }], "next": [
+                    { "x": 3, "ref": "Plus1-NextAdr" }
+                ]},
+                { "x": -12, "next": [
+                    { "y": 11.5, "arrows": [{ "dist": 5 }], "next": [
+                        { "x": 3, "ref": "Plus1-Cond" }
+                    ]}
+                ]}
+            ]}
+        ]},
+        { "model": "busOutputConditionMult", "name": "Bus sortie Mult 1", "x": 10.4, "y": 18.7, "next": [
+            { "x": 10, "ref": "Cond-NextAdr", "arrows": [{ "dist": 7 }]}
+        ]},
+        { "model": "busInputCOPMA", "name": "Bus COPMA", "x": 14, "y": 27, "next": [
+            { "y": -6.2, "next": [
+                { "x": 6, "ref": "COPMA-NextAdr", "arrows": [{ "dist": 3.4 }] }
+            ]}
+        ]},
+        { "model": "busSelMS", "name": "selMS", "x": 23, "y": 27, "next": [
+            { "y": -5.5, "ref": "SelMS-NextAdr" }
+        ]},
+        { "model": "busOutputNextAddrMult", "name": "Bus sortie Mult 2", "x": 24, "y": 19.8, "next": [
+            { "x": 11, "ref": "NextAdr-Phase", "arrows": [{ "dist": 8 }] }
+        ]},
+        { "model": "busOutputFetch", "name": "Bus fetch", "x": 30, "y": 27, "next": [
+            { "y": -5, "next": [
+                { "x": 5, "ref": "Fetch-Phase", "arrows": [{ "dist": 2 }] }
+            ]}
+        ]},
+        { "model": "", "name": "Bus intermédiaire de phase", "x": 41, "y": 28, "next": [
+            { "x": -2.2 }
+        ]},
+        { "model": "busOutputPhase", "name": "Bus sélection mult 3", "x": 36.8, "y": 27, "next": [
+            { "y": -5.2, "ref": "Phase-Phase", "arrows": [{ "dist": 3 }] }
+        ]},
+        { "model": "busOutputPhaseMult", "name": "Bus sortie Mult 3", "x": 37.5, "y": 21, "next": [
+            { "x": 14.5, "arrows": [{ "dist": 6 }], "next": [
+                { "signals": [{ "name": "eRAMM" }], "y": -3, "ref": "Phase-RAMM" }
+            ]}
+        ]},
+        { "model": "busOutputMM", "name": "Bus sortie mémoire microprogrammée", "x": 122, "y": 32, "next": [
+            { "y": 14, "next": [
+                { "x": -10, "arrows": [{ "dist": 5 }], "next": [
+                    { "signals": [{ "name": "eREMM" }], "y": -2, "ref": "Memory-REMM" }
+                ]}
+            ]}
+        ]},
+        { "model": "busNextAddr", "name": "Bus Adresse Suiv.", "x": 70, "y": 40, "next": [
+            { "y": -3, "labels": [{ "x": -7, "y": 1 }], "next": [
+                { "x": -52, "arrows": [{ "dist": 20 }], "next": [
+                    { "y": -13.9, "arrows": [{ "dist": 3 }], "next": [
+                        { "x": 2, "ref": "REMM-NextAdr" }
+                    ]},
+                    { "x": -13, "next": [
+                        { "y": -17.2, "arrows": [{ "dist": 3 }], "next": [
+                            { "x": 3, "ref": "REMM-Cond"}
+                        ]}
+                    ]}
+                ]}
+            ]}
+        ]},
+        { "model": "busSelMS", "name": "Bus SelMS", "x": 72.5, "y": 41, "next": [
+            { "y": -6, "labels": [{ "x": -9.5 }], "next": [
+                { "x": -49.5, "arrows": [{ "dist": 22.5 }], "next": [
+                    { "y": -6, "ref": "REMM-SelMS" }
+                ]}
+            ]}
+        ]},
+        { "model": "", "name": "Bus niveaux", "x": 80, "y": 40, "next": [
+            { "y": -5, "ref": "Level", "arrows": [{ "dist": 5 }] }
+        ]},
+        { "model": "", "name": "Bus niveaux", "x": 83, "y": 40, "next": [
+            { "y": -5, "ref": "Level", "arrows": [{ "dist": 5 }] }
+        ]},
+        { "model": "", "name": "Bus niveaux", "x": 86, "y": 40, "next": [
+            { "y": -5, "ref": "Level", "arrows": [{ "dist": 5 }] }
+        ]},
+        { "model": "", "name": "Bus niveaux", "x": 89, "y": 40, "next": [
+            { "y": -5, "ref": "Level", "arrows": [{ "dist": 5 }] }
+        ]},
+        { "model": "", "name": "Bus impulsion", "x": 96, "y": 40, "next": [
+            { "y": -5, "ref": "Pulse", "arrows": [{ "dist": 5 }] }
+        ]},
+        { "model": "", "name": "Bus impulsion", "x": 99, "y": 40, "next": [
+            { "y": -5, "ref": "Pulse", "arrows": [{ "dist": 5 }] }
+        ]},
+        { "model": "", "name": "Bus impulsion", "x": 102, "y": 40, "next": [
+            { "y": -5, "ref": "Pulse", "arrows": [{ "dist": 5 }] }
+        ]},
+        { "model": "", "name": "Bus impulsion", "x": 105, "y": 40, "next": [
+            { "y": -5, "ref": "Pulse", "arrows": [{ "dist": 5 }] }
+        ]},
+        { "model": "", "color": "red", "name": "Bus clock", "x": 112, "y": 37, "next": [
+            { "y": 2, "next": [
+                { "x": -8, "next": [
+                    { "y": -1, "ref": "Pulse" },
+                    { "x": -3, "next": [
+                        { "y": -1, "ref": "Pulse" },
+                        { "x": -3, "next": [
+                            { "y": -1, "ref": "Pulse" },
+                            { "x": -3, "next": [
+                                { "y": -1, "ref": "Pulse"}
+                            ]}
+                        ]}
+                    ]}
+                ]}
+            ]}
+        ]}
     ]
 }
