@@ -33,7 +33,7 @@
 import Sequencer from '@/components/Sequencer.vue'
 import Architecture from '@/models/von-neumann-architecture-model'
 import Clock from '@/models/clock'
-import architectureStyle from '@/view-datas/architecture-style.json'
+import sequencerStyle from '@/view-datas/sequencer-style.json'
 import MouseMovingComponent from '@/components/MouseMovingComponent.vue'
 
 export default {
@@ -45,19 +45,28 @@ export default {
     data() {
         return {
             arch: new Architecture(),
-            width: architectureStyle.svgWidth,
-            height: architectureStyle.svgHeight,
-            fontSize: architectureStyle.fontSize,
-            fontColor: architectureStyle.fontColor,
-            strokeWidth: architectureStyle.elementStrokeWidth,
+            width: sequencerStyle.svgWidth,
+            height: sequencerStyle.svgHeight,
+            fontSize: sequencerStyle.fontSize,
+            fontColor: sequencerStyle.fontColor,
+            strokeWidth: sequencerStyle.elementStrokeWidth,
             scale: 100,
         }
     },
     created() {
+        const buses = this.arch.buses().concat(this.arch.sequencer.buses())
+
         Clock.register((UTA, signals) => {
             for (const signal of Object.keys(signals)) {
                 if (signals[signal] > 0) {
                     this.$store.commit('addSignal', signal)
+                }
+            }
+            for (const bus of buses) {
+                if (bus.hasPower()) {
+                    if (!this.$store.state.engine.powerBus.includes(bus)) {
+                        this.$store.commit('setPowerToBus', bus)
+                    }
                 }
             }
         })
@@ -76,10 +85,12 @@ export default {
     methods: {
         stepByStep() {
             this.$store.commit('resetSignals')
+            this.$store.commit('resetBusPower')
             this.arch.stepByStep()
         },
         phaseByPhase() {
             this.$store.commit('resetSignals')
+            this.$store.commit('resetBusPower')
             this.arch.phaseByPhase()
         },
     },

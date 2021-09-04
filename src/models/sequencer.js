@@ -236,4 +236,23 @@ export default class Sequencer {
             ])
         )
     }
+
+    // ------------------------------------------------------------------------
+    // Getters
+
+    buses() {
+        return [
+            this.busSelMS,
+            this.busNextAddr,
+            this.busInputMM,
+            this.busOutputMM,
+            this.busOutputConditionMult,
+            this.busOutputNextAddrMult,
+            this.busOutputPhaseMult,
+            this.busOutputFetch,
+            this.busOutputPhase,
+            this.busOutputPlus1,
+            this.busInputCOPMA,
+        ]
+    }
 }

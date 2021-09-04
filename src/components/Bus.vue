@@ -120,6 +120,9 @@ export default {
         y() {
             return verifyValue(this.datas.y, 'number')
         },
+        ref() {
+            return verifyValue(this.datas.ref, 'string')
+        },
         color() {
             return verifyValue(this.datas.color, 'string', 'black')
         },
@@ -243,6 +246,7 @@ export default {
                 b.arrows = this.verifyArrows(bus.arrows)
                 b.bridges = this.verifyBridges(bus.bridges)
                 b.signals = this.verifySignals(bus.signals)
+                b.insulator = this.verifyInsulator(bus.insulator)
 
                 nextB.push(b)
             }

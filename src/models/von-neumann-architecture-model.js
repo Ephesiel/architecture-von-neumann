@@ -282,6 +282,23 @@ export default class VonNeumannArchitecture {
     }
 
     // ------------------------------------------------------------------------
+    // Getters.
+
+    buses() {
+        return [
+            this.bus1,
+            this.bus2,
+            this.bus3,
+            this.busCondInput,
+            this.busCondOutput,
+            this.busCOPMA,
+            this.busSM,
+            this.busEM,
+            this.busRAM,
+        ]
+    }
+
+    // ------------------------------------------------------------------------
     // UI.
 
     stepByStep() {
@@ -307,22 +324,23 @@ export default class VonNeumannArchitecture {
             this.updateRegisters()
         }
         console.log('eRAMM')
+
         SignalManager.emit(Signals.eRAMM, 5)
         Clock.waitAndTick(10, 1)
-        SignalManager.emit(Signals.SWITCH_RAMM, 1)
-        Clock.waitAndTick(5, 1)
     }
 
     eREMM() {
+        this.updateRAMM()
         console.log('eREMM')
+
         SignalManager.emit(Signals.eREMM, 5)
         Clock.waitAndTick(10, 1)
-        SignalManager.emit(Signals.SWITCH_REMM, 1)
-        Clock.waitAndTick(5, 1)
     }
 
     sendSignals() {
+        this.updateREMM()
         console.log('sendSignals')
+
         SignalManager.emit(Signals.SENDLEVELS, 1)
         Clock.waitAndTick(TIME_ATU_FOR_LEVELS - TIME_ATU_FOR_PULSES, 1)
         SignalManager.emit(Signals.SENDPULSES, 1)
@@ -331,6 +349,16 @@ export default class VonNeumannArchitecture {
             1
         )
         this.canUpdateRegisters = true
+    }
+
+    updateRAMM() {
+        SignalManager.emit(Signals.SWITCH_RAMM, 1)
+        Clock.waitAndTick(5, 1)
+    }
+
+    updateREMM() {
+        SignalManager.emit(Signals.SWITCH_REMM, 1)
+        Clock.waitAndTick(5, 1)
     }
 
     updateRegisters() {

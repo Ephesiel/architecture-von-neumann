@@ -53,8 +53,8 @@
 
 <script>
 import { getJsonValues } from '@/functions'
+import { Signals } from '@/globals'
 import Integer from '@/integer'
-import Helper from '@/helper'
 import MMParser from '@/microprogrammed-memory-parser'
 import sequencerData from '@/view-datas/sequencer.json'
 import SequencerModel from '@/models/sequencer'
@@ -153,10 +153,82 @@ export default {
                         bus.model2 !== ''
                             ? this.sequencerModel[bus.model2]
                             : null,
-                    hasPower: Helper.busHasPower,
+                    hasPower: this.busHasPower,
                     datas: bus,
                 }
             })
+        },
+    },
+    methods: {
+        busHasPower(bus) {
+            let result = false
+
+            const powerBus = this.$store.state.engine.powerBus
+            const signals = this.$store.state.engine.signals
+
+            if (bus.model1 === null || powerBus.includes(bus.model1)) {
+                const phaseMultVal =
+                    this.sequencerModel.phaseMult.selectorBus.getValue()
+                const nextAddrMultVal =
+                    this.sequencerModel.nextAddrMult.selectorBus.getValue()
+                const conditionMultVal =
+                    this.sequencerModel.conditiontMult.selectorBus.getValue()
+
+                const phaseMultPower = signals[Signals.eRAMM]
+                const nextAddrMultPower = phaseMultVal.eq(0) && phaseMultPower
+                const conditionMultPower =
+                    nextAddrMultVal.eq(1) && nextAddrMultPower
+
+                switch (bus.ref) {
+                    case 'RAMM-Memory':
+                    case 'Memory-REMM':
+                        result = signals[Signals.eREMM]
+                        break
+                    case 'RAMM-Plus1':
+                        result =
+                            (conditionMultPower && conditionMultVal.eq(0)) ||
+                            (nextAddrMultPower && nextAddrMultVal.eq(0))
+                        break
+                    case 'Plus1-Cond':
+                        result = conditionMultPower && conditionMultVal.eq(0)
+                        break
+                    case 'REMM-Cond':
+                        result = conditionMultPower && conditionMultVal.eq(1)
+                        break
+                    case 'Cond-NextAdr':
+                        result = conditionMultPower
+                        break
+                    case 'Plus1-NextAdr':
+                        result = nextAddrMultPower && nextAddrMultVal.eq(0)
+                        break
+                    case 'COPMA-NextAdr':
+                        result = nextAddrMultPower && nextAddrMultVal.eq(2)
+                        break
+                    case 'REMM-NextAdr':
+                        result = nextAddrMultPower && nextAddrMultVal.eq(3)
+                        break
+                    case 'REMM-SelMS':
+                    case 'SelMS-NextAdr':
+                    case 'NextAdr-Phase':
+                        result = nextAddrMultPower
+                        break
+                    case 'Fetch-Phase':
+                        result = phaseMultPower && phaseMultVal.eq(1)
+                        break
+                    case 'Phase-Phase':
+                    case 'Phase-RAMM':
+                        result = phaseMultPower
+                        break
+                    case 'Level':
+                        result = signals[Signals.SENDLEVELS]
+                        break
+                    case 'Pulse':
+                        result = signals[Signals.SENDPULSES]
+                        break
+                }
+            }
+
+            return result
         },
     },
 }
