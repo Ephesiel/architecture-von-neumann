@@ -161,60 +161,63 @@ export default {
     },
     methods: {
         busHasPower(bus) {
-            if (bus.model1 === null) {
-                return 1
-            }
-
-            let result = 0
+            let result = false
 
             const powerBus = this.$store.state.engine.powerBus
             const signals = this.$store.state.engine.signals
-            const model1Power = powerBus.includes(bus.model1)
 
-            const phaseMultVal =
-                this.sequencerModel.phaseMult.selectorBus.getValue()
-            const nextAddrMultVal =
-                this.sequencerModel.nextAddrMult.selectorBus.getValue()
-            const conditionMultVal =
-                this.sequencerModel.conditiontMult.selectorBus.getValue()
+            if (bus.model1 === null || powerBus.includes(bus.model1)) {
+                const phaseMultVal =
+                    this.sequencerModel.phaseMult.selectorBus.getValue()
+                const nextAddrMultVal =
+                    this.sequencerModel.nextAddrMult.selectorBus.getValue()
+                const conditionMultVal =
+                    this.sequencerModel.conditiontMult.selectorBus.getValue()
 
-            const phaseMultPower = signals[Signals.eRAMM]
-            const nextAddrMultPower = phaseMultVal.eq(0) && phaseMultPower
-            const conditionMultPower =
-                nextAddrMultVal.eq(1) && nextAddrMultPower
+                const phaseMultPower = signals[Signals.eRAMM]
+                const nextAddrMultPower = phaseMultVal.eq(0) && phaseMultPower
+                const conditionMultPower =
+                    nextAddrMultVal.eq(1) && nextAddrMultPower
 
-            if (model1Power) {
-                switch (bus.model1) {
-                    case this.sequencerModel.busInputMM:
-                        result =
-                            signals[Signals.eREMM] ||
-                            (conditionMultPower && conditionMultVal.eq(0)) ||
-                            (nextAddrMultPower && nextAddrMultVal.eq(0))
-                        break
-                    case this.sequencerModel.busOutputMM:
+                switch (bus.ref) {
+                    case 'RAMM-Memory':
+                    case 'Memory-REMM':
                         result = signals[Signals.eREMM]
                         break
-                    case this.sequencerModel.busOutputPlus1:
+                    case 'RAMM-Plus1':
                         result =
                             (conditionMultPower && conditionMultVal.eq(0)) ||
                             (nextAddrMultPower && nextAddrMultVal.eq(0))
                         break
-                    case this.sequencerModel.busOutputConditionMult:
+                    case 'Plus1-Cond':
+                        result = conditionMultPower && conditionMultVal.eq(0)
+                        break
+                    case 'REMM-Cond':
+                        result = conditionMultPower && conditionMultVal.eq(1)
+                        break
+                    case 'Cond-NextAdr':
                         result = conditionMultPower
                         break
-                    case this.sequencerModel.busInputCOPMA:
+                    case 'Plus1-NextAdr':
+                        result = nextAddrMultPower && nextAddrMultVal.eq(0)
+                        break
+                    case 'COPMA-NextAdr':
                         result = nextAddrMultPower && nextAddrMultVal.eq(2)
                         break
-                    case this.sequencerModel.busOutputPhase:
-                    case this.sequencerModel.busOutputPhaseMult:
-                        result = phaseMultPower
+                    case 'REMM-NextAdr':
+                        result = nextAddrMultPower && nextAddrMultVal.eq(3)
                         break
-                    case this.sequencerModel.busSelMS:
-                    case this.sequencerModel.busOutputNextAddrMult:
+                    case 'REMM-SelMS':
+                    case 'SelMS-NextAdr':
+                    case 'NextAdr-Phase':
                         result = nextAddrMultPower
                         break
-                    case this.sequencerModel.busOutputFetch:
+                    case 'Fetch-Phase':
                         result = phaseMultPower && phaseMultVal.eq(1)
+                        break
+                    case 'Phase-Phase':
+                    case 'Phase-RAMM':
+                        result = phaseMultPower
                         break
                 }
             }

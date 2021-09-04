@@ -30,6 +30,7 @@
             "model": "",
             "model2": "",
             "name": "bus",
+            "ref": "",
             "x": 0,
             "y": 0,
             "labels": "&label",
@@ -148,6 +149,7 @@
                     "next": [
                         {
                             "x": 15,
+                            "ref": "RAMM-Memory",
                             "arrows": [{ "dist": 12 }]
                         },
                         {
@@ -155,6 +157,7 @@
                             "next": [
                                 {
                                     "x": -25,
+                                    "ref": "RAMM-Plus1",
                                     "arrows": [{ "dist": 15 }]
                                 }
                             ]
@@ -180,6 +183,7 @@
                             "next": [
                                 {
                                     "x": 3,
+                                    "ref": "Plus1-NextAdr",
                                     "arrows": [{ "dist": 2 }]
                                 }
                             ]
@@ -192,7 +196,8 @@
                                     "arrows": [{ "dist": 5 }],
                                     "next": [
                                         {
-                                            "x": 2
+                                            "x": 2,
+                                            "ref": "Plus1-Cond"
                                         }
                                     ]
                                 }
@@ -217,6 +222,7 @@
                             "next": [
                                 {
                                     "x": 3.8,
+                                    "ref": "Cond-NextAdr",
                                     "arrows": [{ "dist": 1.5 }]
                                 }
                             ]
@@ -237,6 +243,7 @@
                     "next": [
                         {
                             "x": 6,
+                            "ref": "COPMA-NextAdr",
                             "arrows": [{ "dist": 4 }]
                         }
                     ]
@@ -251,7 +258,8 @@
             "y": 38,
             "next": [
                 {
-                    "y": -3
+                    "y": -3,
+                    "ref": "SelMS-NextAdr"
                 }
             ]
         },
@@ -270,6 +278,7 @@
                             "next": [
                                 {
                                     "x": 3.5,
+                                    "ref": "NextAdr-Phase",
                                     "arrows": [{ "dist": 2 }]
                                 }
                             ]
@@ -290,6 +299,7 @@
                     "next": [
                         {
                             "x": 5,
+                            "ref": "Fetch-Phase",
                             "arrows": [{ "dist": 3 }]
                         }
                     ]
@@ -317,6 +327,7 @@
             "next": [
                 {
                     "y": -4.2,
+                    "ref": "Phase-Phase",
                     "arrows": [{ "dist": 3 }]
                 }
             ]
@@ -333,7 +344,8 @@
                     "arrows": [{ "dist": 15 }],
                     "next": [
                         {
-                            "y": -1
+                            "y": -1,
+                            "ref": "Phase-RAMM"
                         }
                     ]
                 }
@@ -348,6 +360,7 @@
             "next": [
                 {
                     "y": -3,
+                    "ref": "Memory-REMM",
                     "arrows": [{ "dist": 2 }]
                 }
             ]
@@ -380,18 +393,17 @@
                                             ],
                                             "next": [
                                                 {
-                                                    "model": "busSelMS",
                                                     "y": -6,
+                                                    "ref": "REMM-SelMS",
                                                     "arrows": [{ "dist": 4 }]
                                                 },
                                                 {
-                                                    "model": "busNextAddr",
                                                     "x": -4,
                                                     "next": [
                                                         {
                                                             "y": -10.5,
                                                             "next": [
-                                                                { "x": 1.5 }
+                                                                { "x": 1.5, "ref": "REMM-NextAdr" }
                                                             ],
                                                             "arrows": [
                                                                 { "dist": 6 }
@@ -412,7 +424,8 @@
                                                                     ],
                                                                     "next": [
                                                                         {
-                                                                            "x": 2
+                                                                            "x": 2,
+                                                                            "ref": "REMM-Cond"
                                                                         }
                                                                     ]
                                                                 }

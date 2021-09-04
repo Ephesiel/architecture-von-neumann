@@ -120,6 +120,9 @@ export default {
         y() {
             return verifyValue(this.datas.y, 'number')
         },
+        ref() {
+            return verifyValue(this.datas.ref, 'string')
+        },
         color() {
             return verifyValue(this.datas.color, 'string', 'black')
         },
