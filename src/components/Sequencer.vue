@@ -219,6 +219,12 @@ export default {
                     case 'Phase-RAMM':
                         result = phaseMultPower
                         break
+                    case 'Level':
+                        result = signals[Signals.SENDLEVELS]
+                        break
+                    case 'Pulse':
+                        result = signals[Signals.SENDPULSES]
+                        break
                 }
             }
 

@@ -246,6 +246,7 @@ export default {
                 b.arrows = this.verifyArrows(bus.arrows)
                 b.bridges = this.verifyBridges(bus.bridges)
                 b.signals = this.verifySignals(bus.signals)
+                b.insulator = this.verifyInsulator(bus.insulator)
 
                 nextB.push(b)
             }
