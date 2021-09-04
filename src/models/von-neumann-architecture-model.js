@@ -282,6 +282,23 @@ export default class VonNeumannArchitecture {
     }
 
     // ------------------------------------------------------------------------
+    // Getters.
+
+    buses() {
+        return [
+            this.bus1,
+            this.bus2,
+            this.bus3,
+            this.busCondInput,
+            this.busCondOutput,
+            this.busCOPMA,
+            this.busSM,
+            this.busEM,
+            this.busRAM,
+        ]
+    }
+
+    // ------------------------------------------------------------------------
     // UI.
 
     stepByStep() {

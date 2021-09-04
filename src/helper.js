@@ -138,40 +138,6 @@ class Helper {
 
         return ''
     }
-
-    busHasPower(bus) {
-        let result = 0
-        const powerBus = this.$store.state.engine.powerBus
-        const signals = this.$store.state.engine.signals
-
-        // Est-ce que le bus a du courant ? Il se peut que le bus n'est pas
-        // de modèle (c'est le cas pour sM et eM), dans ce cas, on
-        // considère que le courant passe toujours
-        const model1Power = bus.model1 === null || powerBus.includes(bus.model1)
-
-        // Dans le cas d'un bus bidirectionnel, est-ce que le deuxième bus
-        // possède du courant
-        const model2Power = powerBus.includes(bus.model2)
-
-        // Si le bus possède un signal, alors le courant est en fonction du
-        // signal
-        const hasSignal = bus.signals.length > 0
-        let signalSend = false
-
-        for (const signal of bus.signals) {
-            signalSend = signals[Signals[signal.name]]
-            if (signalSend) {
-                break
-            }
-        }
-
-        if ((!hasSignal || signalSend) && (model1Power || model2Power)) {
-            result += 1
-            result += model2Power ? 2 : 0
-        }
-
-        return result
-    }
 }
 
 export default new Helper()

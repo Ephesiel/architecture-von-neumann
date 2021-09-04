@@ -54,10 +54,19 @@ export default {
         }
     },
     created() {
+        const buses = this.arch.buses().concat(this.arch.sequencer.buses())
+
         Clock.register((UTA, signals) => {
             for (const signal of Object.keys(signals)) {
                 if (signals[signal] > 0) {
                     this.$store.commit('addSignal', signal)
+                }
+            }
+            for (const bus of buses) {
+                if (bus.hasPower()) {
+                    if (!this.$store.state.engine.powerBus.includes(bus)) {
+                        this.$store.commit('setPowerToBus', bus)
+                    }
                 }
             }
         })
@@ -76,10 +85,12 @@ export default {
     methods: {
         stepByStep() {
             this.$store.commit('resetSignals')
+            this.$store.commit('resetBusPower')
             this.arch.stepByStep()
         },
         phaseByPhase() {
             this.$store.commit('resetSignals')
+            this.$store.commit('resetBusPower')
             this.arch.phaseByPhase()
         },
     },
