@@ -200,6 +200,9 @@ export default {
                     case 'Pulse':
                         result = signals[Signals.SENDPULSES]
                         break
+                    case 'Cond-Cond':
+                        result = conditionMultPower
+                        break
                 }
             }
 
