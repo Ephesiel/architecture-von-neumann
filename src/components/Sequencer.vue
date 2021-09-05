@@ -14,38 +14,11 @@
             v-bind="mult"
         ></Multiplexer>
 
-        <g
+        <FloatingText
             v-for="(text, index) of texts"
             :key="index"
-            :transform="`translate(${text.x}, ${text.y})`"
-            :width="text.w"
-            :height="text.h"
-        >
-            <rect
-                v-if="text.border !== ''"
-                :width="text.w"
-                :height="text.h"
-                :stroke="text.border"
-                :fill="text.background"
-                stroke-width="0.1"
-            />
-            <text
-                :x="text.w / 2"
-                :y="text.h / 2"
-                v-if="text.content.indexOf('\n') > -1"
-            >
-                <tspan
-                    v-for="line of text.content.split('\n')"
-                    :key="line"
-                    :x="text.w / 2"
-                    dy="1"
-                    >{{ line }}</tspan
-                >
-            </text>
-            <text :x="text.w / 2" :y="text.h / 2" v-else>
-                {{ text.content }}
-            </text>
-        </g>
+            v-bind="text"
+        />
 
         <Memory v-bind="memory" />
     </g>
@@ -62,6 +35,7 @@ import Register from '@/components/Register.vue'
 import Bus from '@/components/Bus.vue'
 import Multiplexer from '@/components/Multiplexer.vue'
 import Memory from '@/components/Memory.vue'
+import FloatingText from '@/components/FloatingText.vue'
 
 export default {
     name: 'Sequencer',
@@ -73,6 +47,7 @@ export default {
         Memory,
         Register,
         Bus,
+        FloatingText,
     },
     computed: {
         registers() {
@@ -224,6 +199,9 @@ export default {
                         break
                     case 'Pulse':
                         result = signals[Signals.SENDPULSES]
+                        break
+                    case 'Cond-Cond':
+                        result = conditionMultPower
                         break
                 }
             }
