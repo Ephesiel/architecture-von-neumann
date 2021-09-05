@@ -75,17 +75,17 @@ export default {
             return verifyValue(this.datas.labelPos, 'string', 'L')
         },
         componentsWidth() {
+            const labelWidth = Helper.calculateSize(this.label, this.fontSize).h
             return {
-                label: 0.1 * this.width,
-                decimal: 0.25 * this.width,
-                binary: 0.65 * this.width,
+                label: labelWidth,
+                decimal: 0.3 * (this.width - labelWidth),
+                binary: 0.7 * (this.width - labelWidth),
             }
         },
         margins() {
-            // Doit être computed car utilise les données
             return {
                 ud: 0,
-                lr: 0,
+                lr: 0.125,
             }
         },
         transform() {
@@ -158,7 +158,7 @@ export default {
         labelPoint() {
             return {
                 x: this.componentsWidth.label / 2,
-                y: this.height / 2,
+                y: this.height / 2 + this.margins.lr,
             }
         },
         currentValueBinaryPoint() {
