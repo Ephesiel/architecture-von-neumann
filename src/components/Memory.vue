@@ -22,18 +22,18 @@
                 <table
                     :style="{
                         height: `${compsGeometry.table.h}px`,
-                        width: `100%`,
                         fontSize: `${fontSize}px`,
                     }"
                 >
-                    <thead>
+                    <tbody
+                        id="scrollableBody"
+                        :style="{ height: `${compsGeometry.table.h}px` }"
+                    >
                         <tr>
                             <th>Adresse</th>
                             <th>Contenu</th>
                             <th>Traduction</th>
                         </tr>
-                    </thead>
-                    <tbody id="scrollableBody">
                         <tr v-for="(obj, index) in shouldRender" :key="index">
                             <td>{{ obj.address }}</td>
                             <td>{{ obj.content.toBinary() }}</td>
@@ -183,13 +183,13 @@ table {
     text-align: center;
     border-collapse: collapse;
     border-spacing: 2px;
-    //overflow-x: auto;
+    width: 100% !important;
 
     td:last-child {
         width: 100%;
     }
 
-    tr:nth-child(even) {
+    tr:nth-child(odd) {
         background: rgba(0, 0, 0, 0.05);
     }
 
@@ -202,13 +202,13 @@ table {
         }
     }
 
-    th,
     td {
         padding: 0.1rem;
         vertical-align: top;
+        display: table-cell;
     }
 
-    thead th {
+    tbody th {
         position: sticky;
         top: 0;
         z-index: 1;
@@ -222,7 +222,9 @@ foreignObject > body {
 }
 
 #scrollableBody {
-    overflow-y: scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: inline-block;
     -ms-overflow-style: none; /* IE & Edge */
     scrollbar-width: none; /* Firefox */
 }
