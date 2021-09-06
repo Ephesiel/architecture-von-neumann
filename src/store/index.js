@@ -37,11 +37,15 @@ const moduleEngine = {
  */
 const modulePage = {
     state: {
-        width: 1000,
+        width: 0,
+        sequencerWidth: 0,
+        architectureWidth: 0,
     },
     mutations: {
         changePageSize: (state, page) => {
             state.width = page.getBoundingClientRect().width
+            state.sequencerWidth = state.width / 1.5
+            state.architectureWidth = state.width / 1.5
         },
     },
 }
