@@ -3,13 +3,29 @@
         <div class="buttons-bar">
             <button class="btn" @click="stepByStep()">Pas à pas</button>
             <button class="btn" @click="phaseByPhase()">Phase par phase</button>
+            <button class="btn" @click="toggleArch()">
+                {{
+                    displayArch
+                        ? 'Cacher architecture'
+                        : 'Afficher architecture'
+                }}
+            </button>
+            <button class="btn" @click="toggleSequencer()">
+                {{
+                    displaySequencer
+                        ? 'Cacher séquenceur'
+                        : 'Afficher séquenceur'
+                }}
+            </button>
         </div>
         <div class="svg">
             <ArchitectureSVG
+                v-if="displayArch"
                 class="architecture-svg"
                 :architecture-model="arch"
             />
             <SequencerSVG
+                v-if="displaySequencer"
                 class="sequencer-svg"
                 :sequencer-model="arch.sequencer"
             />
@@ -32,6 +48,8 @@ export default {
     data() {
         return {
             arch: new ArchitectureModel(),
+            displayArch: true,
+            displaySequencer: true,
         }
     },
     created() {
@@ -63,6 +81,12 @@ export default {
             this.$store.commit('resetSignals')
             this.$store.commit('resetBusPower')
             this.arch.phaseByPhase()
+        },
+        toggleArch() {
+            this.displayArch = !this.displayArch
+        },
+        toggleSequencer() {
+            this.displaySequencer = !this.displaySequencer
         },
     },
 }
