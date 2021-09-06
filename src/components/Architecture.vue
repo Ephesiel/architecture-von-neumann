@@ -2,10 +2,6 @@
     <MouseMovingComponent
         :width="realWidth"
         :height="realHeight"
-        :componentWidth="realWidth"
-        :componentHeight="realHeight"
-        :scale="scaleRatio"
-        @wheel="changeScale"
         style="border: 1px solid black"
     >
         <svg
@@ -37,42 +33,6 @@
 
     <button @click="stepByStep()">Pas à pas</button><br />
     <button @click="phaseByPhase()">Phase par phase</button><br />
-    <label>Scale de l'architecture</label>
-    <input type="range" min="50" max="200" v-model="scale" />
-
-    <!--
-        Séquenceur et mémoire ? Ou juste séquenceur, et la mémoire dans un autre SVG ?
-        Dans les deux cas, ajouter un bouton pour choisir d'afficher ou non l'élément.
-
-    <MouseMovingComponent
-        :width="realWidth"
-        :height="realHeight"
-        :componentWidth="realWidth"
-        :componentHeight="realHeight"
-        :scale="scaleRatio"
-        @wheel="changeScale"
-        style="border: 1px solid black"
-    >
-        <svg
-            version="1.1"
-            baseProfile="full"
-            :viewBox="`0 0 ${width} ${height}`"
-            width="100%"
-            height="100%"
-            :stroke-width="strokeWidth"
-            :font-size="fontSize"
-            :fill="fontColor"
-            xmlns="http://www.w3.org/2000/svg"
-            style="overflow: visible"
-        >
-            
-            <Sequencer 
-                />
-
-            Désolé, votre navigateur ne supporte pas le SVG.
-        </svg>
-    </MouseMovingComponent>
-    -->
 </template>
 
 <script>
@@ -107,7 +67,6 @@ export default {
             fontSize: architectureStyle.fontSize,
             fontColor: architectureStyle.fontColor,
             strokeWidth: architectureStyle.elementStrokeWidth,
-            scale: 100,
         }
     },
     created() {
@@ -163,9 +122,6 @@ export default {
                 datas: getJsonValues(architectureData, 'datasManager')[0],
             }
         },
-        scaleRatio() {
-            return this.scale / 100
-        },
         realWidth() {
             return this.$store.state.page.width
         },
@@ -183,10 +139,6 @@ export default {
             this.$store.commit('resetSignals')
             this.$store.commit('resetBusPower')
             this.arch.phaseByPhase()
-        },
-        changeScale(event) {
-            this.scale -= event.deltaY * 0.1
-            this.scale = Math.max(50, Math.min(this.scale, 200))
         },
         busHasPower(bus) {
             let result = 0
