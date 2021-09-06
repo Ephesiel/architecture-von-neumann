@@ -20,7 +20,7 @@
             v-bind="text"
         />
 
-        <Memory v-bind="memory" />
+        <Memory v-bind="memory" @wheel="onMemoryWheel" />
     </g>
 </template>
 
@@ -207,6 +207,9 @@ export default {
             }
 
             return result
+        },
+        onMemoryWheel(event) {
+            event.stopPropagation()
         },
     },
 }

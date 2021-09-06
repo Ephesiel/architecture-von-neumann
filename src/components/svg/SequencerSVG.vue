@@ -2,9 +2,7 @@
     <MouseMovingComponent
         :width="realWidth"
         :height="realHeight"
-        :componentWidth="realWidth"
-        :componentHeight="realHeight"
-        :scale="scaleRatio"
+        :maxScale="500"
         style="border: 1px solid black"
     >
         <svg
@@ -19,62 +17,42 @@
             xmlns="http://www.w3.org/2000/svg"
             style="overflow: visible"
         >
-            <Sequencer :sequencer-model="arch.sequencer" />
+            <Sequencer :sequencer-model="sequencerModel" />
             Désolé, votre navigateur ne supporte pas le SVG.
         </svg>
     </MouseMovingComponent>
-    <div>
-        <button @click="stepByStep()">Pas à pas</button><br />
-        <button @click="phaseByPhase()">Phase par phase</button>
-    </div>
 </template>
 
 <script>
-import Sequencer from '@/components/Sequencer.vue'
-import sequencerStyle from '@/view-datas/sequencer-style.json'
 import MouseMovingComponent from '@/components/MouseMovingComponent.vue'
+import Sequencer from '@/components/Sequencer.vue'
+import SequencerModel from '@/models/sequencer'
+import sequencerStyle from '@/view-datas/sequencer-style.json'
 
 export default {
-    name: 'Architecture',
     components: {
-        Sequencer,
         MouseMovingComponent,
+        Sequencer,
+    },
+    props: {
+        sequencerModel: SequencerModel,
     },
     data() {
         return {
-            arch: this.$store.state.engine.arch,
             width: sequencerStyle.svgWidth,
             height: sequencerStyle.svgHeight,
             fontSize: sequencerStyle.fontSize,
             fontColor: sequencerStyle.fontColor,
             strokeWidth: sequencerStyle.elementStrokeWidth,
-            scale: 100,
         }
     },
     computed: {
-        scaleRatio() {
-            return this.scale / 100
-        },
         realWidth() {
-            return this.$store.state.page.width
+            return this.$store.state.page.sequencerWidth
         },
         realHeight() {
             return this.realWidth * (this.height / this.width)
         },
     },
-    methods: {
-        stepByStep() {
-            this.$store.commit('resetSignals')
-            this.$store.commit('resetBusPower')
-            this.arch.stepByStep()
-        },
-        phaseByPhase() {
-            this.$store.commit('resetSignals')
-            this.$store.commit('resetBusPower')
-            this.arch.phaseByPhase()
-        },
-    },
 }
 </script>
-
-<style scoped lang="scss"></style>
