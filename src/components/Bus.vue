@@ -162,9 +162,16 @@ export default {
             return null
         },
     },
+    mounted() {
+        // Malgré le fait que `power` se recréer lorsque le bus se réaffiche,
+        // la méthode watch n'est pas appelée. Si la méthode `sendPower` n'est
+        // pas réappelée ici, alors les bus n'auront pas d'animation lorsqu'ils
+        // réapparaitront.
+        this.sendPower()
+    },
     watch: {
         power: function () {
-            this.$emit('power', this.power)
+            this.sendPower()
         },
     },
     methods: {
@@ -252,6 +259,11 @@ export default {
             }
 
             return nextB
+        },
+        sendPower() {
+            if (this.power !== null) {
+                this.$emit('power', this.power)
+            }
         },
         onPower(index, power) {
             this.powers[index] = power.isOn

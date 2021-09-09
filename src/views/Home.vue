@@ -84,9 +84,19 @@ export default {
         },
         toggleArch() {
             this.displayArch = !this.displayArch
+            console.log('-----------------------')
+            console.log(
+                'Architecture ' + (this.displayArch ? 'affichée' : 'cachée')
+            )
+            console.log('-----------------------')
         },
         toggleSequencer() {
             this.displaySequencer = !this.displaySequencer
+            console.log('-----------------------')
+            console.log(
+                'Séquenceur ' + (this.displaySequencer ? 'affiché' : 'caché')
+            )
+            console.log('-----------------------')
         },
     },
 }
