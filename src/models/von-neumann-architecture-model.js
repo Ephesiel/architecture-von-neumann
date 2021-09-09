@@ -376,5 +376,11 @@ export default class VonNeumannArchitecture {
         // A+B -> C
         //   -> 01100111 000000000000
         this.memory.setValue(uint(2), uint(103).leftShift(NB_BITS_RA))
+        // JUMPC (B null), Direct, 12
+        //   -> 01111000 000000001100
+        this.memory.setValue(uint(3), uint(120).leftShift(NB_BITS_RA).add(12))
+        // JUMPC (A > 0), Direct, 0
+        //   -> 10000010 000000000000
+        this.memory.setValue(uint(4), uint(130).leftShift(NB_BITS_RA).add(0))
     }
 }

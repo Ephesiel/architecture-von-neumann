@@ -548,7 +548,7 @@
             ]
         },
         {
-            "model": "REMM.busCond",
+            "model": "busInputCond",
             "name": "Bus sélection mult 1",
             "x": 10,
             "y": 15,
