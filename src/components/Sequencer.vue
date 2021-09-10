@@ -171,6 +171,7 @@ export default {
                         result = conditionMultPower && conditionMultVal.eq(1)
                         break
                     case 'Cond-NextAdr':
+                    case 'Cond-Cond':
                         result = conditionMultPower
                         break
                     case 'Plus1-NextAdr':
@@ -199,9 +200,6 @@ export default {
                         break
                     case 'Pulse':
                         result = signals[Signals.SENDPULSES]
-                        break
-                    case 'Cond-Cond':
-                        result = conditionMultPower
                         break
                 }
             }

@@ -30,6 +30,10 @@ export default class RegisterDecorator extends Register {
 
     update() {}
 
+    reset() {
+        this.register.reset()
+    }
+
     getCurrentValue() {
         return this.register.getCurrentValue()
     }

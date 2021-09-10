@@ -55,6 +55,8 @@ export default class Sequencer {
     busOutputFetch //: Bus
     busOutputPhase //: Bus
     busOutputPlus1 //: Bus
+    busInputCond //: Bus
+    busOutputCond //: Bus
     busInputCOPMA //: Bus
     conditiontMult //: Multiplexer
     nextAddrMult //: Multiplexer
@@ -108,6 +110,8 @@ export default class Sequencer {
             MPM_BITS_ADDRESSES,
             UNSIGNED
         )
+        this.busInputCond = busInputCond
+        this.busOutputCond = busOutputCond
         this.busInputCOPMA = busInputCOPMA
 
         // Instanciation des registres
@@ -192,9 +196,9 @@ export default class Sequencer {
         this.microprogammedMemory.setValue(FETCH_PHASE1_ADDR.add(2), FETCH_PHI3)
 
         // LOAD A, Imm, 10
-        // Phi4 : RIB1 XS eRA Fin
-        //   * Adresse Suivante : 256, pas besoin
-        //   * selMS : 3, osef
+        // Phi4 : RIB1 XS eRA
+        //   * Adresse Suivante : 256
+        //   * selMS : 3, adresse suivante
         //   * Cond : 0, pas besoin
         this.microprogammedMemory.setValue(
             uint(1),
@@ -202,9 +206,9 @@ export default class Sequencer {
         )
 
         // LOAD B, Imm, 12
-        // Phi4 : RIB1 XS eRB Fin
-        //   * Adresse Suivante : 256, pas besoin
-        //   * selMS : 3, osef
+        // Phi4 : RIB1 XS eRB
+        //   * Adresse Suivante : 256
+        //   * selMS : 3, adresse suivante
         //   * Cond : 0, pas besoin
         this.microprogammedMemory.setValue(
             uint(11),
@@ -212,9 +216,9 @@ export default class Sequencer {
         )
 
         // A+B -> C
-        // Phi4 : RAB1 RBB2 ADD eRC Fin
-        //   * Adresse Suivante : 256, pas besoin
-        //   * selMS : 3, osef
+        // Phi4 : RAB1 RBB2 ADD eRC
+        //   * Adresse Suivante : 256
+        //   * selMS : 3, adresse suivante
         //   * Cond : 0, pas besoin
         this.microprogammedMemory.setValue(
             uint(103),
@@ -223,6 +227,60 @@ export default class Sequencer {
                 Signals.RBB2,
                 Signals.ADD,
                 Signals.eRC,
+            ])
+        )
+
+        // JUMPC (B null), Direct, 12
+        // Phi4 :
+        //   * Adresse Suivante : 200, si la condition est juste
+        //   * selMS : 1, Condition
+        //   * Cond : 2, is B Null
+        this.microprogammedMemory.setValue(
+            uint(120),
+            MMParser.parse(200, 1, 2, [])
+        )
+
+        // JUMPC (A > 0), Direct, 0
+        // Phi4 :
+        //   * Adresse Suivante : 200, si la condition est juste
+        //   * selMS : 1, Condition
+        //   * Cond : 3, is A > 0
+        this.microprogammedMemory.setValue(
+            uint(130),
+            MMParser.parse(200, 1, 3, [])
+        )
+
+        // Condition fausse
+        // Phi5 : COB1 XP1 eCO FIN
+        this.microprogammedMemory.setValue(
+            uint(121),
+            MMParser.parse(0, 0, 0, [
+                Signals.COB1,
+                Signals.XP1,
+                Signals.eCO,
+                Signals.FIN,
+            ])
+        )
+
+        this.microprogammedMemory.setValue(
+            uint(131),
+            MMParser.parse(0, 0, 0, [
+                Signals.COB1,
+                Signals.XP1,
+                Signals.eCO,
+                Signals.FIN,
+            ])
+        )
+
+        // Condition vraie
+        // Phi5 : RIB1 XS eCO FIN
+        this.microprogammedMemory.setValue(
+            uint(200),
+            MMParser.parse(0, 0, 0, [
+                Signals.RIB1,
+                Signals.XS,
+                Signals.eCO,
+                Signals.FIN,
             ])
         )
 
@@ -252,6 +310,8 @@ export default class Sequencer {
             this.busOutputFetch,
             this.busOutputPhase,
             this.busOutputPlus1,
+            this.busInputCond,
+            this.busOutputCond,
             this.busInputCOPMA,
         ]
     }

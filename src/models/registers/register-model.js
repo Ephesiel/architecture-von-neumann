@@ -154,6 +154,8 @@ export default class Register {
 
         let maxSize = 0
 
+        // La taille du registre correspond au plus gros bus emportant des
+        // informations
         for (const input of this.inputs) {
             if (input.bus.getValue().size > maxSize) {
                 maxSize = input.bus.getValue().size
@@ -166,6 +168,10 @@ export default class Register {
         } else {
             setDefaultValue()
         }
+    }
+
+    reset() {
+        this.setBitsOfValue()
     }
 
     setOutputs(outputs) {

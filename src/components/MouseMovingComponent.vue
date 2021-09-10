@@ -79,6 +79,14 @@ export default {
         // composant interne visible
         // Si le changement implique un zoom, le zoom se fait depuis le centre
         sizes: function (newSizes, oldSizes) {
+            // Impossible de diviser par 0
+            if (
+                oldSizes.componentWidth === 0 ||
+                oldSizes.componentHeight === 0
+            ) {
+                return
+            }
+
             // Les centres
             const oldC = { x: oldSizes.width / 2, y: oldSizes.height / 2 }
             const newC = { x: newSizes.width / 2, y: newSizes.height / 2 }

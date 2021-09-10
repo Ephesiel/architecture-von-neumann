@@ -298,6 +298,20 @@ export default class VonNeumannArchitecture {
         ]
     }
 
+    registers() {
+        return [
+            this.CO,
+            this.RI,
+            this.RE,
+            this.RA,
+            this.RB,
+            this.RC,
+            this.RX,
+            this.SP,
+            this.RAM,
+        ]
+    }
+
     // ------------------------------------------------------------------------
     // UI.
 
@@ -366,6 +380,24 @@ export default class VonNeumannArchitecture {
         Clock.waitAndTick(5, 1)
     }
 
+    reset() {
+        for (const bus of this.buses()) {
+            bus.setValue(uint(0))
+        }
+        for (const bus of this.sequencer.buses()) {
+            bus.setValue(uint(0))
+        }
+        for (const register of this.registers()) {
+            register.reset()
+        }
+        this.sequencer.REMM.reset()
+        this.sequencer.RAMM.reset()
+
+        this.updateRAMM()
+        this.updateREMM()
+        this.updateRegisters()
+    }
+
     TEST() {
         // LOAD A, Imm, 10
         //   -> 00000001 000000001010
@@ -376,5 +408,11 @@ export default class VonNeumannArchitecture {
         // A+B -> C
         //   -> 01100111 000000000000
         this.memory.setValue(uint(2), uint(103).leftShift(NB_BITS_RA))
+        // JUMPC (B null), Direct, 12
+        //   -> 01111000 000000001100
+        this.memory.setValue(uint(3), uint(120).leftShift(NB_BITS_RA).add(12))
+        // JUMPC (A > 0), Direct, 0
+        //   -> 10000010 000000000000
+        this.memory.setValue(uint(4), uint(130).leftShift(NB_BITS_RA).add(0))
     }
 }
