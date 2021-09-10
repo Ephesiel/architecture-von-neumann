@@ -236,7 +236,7 @@ export default class Sequencer {
         //   * selMS : 1, Condition
         //   * Cond : 2, is B Null
         this.microprogammedMemory.setValue(
-            uint(120),
+            uint(129),
             MMParser.parse(200, 1, 2, [])
         )
 

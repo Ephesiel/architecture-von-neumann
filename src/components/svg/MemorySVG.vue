@@ -9,14 +9,7 @@
         xmlns="http://www.w3.org/2000/svg"
         style="overflow: visible"
     >
-        <Memory
-            :memory-model="memoryModel"
-            :width="width"
-            :height="height"
-            :x="0"
-            :y="0"
-            :dataProcessor="() => 'bite'"
-        />
+        <Memory v-bind="memory" />
         Désolé, votre navigateur ne supporte pas le SVG.
     </svg>
 </template>
@@ -24,6 +17,7 @@
 <script>
 import MemoryModel from '@/models/memory/memory-model'
 import Memory from '@/components/Memory.vue'
+import CMParser from '@/central-memory-parser'
 import memoryStyle from '@/view-datas/memory-style.json'
 
 export default {
@@ -41,6 +35,18 @@ export default {
             fontColor: memoryStyle.fontColor,
             strokeWidth: memoryStyle.elementStrokeWidth,
         }
+    },
+    computed: {
+        memory() {
+            return {
+                memoryModel: this.memoryModel,
+                width: this.width,
+                height: this.height,
+                x: 0,
+                y: 0,
+                dataProcessor: CMParser.translate,
+            }
+        },
     },
 }
 </script>

@@ -39,7 +39,13 @@
                     <label for="ra">Référence Adresse : </label>
                 </td>
                 <td>
-                    <input type="number" id="ra" v-model="RA" />
+                    <input
+                        type="number"
+                        :min="minRA"
+                        :max="maxRA"
+                        id="ra"
+                        v-model="RA"
+                    />
                 </td>
             </tr>
             <tr>
@@ -50,7 +56,13 @@
                     <label for="address">Écrire à l'adresse : </label>
                 </td>
                 <td>
-                    <input type="number" id="address" v-model="address" />
+                    <input
+                        type="number"
+                        min="0"
+                        :max="maxAddr"
+                        id="address"
+                        v-model="address"
+                    />
                 </td>
             </tr>
         </table>
@@ -62,9 +74,10 @@
 </template>
 
 <script>
-import instructions from '@/models/instructions.json'
+import instructions from '@/instructions.json'
 import MemoryModel from '@/models/memory/memory-model'
-import { int } from '@/integer'
+import CMParser from '@/central-memory-parser'
+import { MIN_RA, MAX_RA, MAX_ADDR } from '@/globals'
 
 export default {
     props: {
@@ -76,6 +89,9 @@ export default {
             MA: null,
             RA: 0,
             address: 0,
+            minRA: MIN_RA,
+            maxRA: MAX_RA,
+            maxAddr: MAX_ADDR,
         }
     },
     computed: {
@@ -114,7 +130,13 @@ export default {
     },
     methods: {
         write() {
-            this.memoryModel.setValue(int(this.address), int(this.value))
+            const addr = CMParser.parseAddress(parseInt(this.address))
+            const value = CMParser.parse(
+                parseInt(this.COPMA),
+                parseInt(this.RA)
+            )
+
+            this.memoryModel.setValue(addr, value)
         },
     },
 }
@@ -124,9 +146,27 @@ export default {
 .form {
     border: 1px solid black;
     padding: 10px;
+
+    input,
+    select {
+        width: 100%;
+        min-width: 180px;
+    }
 }
 table {
     width: 100%;
+    td {
+        padding: 10px 2px;
+    }
+
+    tr td:first-child {
+        text-align: right;
+        min-width: 160px;
+    }
+
+    tr td:last-child {
+        text-align: left;
+    }
 }
 .flex {
     display: flex;
@@ -134,17 +174,5 @@ table {
 }
 .label {
     font-weight: bold;
-}
-td {
-    padding: 10px 2px;
-}
-
-tr td:first-child {
-    text-align: right;
-    min-width: 160px;
-}
-
-tr td:last-child {
-    text-align: left;
 }
 </style>
