@@ -298,6 +298,20 @@ export default class VonNeumannArchitecture {
         ]
     }
 
+    registers() {
+        return [
+            this.CO,
+            this.RI,
+            this.RE,
+            this.RA,
+            this.RB,
+            this.RC,
+            this.RX,
+            this.SP,
+            this.RAM,
+        ]
+    }
+
     // ------------------------------------------------------------------------
     // UI.
 
@@ -364,6 +378,24 @@ export default class VonNeumannArchitecture {
     updateRegisters() {
         SignalManager.emit(Signals.REGSIGCLOCK, 1)
         Clock.waitAndTick(5, 1)
+    }
+
+    reset() {
+        for (const bus of this.buses()) {
+            bus.setValue(uint(0))
+        }
+        for (const bus of this.sequencer.buses()) {
+            bus.setValue(uint(0))
+        }
+        for (const register of this.registers()) {
+            register.reset()
+        }
+        this.sequencer.REMM.reset()
+        this.sequencer.RAMM.reset()
+
+        this.updateRAMM()
+        this.updateREMM()
+        this.updateRegisters()
     }
 
     TEST() {

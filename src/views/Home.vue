@@ -3,6 +3,7 @@
         <div class="buttons-bar">
             <button class="btn" @click="stepByStep()">Pas à pas</button>
             <button class="btn" @click="phaseByPhase()">Phase par phase</button>
+            <button class="btn" @click="reset()">Reset</button>
             <button class="btn" @click="toggleArch()">
                 {{
                     displayArch
@@ -81,6 +82,11 @@ export default {
             this.$store.commit('resetSignals')
             this.$store.commit('resetBusPower')
             this.arch.phaseByPhase()
+        },
+        reset() {
+            this.$store.commit('resetSignals')
+            this.$store.commit('resetBusPower')
+            this.arch.reset()
         },
         toggleArch() {
             this.displayArch = !this.displayArch
