@@ -18,18 +18,27 @@
                         : 'Afficher séquenceur'
                 }}
             </button>
+            <button class="btn" @click="toggleMemory()">
+                {{ displayMemory ? 'Cacher mémoire' : 'Afficher mémoire' }}
+            </button>
         </div>
-        <div class="svg">
-            <ArchitectureSVG
-                v-if="displayArch"
-                class="architecture-svg"
-                :architecture-model="arch"
-            />
-            <SequencerSVG
-                v-if="displaySequencer"
-                class="sequencer-svg"
-                :sequencer-model="arch.sequencer"
-            />
+        <div class="flex">
+            <div class="svg">
+                <ArchitectureSVG
+                    v-if="displayArch"
+                    class="architecture-svg"
+                    :architecture-model="arch"
+                />
+                <SequencerSVG
+                    v-if="displaySequencer"
+                    class="sequencer-svg"
+                    :sequencer-model="arch.sequencer"
+                />
+            </div>
+            <div v-if="displayMemory">
+                <MemorySVG class="memory-svg" :memory-model="arch.memory" />
+                <InstructionCreator :memoryModel="arch.memory" />
+            </div>
         </div>
     </div>
 </template>
@@ -39,18 +48,23 @@ import ArchitectureModel from '@/models/von-neumann-architecture-model'
 import Clock from '@/models/clock'
 import ArchitectureSVG from '@/components/svg/ArchitectureSVG.vue'
 import SequencerSVG from '@/components/svg/SequencerSVG.vue'
+import MemorySVG from '@/components/svg/MemorySVG.vue'
+import InstructionCreator from '@/components/InstructionCreator.vue'
 
 export default {
     name: 'Home',
     components: {
         ArchitectureSVG,
         SequencerSVG,
+        MemorySVG,
+        InstructionCreator,
     },
     data() {
         return {
             arch: new ArchitectureModel(),
             displayArch: true,
             displaySequencer: true,
+            displayMemory: true,
         }
     },
     created() {
@@ -104,6 +118,14 @@ export default {
             )
             console.log('-----------------------')
         },
+        toggleMemory() {
+            this.displayMemory = !this.displayMemory
+            console.log('-----------------------')
+            console.log(
+                'mémoire ' + (this.displayMemory ? 'affichée' : 'cachée')
+            )
+            console.log('-----------------------')
+        },
     },
 }
 </script>
@@ -131,5 +153,12 @@ export default {
 }
 .svg .architecture-svg {
     margin-bottom: 20px;
+}
+.instructions-creator {
+    width: 400px;
+}
+.flex {
+    display: flex;
+    justify-content: space-evenly;
 }
 </style>
