@@ -380,6 +380,11 @@ export default class VonNeumannArchitecture {
         Clock.waitAndTick(5, 1)
     }
 
+    backToFetch() {
+        SignalManager.emit(Signals.FIN, 1)
+        Clock.waitAndTick(5, 1)
+    }
+
     reset() {
         for (const bus of this.buses()) {
             bus.setValue(uint(0))
@@ -396,6 +401,7 @@ export default class VonNeumannArchitecture {
         this.updateRAMM()
         this.updateREMM()
         this.updateRegisters()
+        this.backToFetch()
     }
 
     TEST() {
