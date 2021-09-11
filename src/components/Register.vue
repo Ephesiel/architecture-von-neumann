@@ -75,7 +75,9 @@ export default {
             return verifyValue(this.datas.labelPos, 'string', 'L')
         },
         componentsWidth() {
-            const labelWidth = Helper.calculateSize(this.label, this.fontSize).h
+            const labelWidth =
+                Helper.calculateSize(this.label, this.fontSize).h +
+                this.margins.lr
             return {
                 label: labelWidth,
                 decimal: 0.3 * (this.width - labelWidth),
@@ -85,7 +87,7 @@ export default {
         margins() {
             return {
                 ud: 0,
-                lr: 0.125,
+                lr: 1,
             }
         },
         transform() {
@@ -158,7 +160,7 @@ export default {
         labelPoint() {
             return {
                 x: this.componentsWidth.label / 2,
-                y: this.height / 2 + this.margins.lr,
+                y: this.height / 2,
             }
         },
         currentValueBinaryPoint() {
