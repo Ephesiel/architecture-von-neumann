@@ -10,6 +10,7 @@
             activatedColor="#ccff66"
             deactivatedColor="#ffcc66"
             @click="buttonClicked()"
+            v-show="showButton"
         />
 
         <foreignObject
@@ -91,6 +92,10 @@ export default {
         width: Number,
         height: Number,
         dataProcessor: Function,
+        showButton: {
+            type: Boolean,
+            default: true,
+        },
     },
     data() {
         return {
@@ -103,12 +108,6 @@ export default {
     computed: {
         transform() {
             return Helper.transform(this.x, this.y)
-        },
-        labelPoint() {
-            return {
-                x: this.width / 2,
-                y: this.height / 20,
-            }
         },
         memoryData() {
             const data = []
@@ -135,13 +134,13 @@ export default {
                 x: 0,
                 y: 0,
                 w: this.width,
-                h: 0.1 * this.height,
+                h: this.showButton ? 3 : 0,
             }
             const table = {
                 x: 0,
                 y: button.h,
                 w: this.width,
-                h: 0.8 * this.height,
+                h: 0.9 * this.height - button.h,
             }
             const scroll = {
                 x: 0,
@@ -162,9 +161,9 @@ export default {
             this.scrollBody(-1)
         },
         getPoints(side) {
-            let topY = 0.94 * this.height
-            let botY = 0.96 * this.height
-            let sideShift = this.width / 100
+            const topY = 0.95 * this.height - 0.3
+            const botY = 0.95 * this.height + 0.3
+            const sideShift = this.width / 100
 
             const calculatePoints = function (start, side) {
                 let sideX = start + side * sideShift
@@ -215,6 +214,9 @@ export default {
         scrollableBody.onwheel = this.scroll.bind(this)
 
         this.canScroll = scrollableBody.scrollTopMax !== 0
+    },
+    created() {
+        this.displayAll = !this.showButton
     },
 }
 </script>
