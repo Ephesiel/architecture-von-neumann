@@ -27,7 +27,10 @@
                 >
                     <tbody
                         id="scrollableBody"
-                        :style="{ height: `${compsGeometry.table.h}px` }"
+                        :style="{
+                            width: '100%',
+                            height: `${compsGeometry.table.h}px`,
+                        }"
                     >
                         <tr>
                             <th>Adresse</th>
@@ -44,7 +47,7 @@
             </body>
         </foreignObject>
 
-        <g>
+        <g v-show="canScroll">
             <polygon
                 fill="black"
                 stroke="black"
@@ -154,6 +157,9 @@ export default {
     methods: {
         buttonClicked() {
             this.displayAll = !this.displayAll
+
+            this.scrolled = 0
+            this.scrollBody(-1)
         },
         getPoints(side) {
             let topY = 0.94 * this.height
@@ -173,17 +179,54 @@ export default {
                 return calculatePoints(this.width / 2 + 4, -1)
             }
         },
+        scroll(event) {
+            event.preventDefault()
+
+            this.scrollBody(Math.sign(event.deltaY))
+        },
+        scrollBody(sign) {
+            const scrollableBody = document.getElementById('scrollableBody')
+            const headRow = document.querySelector(
+                '#scrollableBody tr:first-child'
+            )
+
+            this.scrolled += sign
+
+            // Hauteur de la table - 1 ligne (la ligne header sticky)
+            const top =
+                this.scrolled * this.compsGeometry.table.h -
+                headRow.clientHeight
+
+            if (this.scrolled < 0 || top > scrollableBody.scrollTopMax) {
+                this.scrolled -= sign
+            }
+
+            // Désafficher « Scroll » si c'est la fin de la table
+            this.canScroll = top <= scrollableBody.scrollTopMax
+
+            scrollableBody.scroll({
+                top: top,
+                behavior: 'smooth',
+            })
+        },
+    },
+    mounted() {
+        const scrollableBody = document.getElementById('scrollableBody')
+        scrollableBody.onwheel = this.scroll.bind(this)
+
+        this.canScroll = scrollableBody.scrollTopMax !== 0
     },
 }
 </script>
 
 <style lang="scss" scoped>
 table {
-    display: block;
+    display: table;
     text-align: center;
     border-collapse: collapse;
     border-spacing: 2px;
     width: 100% !important;
+    line-height: 1 !important;
 
     td:last-child {
         width: 100%;
@@ -202,16 +245,10 @@ table {
         }
     }
 
-    td {
-        padding: 0.1rem;
-        vertical-align: top;
-        display: table-cell;
-    }
-
     tbody th {
         position: sticky;
         top: 0;
-        z-index: 1;
+        z-index: 100;
         background: #f2f2f2;
     }
 }
