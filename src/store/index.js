@@ -40,12 +40,16 @@ const modulePage = {
         width: 0,
         sequencerWidth: 0,
         architectureWidth: 0,
+        memoryWidth: 0,
+        memoryHeight: 0,
     },
     mutations: {
         changePageSize: (state, page) => {
             state.width = page.getBoundingClientRect().width
             state.sequencerWidth = state.width / 1.5
             state.architectureWidth = state.width / 1.5
+            state.memoryWidth = state.width / 3
+            state.memoryHeight = state.memoryWidth / 1.5
         },
     },
 }

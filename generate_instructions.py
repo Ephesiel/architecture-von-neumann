@@ -59,27 +59,31 @@ instructions = {
 
 cpt = 0
 
-with open('instructions.csv', 'w') as outfile:
-    outfile.write('Numéro;Code Opération;Mode d\'adressage\n')
+def toWrite(num, cop, ma):
+    return f"\t\"{cpt}\": {{\"COP\": \"{cop}\", \"MA\": \"{ma}\"}},\n"
+
+with open('instructions.json', 'w') as outfile:
+    outfile.write('{\n')
     for key, value in instructions.items():
         if len(value['regs']) > 0:
             for reg in value['regs']:
                 if len(value['ma']) > 0:
                     for ma in value['ma']:
-                        outfile.write(f"{cpt};{key} {reg};{ma}\n")
+                        outfile.write(toWrite(cpt, f"{key} {reg}", ma))
                         cpt += 1
                 else:
-                    outfile.write(f"{cpt};{key} {reg};\n")
+                    outfile.write(toWrite(cpt, f"{key} {reg}", ""))
                     cpt += 1
         elif len(value['ma']) > 0:
             for ma in value['ma']:
                 if value['conds']:
                     for cond in conds: 
-                        outfile.write(f"{cpt};{key} ({cond});{ma}\n")
+                        outfile.write(toWrite(cpt, f"{key} ({cond})", ma))
                         cpt += 1
                 else:
-                    outfile.write(f"{cpt};{key};{ma}\n")
+                    outfile.write(toWrite(cpt, key, ma))
                     cpt += 1
         else:
-            outfile.write(f"{cpt};{key};\n")
+            outfile.write(toWrite(cpt, key, ""))
             cpt += 1
+    outfile.write('}')

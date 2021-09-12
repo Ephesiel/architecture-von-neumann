@@ -22,7 +22,7 @@ import Integer, { SIGNED, maxOf, int } from '@/integer'
  * Exemple :
  *
  * ```js
- * // Adresses sur 4 bits, Valeur sur 10 bits
+ * // Adresses sur 4 bits, Valeurs sur 10 bits
  * let memory = new Memory(4, 10)
  *
  * // Ok

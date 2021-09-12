@@ -21,6 +21,13 @@ import {
 } from '@/globals'
 import { UNSIGNED, uint } from '@/integer'
 
+const Phase = {
+    NONE: 0,
+    ERAMM: 1,
+    EREMM: 2,
+    SENDSIG: 3,
+}
+
 /**
  * Représentation de l'architecture d'un ordinateur.
  *
@@ -76,8 +83,7 @@ export default class VonNeumannArchitecture {
     memory //: Memory
     memoryReader //: MemoryReader
     memoryWriter //: MemoryWriter
-    stepByStepQueue //: Queue
-    canUpdateRegisters //: Boolean
+    actualPhase //: Number
 
     // ------------------------------------------------------------------------
     // Constructeur.
@@ -205,14 +211,7 @@ export default class VonNeumannArchitecture {
             this.busEM
         )
 
-        // Queue
-        this.stepByStepQueue = [
-            this.eRAMM.bind(this),
-            this.eREMM.bind(this),
-            this.sendSignals.bind(this),
-        ]
-
-        this.canUpdateRegisters = false
+        this.actualPhase = Phase.NONE
 
         this.TEST()
     }
@@ -316,15 +315,31 @@ export default class VonNeumannArchitecture {
     // UI.
 
     stepByStep() {
-        const fun = this.stepByStepQueue.shift()
-        fun()
-        this.stepByStepQueue.push(fun)
+        switch (this.actualPhase) {
+            case Phase.NONE:
+            case Phase.SENDSIG:
+                this.eRAMM()
+                break
+            case Phase.ERAMM:
+                this.eREMM()
+                break
+            case Phase.EREMM:
+                this.sendSignals()
+                break
+        }
     }
 
     phaseByPhase() {
-        this.eRAMM()
-        this.eREMM()
-        this.sendSignals()
+        do {
+            this.stepByStep()
+        } while (this.actualPhase !== Phase.SENDSIG)
+
+        // TO DO : En phase par phase, les bus animés ne sont pas les bons
+        // Le COPMA est allumé en phase 3 alors qu'il ne devrait pas l'être parce que la valeur
+        // du multiplexeur passe à 2 dans la 3ème phase. Seulement, c'est parce que c'est la prochaine instruction
+        // Le mieux étant peut être de ne pas alumer les bus en phase par phase
+
+        // TO DO : Erreur lorsque un fichier est enregistré et qu'on ne F5 pas la page, étudier le mystère
     }
 
     instrByInstr() {
@@ -332,12 +347,9 @@ export default class VonNeumannArchitecture {
     }
 
     eRAMM() {
-        // Update seulement lorsque eRAMM, eREMM et sendSignals ont été
-        // appelées au moins une fois.
-        if (this.canUpdateRegisters) {
-            this.updateRegisters()
-        }
+        this.updateRegisters()
         console.log('eRAMM')
+        this.actualPhase = Phase.ERAMM
 
         SignalManager.emit(Signals.eRAMM, 5)
         Clock.waitAndTick(10, 1)
@@ -346,6 +358,7 @@ export default class VonNeumannArchitecture {
     eREMM() {
         this.updateRAMM()
         console.log('eREMM')
+        this.actualPhase = Phase.EREMM
 
         SignalManager.emit(Signals.eREMM, 5)
         Clock.waitAndTick(10, 1)
@@ -354,6 +367,7 @@ export default class VonNeumannArchitecture {
     sendSignals() {
         this.updateREMM()
         console.log('sendSignals')
+        this.actualPhase = Phase.SENDSIG
 
         SignalManager.emit(Signals.SENDLEVELS, 1)
         Clock.waitAndTick(TIME_ATU_FOR_LEVELS - TIME_ATU_FOR_PULSES, 1)
@@ -362,7 +376,6 @@ export default class VonNeumannArchitecture {
             TIME_ATU_FOR_PULSES + MAXIMUM_ALLOWED_BUS_POWER_TIME + 5,
             1
         )
-        this.canUpdateRegisters = true
     }
 
     updateRAMM() {
@@ -376,26 +389,47 @@ export default class VonNeumannArchitecture {
     }
 
     updateRegisters() {
-        SignalManager.emit(Signals.REGSIGCLOCK, 1)
-        Clock.waitAndTick(5, 1)
+        // Les registres ne sont update que si l'architecture a au moins fait
+        // un tour. Sinon, le compteur de phase va augmenter pour rien (il
+        // augmente lorsque ce signal est envoyé)
+        if (this.actualPhase !== Phase.NONE) {
+            SignalManager.emit(Signals.REGSIGCLOCK, 1)
+            Clock.waitAndTick(5, 1)
+        }
+    }
+
+    backToFetch() {
+        SignalManager.emit(Signals.FIN, TIME_ATU_FOR_LEVELS)
+        Clock.waitAndTick(
+            TIME_ATU_FOR_LEVELS + MAXIMUM_ALLOWED_BUS_POWER_TIME + 5,
+            1
+        )
     }
 
     reset() {
-        for (const bus of this.buses()) {
-            bus.setValue(uint(0))
+        if (this.actualPhase !== Phase.NONE) {
+            for (const bus of this.buses()) {
+                bus.setValue(uint(0))
+            }
+            for (const bus of this.sequencer.buses()) {
+                bus.setValue(uint(0))
+            }
+            for (const register of this.registers()) {
+                register.reset()
+            }
+            this.sequencer.REMM.reset()
+            this.sequencer.RAMM.reset()
+            this.backToFetch()
+            this.updateRAMM()
+            this.updateREMM()
+            this.updateRegisters()
+            this.actualPhase = Phase.NONE
         }
-        for (const bus of this.sequencer.buses()) {
-            bus.setValue(uint(0))
-        }
-        for (const register of this.registers()) {
-            register.reset()
-        }
-        this.sequencer.REMM.reset()
-        this.sequencer.RAMM.reset()
 
-        this.updateRAMM()
-        this.updateREMM()
-        this.updateRegisters()
+        // TO DO : au reset, le sélecteur de Phase et la Phase ne s'update pas correctement
+        // Il augmente de phase et il faut appuyer de nouveau sur reset pour voir apparaitre 1 et 1
+
+        // TO DO : Appuyer sur reset sans avoir encore appuyer sur un autre bouton de l'architecture ne commence pas par appeler le fetch
     }
 
     TEST() {
@@ -409,8 +443,8 @@ export default class VonNeumannArchitecture {
         //   -> 01100111 000000000000
         this.memory.setValue(uint(2), uint(103).leftShift(NB_BITS_RA))
         // JUMPC (B null), Direct, 12
-        //   -> 01111000 000000001100
-        this.memory.setValue(uint(3), uint(120).leftShift(NB_BITS_RA).add(12))
+        //   -> 10000001 000000001100
+        this.memory.setValue(uint(3), uint(129).leftShift(NB_BITS_RA).add(12))
         // JUMPC (A > 0), Direct, 0
         //   -> 10000010 000000000000
         this.memory.setValue(uint(4), uint(130).leftShift(NB_BITS_RA).add(0))
