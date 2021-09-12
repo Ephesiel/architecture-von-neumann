@@ -85,6 +85,10 @@ export default {
                 }
             }
         })
+
+        // On lance un premier tick pour que les méthodes updates soient toutes
+        // appelées au moins un fois
+        Clock.waitAndTick(1, 1)
     },
     methods: {
         stepByStep() {

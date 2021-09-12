@@ -68,8 +68,6 @@ export default class PhaseCounter {
     // Méthodes utilisées par la classe.
 
     setBusValue() {
-        this.busOutput.setValue(
-            uint(Number(this.currentPhase.toNumber() === 1), 1)
-        )
+        this.busOutput.setValue(uint(Number(this.currentPhase.eq(1)), 1))
     }
 }
