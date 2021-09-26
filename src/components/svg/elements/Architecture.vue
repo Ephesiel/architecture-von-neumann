@@ -12,11 +12,11 @@
 </template>
 
 <script>
-import Register from '@/components/Register.vue'
-import InstructionRegister from '@/components/InstructionRegister.vue'
-import Bus from '@/components/Bus.vue'
-import ALU from '@/components/ArithmeticLogicUnit.vue'
-import DatasManager from '@/components/DatasManager.vue'
+import Register from '@/components/svg/elements/Register.vue'
+import InstructionRegister from '@/components/svg/elements/InstructionRegister.vue'
+import Bus from '@/components/svg/elements/Bus.vue'
+import ALU from '@/components/svg/elements/ArithmeticLogicUnit.vue'
+import DatasManager from '@/components/svg/elements/DatasManager.vue'
 import { Signals } from '@/globals'
 import ArchitectureModel from '@/models/von-neumann-architecture-model'
 import architectureData from '@/view-datas/architecture.json'

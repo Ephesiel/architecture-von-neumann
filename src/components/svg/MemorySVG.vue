@@ -16,7 +16,7 @@
 
 <script>
 import MemoryModel from '@/models/memory/memory-model'
-import Memory from '@/components/Memory.vue'
+import Memory from '@/components/svg/elements/Memory.vue'
 import CMParser from '@/central-memory-parser'
 import memoryStyle from '@/view-datas/memory-style.json'
 

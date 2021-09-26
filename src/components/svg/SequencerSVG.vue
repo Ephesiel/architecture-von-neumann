@@ -25,7 +25,7 @@
 
 <script>
 import MouseMovingComponent from '@/components/MouseMovingComponent.vue'
-import Sequencer from '@/components/Sequencer.vue'
+import Sequencer from '@/components/svg/elements/Sequencer.vue'
 import SequencerModel from '@/models/sequencer'
 import sequencerStyle from '@/view-datas/sequencer-style.json'
 

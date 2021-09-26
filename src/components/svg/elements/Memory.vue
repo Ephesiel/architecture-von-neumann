@@ -78,7 +78,7 @@ import Helper from '@/helper'
 import MemoryModel from '@/models/memory/memory-model'
 import architectureStyle from '@/view-datas/architecture-style.json'
 import { uint } from '@/integer'
-import Button from '@/components/Button.vue'
+import Button from '@/components/svg/elements/Button.vue'
 
 export default {
     name: 'Memory',

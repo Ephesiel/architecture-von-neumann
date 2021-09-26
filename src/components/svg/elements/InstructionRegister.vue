@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import Register from '@/components/Register.vue'
-import Formatter from '@/components/Formatter.vue'
+import Register from '@/components/svg/elements/Register.vue'
+import Formatter from '@/components/svg/elements/Formatter.vue'
 import RegisterDecorator from '@/models/registers/register-decorator'
 import Helper from '@/helper'
 import { verifyValue } from '@/functions'

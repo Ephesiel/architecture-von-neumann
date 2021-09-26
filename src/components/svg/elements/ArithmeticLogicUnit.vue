@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import Signal from '@/components/Signal.vue'
+import Signal from '@/components/svg/elements/Signal.vue'
 import ALUModel from '@/models/arithmetic-logic-unit-model'
 import Helper from '@/helper'
 import { verifyValue } from '@/functions'

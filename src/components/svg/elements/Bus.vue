@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import Signal from '@/components/Signal.vue'
+import Signal from '@/components/svg/elements/Signal.vue'
 import BusModel from '@/models/bus-model'
 import { verifyValue } from '@/functions'
 import architectureStyle from '@/view-datas/architecture-style.json'

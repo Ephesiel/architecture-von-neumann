@@ -25,7 +25,7 @@
 
 <script>
 import MouseMovingComponent from '@/components/MouseMovingComponent.vue'
-import Architecture from '@/components/Architecture.vue'
+import Architecture from '@/components/svg/elements/Architecture.vue'
 import ArchitectureModel from '@/models/von-neumann-architecture-model'
 import architectureStyle from '@/view-datas/architecture-style.json'
 

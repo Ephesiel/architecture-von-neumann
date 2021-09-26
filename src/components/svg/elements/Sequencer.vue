@@ -31,11 +31,11 @@ import Integer from '@/integer'
 import MMParser from '@/microprogrammed-memory-parser'
 import sequencerData from '@/view-datas/sequencer.json'
 import SequencerModel from '@/models/sequencer'
-import Register from '@/components/Register.vue'
-import Bus from '@/components/Bus.vue'
-import Multiplexer from '@/components/Multiplexer.vue'
-import Memory from '@/components/Memory.vue'
-import FloatingText from '@/components/FloatingText.vue'
+import Register from '@/components/svg/elements/Register.vue'
+import Bus from '@/components/svg/elements/Bus.vue'
+import Multiplexer from '@/components/svg/elements/Multiplexer.vue'
+import Memory from '@/components/svg/elements/Memory.vue'
+import FloatingText from '@/components/svg/elements/FloatingText.vue'
 
 export default {
     name: 'Sequencer',
